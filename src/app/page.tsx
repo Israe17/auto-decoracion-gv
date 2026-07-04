@@ -30,23 +30,23 @@ export default async function Home() {
         <div className="benefits">
           <div>
             <Store />
-            <strong>Producto en el local</strong>
-            <span>Inventario real en Liberia, listo para llevar.</span>
+            <strong>Disponible de inmediato</strong>
+            <span>Visite nuestro local en Liberia y llévese el producto el mismo día.</span>
           </div>
           <div>
             <Truck />
-            <strong>Bajo pedido de confianza</strong>
-            <span>Lo que no esté en stock lo pedimos a nuestros distribuidores.</span>
+            <strong>Lo conseguimos por usted</strong>
+            <span>Si no está disponible, lo pedimos a nuestros distribuidores de confianza.</span>
           </div>
           <div>
             <Wrench />
-            <strong>Instalación en el taller</strong>
-            <span>Instalamos todo lo que vendemos, de audio a defensas.</span>
+            <strong>Instalación profesional</strong>
+            <span>Instalamos todo lo que vendemos, con acabado limpio y garantizado.</span>
           </div>
           <div>
             <Film />
-            <strong>Polarizado profesional</strong>
-            <span>Protección solar y privacidad para su vehículo.</span>
+            <strong>Polarizado de calidad</strong>
+            <span>Protección solar, privacidad y un acabado uniforme para su vehículo.</span>
           </div>
         </div>
       </section>
@@ -54,8 +54,8 @@ export default async function Home() {
       <section className="section" id="servicios">
         <div className="section__header">
           <div>
-            <span className="eyebrow">Servicios en el taller</span>
-            <h2>No solo vendemos: instalamos y polarizamos</h2>
+            <span className="eyebrow">Servicios</span>
+            <h2>Servicio completo en nuestro taller</h2>
           </div>
         </div>
         <div className="service-grid">
@@ -63,8 +63,8 @@ export default async function Home() {
             <Film />
             <h3>Polarizado</h3>
             <p>
-              Polarizado profesional para todo tipo de vehículo: protección
-              solar, privacidad y mejor apariencia.
+              Reduzca el calor, gane privacidad y mejore la apariencia de su
+              vehículo con un acabado uniforme y duradero.
             </p>
             <a
               className="button button--secondary"
@@ -79,8 +79,8 @@ export default async function Home() {
             <Speaker />
             <h3>Audio y video</h3>
             <p>
-              Instalación de pantallas, cámaras de reversa, parlantes y
-              sistemas de sonido, con conexión limpia y garantizada.
+              Pantallas, cámaras de reversa y sistemas de sonido instalados con
+              conexiones limpias y seguras.
             </p>
             <a
               className="button button--secondary"
@@ -95,8 +95,8 @@ export default async function Home() {
             <Wrench />
             <h3>Accesorios y 4x4</h3>
             <p>
-              Montaje de defensas, estribos, barras LED, racks, suspensión y
-              todo accesorio que compre con nosotros.
+              Defensas, estribos, barras LED, racks y suspensión con montaje
+              profesional y seguro.
             </p>
             <a
               className="button button--secondary"
@@ -113,8 +113,8 @@ export default async function Home() {
       <section className="section">
         <div className="section__header">
           <div>
-            <span className="eyebrow">Categorias</span>
-            <h2>Todo para equipar su vehiculo</h2>
+            <span className="eyebrow">Categorías</span>
+            <h2>Todo para su vehículo en un solo lugar</h2>
           </div>
           <Link href="/catalogo" className="text-link">
             Ver todas <ArrowRight size={18} />
@@ -131,12 +131,12 @@ export default async function Home() {
         <div className="split">
           <VehicleFinder />
           <div className="split__copy">
-            <span className="eyebrow">Filtro inteligente</span>
-            <h2>Universal o compatible con un vehiculo especifico</h2>
+            <span className="eyebrow">Compatibilidad garantizada</span>
+            <h2>Confirme la compatibilidad antes de comprar</h2>
             <p>
-              Los productos pueden aparecer para muchos carros o para modelos
-              concretos como Hilux, Frontier o Fortuner. Asi el cliente cotiza
-              con informacion clara desde el inicio.
+              Indíquenos la marca, el modelo y el año de su vehículo, y le
+              confirmamos que la pieza es la correcta antes de realizar la
+              compra.
             </p>
           </div>
         </div>
@@ -146,7 +146,7 @@ export default async function Home() {
         <div className="section__header">
           <div>
             <span className="eyebrow">Destacados</span>
-            <h2>Productos listos para cotizar</h2>
+            <h2>Productos destacados de la semana</h2>
           </div>
           <Link href="/catalogo" className="text-link">
             Ir al catalogo <ArrowRight size={18} />
@@ -165,13 +165,13 @@ export default async function Home() {
           <div>
             <h2>¿No encontró lo que busca?</h2>
             <p>
-              El catálogo en línea es solo una parte: en el local hay mucho más,
-              y lo que no tengamos lo conseguimos con nuestros distribuidores de
-              confianza.
+              Nuestro catálogo en línea es una selección: en el local hay más
+              producto y trabajamos con distribuidores de confianza. Cuéntenos
+              qué necesita y le enviamos una cotización.
             </p>
           </div>
           <Link className="button button--primary" href="/contacto">
-            Cuéntenos qué necesita <ArrowRight size={18} />
+            Solicitar cotización <ArrowRight size={18} />
           </Link>
         </div>
       </section>

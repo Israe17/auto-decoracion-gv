@@ -8,7 +8,7 @@ import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 export const metadata: Metadata = {
   title: "Auto Decoracion G&V",
   description:
-    "Accesorios automotrices en Liberia, Guanacaste: producto en el local y bajo pedido, polarizado, instalacion profesional y cotizacion por WhatsApp.",
+    "Accesorios automotrices en Liberia, Guanacaste: venta en el local y bajo pedido, polarizado e instalacion profesional. Cotice por WhatsApp.",
   icons: {
     icon: "/gv-system-logo.ico",
     shortcut: "/gv-system-logo.ico",

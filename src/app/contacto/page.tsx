@@ -18,8 +18,8 @@ export default function ContactPage() {
         <span className="eyebrow">Contacto</span>
         <h1>Visítenos en Liberia o escríbanos por WhatsApp</h1>
         <p>
-          Tenemos producto en el local listo para llevar, y lo que no esté en
-          existencia se lo conseguimos con nuestros distribuidores de confianza.
+          Producto disponible en el local, instalación en nuestro taller y
+          pedidos con distribuidores de confianza. Estamos para servirle.
         </p>
       </section>
 

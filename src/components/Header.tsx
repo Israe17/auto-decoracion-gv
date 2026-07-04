@@ -5,8 +5,8 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="topbar">
-        <span>Accesorios, polarizado e instalación en Liberia, Guanacaste</span>
-        <strong>Atención rápida por WhatsApp</strong>
+        <span>Liberia, Guanacaste — venta, instalación y polarizado profesional</span>
+        <strong>Cotización rápida por WhatsApp</strong>
       </div>
       <div className="nav">
         <Link className="brand" href="/">

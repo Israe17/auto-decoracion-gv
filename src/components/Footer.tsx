@@ -17,9 +17,8 @@ export function Footer() {
           </span>
         </Link>
         <p>
-          Accesorios automotrices en {business.city}: producto en el local y
-          bajo pedido con distribuidores de confianza. Polarizado e instalación
-          de todo lo que vendemos.
+          Accesorios automotrices en {business.city}: venta en el local y bajo
+          pedido, con polarizado e instalación profesional en nuestro taller.
         </p>
       </div>
       <div className="footer__links">
