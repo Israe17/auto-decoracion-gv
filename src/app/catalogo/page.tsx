@@ -12,11 +12,12 @@ export default async function CatalogPage() {
   return (
     <>
       <section className="page-hero page-hero--catalog">
-        <span className="eyebrow">Catalogo G&V</span>
+        <span className="eyebrow">Catálogo G&V</span>
         <h1>Seleccione, revise compatibilidad y cotice por WhatsApp</h1>
         <p>
-          Productos con precio visible o solo cotizacion, segun disponibilidad,
-          instalacion y modelo del vehiculo.
+          Producto disponible en el local o bajo pedido con nuestros
+          distribuidores de confianza. Si no lo ve aquí,{" "}
+          <a href="/contacto">cuéntenos qué busca</a> y se lo conseguimos.
         </p>
       </section>
 

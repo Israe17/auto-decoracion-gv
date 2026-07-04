@@ -3,11 +3,12 @@ import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { QuoteTray } from "@/components/QuoteTray";
+import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 export const metadata: Metadata = {
   title: "Auto Decoracion G&V",
   description:
-    "Catalogo de accesorios automotrices, instalacion y cotizacion por WhatsApp en Liberia, Guanacaste.",
+    "Accesorios automotrices en Liberia, Guanacaste: producto en el local y bajo pedido, polarizado, instalacion profesional y cotizacion por WhatsApp.",
   icons: {
     icon: "/gv-system-logo.ico",
     shortcut: "/gv-system-logo.ico",
@@ -26,6 +27,7 @@ export default function RootLayout({
         <Header />
         <main>{children}</main>
         <QuoteTray />
+        <WhatsAppFloat />
         <Footer />
       </body>
     </html>

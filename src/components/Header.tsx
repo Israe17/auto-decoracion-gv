@@ -5,8 +5,8 @@ export function Header() {
   return (
     <header className="site-header">
       <div className="topbar">
-        <span>Instalacion y accesorios en Liberia, Guanacaste</span>
-        <strong>Atencion rapida por WhatsApp</strong>
+        <span>Accesorios, polarizado e instalación en Liberia, Guanacaste</span>
+        <strong>Atención rápida por WhatsApp</strong>
       </div>
       <div className="nav">
         <Link className="brand" href="/">
@@ -19,9 +19,9 @@ export function Header() {
           </span>
         </Link>
         <nav className="nav__links" aria-label="Navegacion principal">
-          <Link href="/catalogo">Catalogo</Link>
-          <Link href="/catalogo#categorias">Categorias</Link>
-          <Link href="/admin">Admin</Link>
+          <Link href="/catalogo">Catálogo</Link>
+          <Link href="/#servicios">Servicios</Link>
+          <Link href="/contacto">Contacto</Link>
         </nav>
         <div className="nav__tools">
           <label className="search-box">

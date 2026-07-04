@@ -121,11 +121,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
               <div>
                 <Wrench size={18} />
-                <span>Instalacion disponible segun producto y vehiculo</span>
+                <span>Instalación disponible en nuestro taller en Liberia</span>
               </div>
               <div>
                 <Truck size={18} />
-                <span>Consulta disponibilidad antes de visitar</span>
+                <span>Si no está en stock, lo pedimos a distribuidores de confianza</span>
               </div>
             </div>
           </div>
