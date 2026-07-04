@@ -14,15 +14,23 @@ Luego abrir `http://localhost:3000`.
 
 ## Firebase
 
-La app funciona sin Firebase usando datos de ejemplo, pero para publicar productos
-desde el admin hay que crear un proyecto Firebase:
+La app funciona sin Firebase usando datos de ejemplo (y el admin guarda en
+localStorage como demo). Con Firebase configurado:
+
+- El catalogo publico lee productos y categorias desde Firestore.
+- El admin (`/admin`) pide login con email y contrasena, y guarda en Firestore.
+- Si la base esta vacia, el admin ofrece importar el catalogo de ejemplo.
+
+Pasos para configurarlo:
 
 1. Entrar a Firebase Console y crear un proyecto.
 2. Activar Authentication con proveedor Email/Password.
-3. Crear Firestore Database.
-4. Crear Cloud Storage.
-5. En Project settings, crear una app Web y copiar las credenciales.
-6. Crear un archivo `.env.local` basado en `.env.example`.
+3. En Authentication > Users, crear el usuario administrador (email y contrasena).
+4. Crear Firestore Database y publicar las reglas de `firestore.rules`
+   (Firestore Database > Rules).
+5. Crear Cloud Storage y publicar las reglas de `storage.rules` (Storage > Rules).
+6. En Project settings, crear una app Web y copiar las credenciales.
+7. Crear un archivo `.env.local` basado en `.env.example`.
 
 ```bash
 NEXT_PUBLIC_FIREBASE_API_KEY=...
@@ -46,5 +54,6 @@ Cada producto maneja:
 
 ## Siguiente paso recomendado
 
-Conectar login real del admin, cargar productos desde Firestore en el catalogo y
-subir imagenes directamente a Firebase Storage desde el formulario.
+Subir imagenes directamente a Firebase Storage desde el formulario del admin
+(hoy se pegan URLs), y hacer funcionales los filtros del catalogo y el buscador
+por vehiculo.

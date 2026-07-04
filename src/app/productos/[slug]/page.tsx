@@ -11,19 +11,23 @@ import {
   Truck,
   Wrench
 } from "lucide-react";
-import { products, findProductBySlug, formatCRC } from "@/lib/catalog";
+import { products as seedProducts, formatCRC } from "@/lib/catalog";
+import { fetchPublicCatalog } from "@/lib/store";
 import { ProductActions } from "@/components/ProductActions";
 import { ProductCard } from "@/components/ProductCard";
 
+export const revalidate = 60;
+
 export function generateStaticParams() {
-  return products.map((product) => ({
+  return seedProducts.map((product) => ({
     slug: product.slug
   }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = findProductBySlug(slug);
+  const { products } = await fetchPublicCatalog();
+  const product = products.find((item) => item.slug === slug);
 
   if (!product) {
     return {
@@ -39,7 +43,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const product = findProductBySlug(slug);
+  const { products } = await fetchPublicCatalog();
+  const product = products.find((item) => item.slug === slug);
 
   if (!product) notFound();
 

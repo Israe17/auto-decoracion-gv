@@ -14,19 +14,21 @@ import {
   Trash2,
   X
 } from "lucide-react";
-import { categories as seedCategories, formatCRC, products as seedProducts } from "@/lib/catalog";
+import { formatCRC } from "@/lib/catalog";
 import { firebaseEnabled } from "@/lib/firebase";
-import { Category, Product, SaleMode } from "@/types";
+import {
+  fetchAdminData,
+  importSeedCatalog,
+  removeCategory,
+  removeProduct,
+  removeVehicle,
+  upsertCategory,
+  upsertProduct,
+  upsertVehicle
+} from "@/lib/store";
+import { Category, Product, SaleMode, VehicleModel } from "@/types";
 
 type AdminTab = "products" | "offers" | "vehicles" | "categories";
-
-type VehicleModel = {
-  id: string;
-  make: string;
-  model: string;
-  fromYear?: number;
-  toYear?: number;
-};
 
 type ConfirmState = {
   title: string;
@@ -36,17 +38,6 @@ type ConfirmState = {
   onConfirm: () => void;
 };
 
-const productKey = "gv-admin-products";
-const categoryKey = "gv-admin-categories";
-const vehicleKey = "gv-admin-vehicles";
-
-const initialVehicles: VehicleModel[] = [
-  { id: "toyota-hilux", make: "Toyota", model: "Hilux", fromYear: 2016, toYear: 2026 },
-  { id: "nissan-frontier", make: "Nissan", model: "Frontier", fromYear: 2021, toYear: 2026 },
-  { id: "toyota-fortuner", make: "Toyota", model: "Fortuner", fromYear: 2017, toYear: 2026 },
-  { id: "mitsubishi-montero", make: "Mitsubishi", model: "Montero", fromYear: 2015, toYear: 2025 }
-];
-
 function makeSlug(value: string) {
   return value
     .toLowerCase()
@@ -54,21 +45,6 @@ function makeSlug(value: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
-}
-
-function readJson<T>(key: string, fallback: T): T {
-  if (typeof window === "undefined") return fallback;
-
-  try {
-    const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as T) : fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeJson<T>(key: string, value: T) {
-  localStorage.setItem(key, JSON.stringify(value));
 }
 
 function emptyProduct(categories: Category[]): Product {
@@ -99,9 +75,11 @@ function productHasPublicPrice(product: Product) {
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("products");
-  const [products, setProducts] = useState<Product[]>(seedProducts);
-  const [categories, setCategories] = useState<Category[]>(seedCategories);
-  const [vehicles, setVehicles] = useState<VehicleModel[]>(initialVehicles);
+  const [loading, setLoading] = useState(true);
+  const [importing, setImporting] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleModel[]>([]);
   const [productDialog, setProductDialog] = useState<Product | null>(null);
   const [offerDialog, setOfferDialog] = useState<Product | null | undefined>(undefined);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -111,9 +89,26 @@ export default function AdminPage() {
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    setProducts(readJson<Product[]>(productKey, seedProducts));
-    setCategories(readJson<Category[]>(categoryKey, seedCategories));
-    setVehicles(readJson<VehicleModel[]>(vehicleKey, initialVehicles));
+    let active = true;
+
+    fetchAdminData()
+      .then((data) => {
+        if (!active) return;
+        setProducts(data.products);
+        setCategories(data.categories);
+        setVehicles(data.vehicles);
+      })
+      .catch((error) => {
+        console.error(error);
+        if (active) setMessage("No se pudieron cargar los datos. Recargue la pagina.");
+      })
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -138,59 +133,77 @@ export default function AdminPage() {
     vehicles: vehicles.length
   };
 
-  function persistProducts(next: Product[], status = "Cambios guardados.") {
-    setProducts(next);
-    writeJson(productKey, next);
-    setMessage(status);
+  function reportError(error: unknown) {
+    console.error(error);
+    setMessage("No se pudo guardar el cambio. Revise la conexion e intente de nuevo.");
   }
 
-  function persistCategories(next: Category[], status = "Categorias actualizadas.") {
-    setCategories(next);
-    writeJson(categoryKey, next);
-    setMessage(status);
+  async function handleImportSeed() {
+    setImporting(true);
+    try {
+      await importSeedCatalog();
+      const data = await fetchAdminData();
+      setProducts(data.products);
+      setCategories(data.categories);
+      setVehicles(data.vehicles);
+      setMessage("Catalogo de ejemplo importado.");
+    } catch (error) {
+      reportError(error);
+    } finally {
+      setImporting(false);
+    }
   }
 
-  function persistVehicles(next: VehicleModel[], status = "Modelos actualizados.") {
-    setVehicles(next);
-    writeJson(vehicleKey, next);
-    setMessage(status);
-  }
-
-  function saveProduct(product: Product) {
+  async function saveProduct(product: Product) {
     const exists = products.some((item) => item.id === product.id);
-    const next = exists
-      ? products.map((item) => (item.id === product.id ? product : item))
-      : [product, ...products];
-
-    persistProducts(next, exists ? "Producto actualizado." : "Producto creado.");
-    setProductDialog(null);
+    try {
+      await upsertProduct(product);
+      setProducts(
+        exists
+          ? products.map((item) => (item.id === product.id ? product : item))
+          : [product, ...products]
+      );
+      setMessage(exists ? "Producto actualizado." : "Producto creado.");
+      setProductDialog(null);
+    } catch (error) {
+      reportError(error);
+    }
   }
 
-  function saveOffer(productId: string, oldPrice?: number, featured = false) {
-    const next = products.map((product) =>
-      product.id === productId
-        ? {
-            ...product,
-            oldPrice: productHasPublicPrice(product) ? oldPrice : undefined,
-            featured
-          }
-        : product
-    );
-    persistProducts(next, "Promocion actualizada.");
-    setOfferDialog(undefined);
+  async function saveOffer(productId: string, oldPrice?: number, featured = false) {
+    const target = products.find((product) => product.id === productId);
+    if (!target) return;
+
+    const updated: Product = {
+      ...target,
+      oldPrice: productHasPublicPrice(target) ? oldPrice : undefined,
+      featured
+    };
+
+    try {
+      await upsertProduct(updated);
+      setProducts(products.map((item) => (item.id === productId ? updated : item)));
+      setMessage("Promocion actualizada.");
+      setOfferDialog(undefined);
+    } catch (error) {
+      reportError(error);
+    }
   }
 
   function confirmDeleteProduct(product: Product) {
     setConfirmState({
       title: "Eliminar producto",
-      body: `Se eliminara "${product.name}" del catalogo local. Esta accion no se puede deshacer.`,
+      body: `Se eliminara "${product.name}" del catalogo. Esta accion no se puede deshacer.`,
       actionLabel: "Eliminar producto",
       tone: "danger",
-      onConfirm: () => {
-        persistProducts(
-          products.filter((item) => item.id !== product.id),
-          "Producto eliminado."
-        );
+      onConfirm: async () => {
+        try {
+          await removeProduct(product.id);
+          setProducts((prev) => prev.filter((item) => item.id !== product.id));
+          setMessage("Producto eliminado.");
+        } catch (error) {
+          reportError(error);
+        }
       }
     });
   }
@@ -201,20 +214,23 @@ export default function AdminPage() {
       title: label,
       body: `Se quitara la promocion de "${product.name}". El producto seguira en el catalogo.`,
       actionLabel: label,
-      onConfirm: () => {
-        persistProducts(
-          products.map((item) =>
-            item.id === product.id ? { ...item, oldPrice: undefined, featured: false } : item
-          ),
-          "Promocion eliminada."
-        );
+      onConfirm: async () => {
+        const updated: Product = { ...product, oldPrice: undefined, featured: false };
+        try {
+          await upsertProduct(updated);
+          setProducts((prev) => prev.map((item) => (item.id === product.id ? updated : item)));
+          setMessage("Promocion eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
       }
     });
   }
 
-  function handleCategorySubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleCategorySubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const name = String(form.get("categoryName") || "").trim();
     const category: Category = {
       id: editingCategory?.id || makeSlug(name),
@@ -225,28 +241,43 @@ export default function AdminPage() {
     };
 
     const exists = categories.some((item) => item.id === category.id);
-    persistCategories(
-      exists
-        ? categories.map((item) => (item.id === category.id ? category : item))
-        : [category, ...categories]
-    );
-    setEditingCategory(null);
-    event.currentTarget.reset();
+    try {
+      await upsertCategory(category);
+      setCategories(
+        exists
+          ? categories.map((item) => (item.id === category.id ? category : item))
+          : [category, ...categories]
+      );
+      setMessage("Categorias actualizadas.");
+      setEditingCategory(null);
+      formElement.reset();
+    } catch (error) {
+      reportError(error);
+    }
   }
 
   function confirmDeleteCategory(category: Category) {
     setConfirmState({
       title: "Eliminar categoria",
-      body: `Se eliminara "${category.name}" de la administracion local.`,
+      body: `Se eliminara "${category.name}" de la administracion.`,
       actionLabel: "Eliminar categoria",
       tone: "danger",
-      onConfirm: () => persistCategories(categories.filter((item) => item.id !== category.id))
+      onConfirm: async () => {
+        try {
+          await removeCategory(category.id);
+          setCategories((prev) => prev.filter((item) => item.id !== category.id));
+          setMessage("Categoria eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
     });
   }
 
-  function handleVehicleSubmit(event: FormEvent<HTMLFormElement>) {
+  async function handleVehicleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = new FormData(event.currentTarget);
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
     const make = String(form.get("make") || "").trim();
     const model = String(form.get("model") || "").trim();
     const vehicle: VehicleModel = {
@@ -258,13 +289,19 @@ export default function AdminPage() {
     };
 
     const exists = vehicles.some((item) => item.id === vehicle.id);
-    persistVehicles(
-      exists
-        ? vehicles.map((item) => (item.id === vehicle.id ? vehicle : item))
-        : [vehicle, ...vehicles]
-    );
-    setEditingVehicle(null);
-    event.currentTarget.reset();
+    try {
+      await upsertVehicle(vehicle);
+      setVehicles(
+        exists
+          ? vehicles.map((item) => (item.id === vehicle.id ? vehicle : item))
+          : [vehicle, ...vehicles]
+      );
+      setMessage("Modelos actualizados.");
+      setEditingVehicle(null);
+      formElement.reset();
+    } catch (error) {
+      reportError(error);
+    }
   }
 
   function confirmDeleteVehicle(vehicle: VehicleModel) {
@@ -273,7 +310,15 @@ export default function AdminPage() {
       body: `Se eliminara "${vehicle.make} ${vehicle.model}" de compatibilidad.`,
       actionLabel: "Eliminar modelo",
       tone: "danger",
-      onConfirm: () => persistVehicles(vehicles.filter((item) => item.id !== vehicle.id))
+      onConfirm: async () => {
+        try {
+          await removeVehicle(vehicle.id);
+          setVehicles((prev) => prev.filter((item) => item.id !== vehicle.id));
+          setMessage("Modelo eliminado.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
     });
   }
 
@@ -296,6 +341,21 @@ export default function AdminPage() {
           <ShieldAlert size={20} />
           Los cambios se guardan en este navegador. Luego conectamos Firebase para publicarlos en
           todos los dispositivos.
+        </div>
+      )}
+
+      {firebaseEnabled && !loading && !products.length && !categories.length && (
+        <div className="notice">
+          <ShieldAlert size={20} />
+          <span>La base de datos esta vacia. Puede importar el catalogo de ejemplo para empezar.</span>
+          <button
+            className="button button--secondary"
+            type="button"
+            disabled={importing}
+            onClick={handleImportSeed}
+          >
+            {importing ? "Importando..." : "Importar catalogo de ejemplo"}
+          </button>
         </div>
       )}
 
@@ -342,7 +402,9 @@ export default function AdminPage() {
 
       {message && <p className="form-status">{message}</p>}
 
-      {activeTab === "products" && (
+      {loading && <p className="admin-empty">Cargando datos...</p>}
+
+      {!loading && activeTab === "products" && (
         <ProductAdminPanel
           products={filteredProducts}
           query={query}
@@ -354,7 +416,7 @@ export default function AdminPage() {
         />
       )}
 
-      {activeTab === "offers" && (
+      {!loading && activeTab === "offers" && (
         <AdminOfferList
           products={offerProducts}
           allProducts={products}
@@ -365,7 +427,7 @@ export default function AdminPage() {
         />
       )}
 
-      {activeTab === "vehicles" && (
+      {!loading && activeTab === "vehicles" && (
         <div className="admin-workspace admin-workspace--simple">
           <form
             key={editingVehicle?.id || "new-vehicle"}
@@ -420,7 +482,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      {activeTab === "categories" && (
+      {!loading && activeTab === "categories" && (
         <div className="admin-workspace admin-workspace--simple">
           <form
             key={editingCategory?.id || "new-category"}
