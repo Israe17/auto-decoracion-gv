@@ -2,9 +2,13 @@ import { SlidersHorizontal } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
-import { categories, products } from "@/lib/catalog";
+import { fetchPublicCatalog } from "@/lib/store";
 
-export default function CatalogPage() {
+export const revalidate = 60;
+
+export default async function CatalogPage() {
+  const { products, categories } = await fetchPublicCatalog();
+
   return (
     <>
       <section className="page-hero page-hero--catalog">
@@ -45,7 +49,7 @@ export default function CatalogPage() {
           </aside>
           <div>
             <div className="catalog-toolbar">
-              <span>Mostrando {products.length} productos de ejemplo</span>
+              <span>Mostrando {products.length} producto(s)</span>
               <span>Orden: destacados primero</span>
             </div>
             <div className="product-grid product-grid--catalog">

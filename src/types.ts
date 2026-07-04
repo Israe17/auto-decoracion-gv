@@ -37,6 +37,14 @@ export type Product = {
   featured?: boolean;
 };
 
+export type VehicleModel = {
+  id: string;
+  make: string;
+  model: string;
+  fromYear?: number;
+  toYear?: number;
+};
+
 export type QuoteItem = {
   id: string;
   name: string;

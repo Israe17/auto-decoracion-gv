@@ -4,9 +4,12 @@ import { CategoryCard } from "@/components/CategoryCard";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
-import { categories, products } from "@/lib/catalog";
+import { fetchPublicCatalog } from "@/lib/store";
 
-export default function Home() {
+export const revalidate = 60;
+
+export default async function Home() {
+  const { products, categories } = await fetchPublicCatalog();
   const featured = products.filter((product) => product.featured).slice(0, 4);
 
   return (
