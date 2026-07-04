@@ -1,5 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, MapPin, MessageCircle, Phone } from "lucide-react";
+import { ArrowRight, Clock, MapPin, MessageCircle } from "lucide-react";
+import { business } from "@/lib/business";
+import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export function Footer() {
   return (
@@ -14,15 +16,25 @@ export function Footer() {
             <small>G&V System</small>
           </span>
         </Link>
-        <p>Accesorios automotrices, cotizacion e instalacion en Liberia.</p>
+        <p>
+          Accesorios automotrices en {business.city}: producto en el local y
+          bajo pedido con distribuidores de confianza. Polarizado e instalación
+          de todo lo que vendemos.
+        </p>
       </div>
       <div className="footer__links">
         <strong>Explorar</strong>
         <Link href="/catalogo">
-          Catalogo <ArrowRight size={15} />
+          Catálogo <ArrowRight size={15} />
         </Link>
-        <Link href="/catalogo#categorias">
-          Categorias <ArrowRight size={15} />
+        <Link href="/#servicios">
+          Servicios <ArrowRight size={15} />
+        </Link>
+        <Link href="/contacto">
+          Contacto y ubicación <ArrowRight size={15} />
+        </Link>
+        <Link href="/contacto#preguntas-frecuentes">
+          Preguntas frecuentes <ArrowRight size={15} />
         </Link>
         <Link href="/admin">
           Panel admin <ArrowRight size={15} />
@@ -30,15 +42,15 @@ export function Footer() {
       </div>
       <div className="footer__contact">
         <strong>Contacto</strong>
+        <a href={business.mapsUrl} target="_blank" rel="noopener">
+          <MapPin size={18} /> {business.address}
+        </a>
         <span>
-          <MapPin size={18} /> Liberia, Guanacaste
+          <Clock size={18} /> {business.hours[0].days}: {business.hours[0].time}
         </span>
-        <span>
-          <Phone size={18} /> Numero del negocio
-        </span>
-        <span>
+        <a href={generalWhatsAppUrl()} target="_blank" rel="noopener">
           <MessageCircle size={18} /> WhatsApp para cotizaciones
-        </span>
+        </a>
       </div>
     </footer>
   );
