@@ -1,0 +1,199 @@
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import {
+  ArrowLeft,
+  CheckCircle2,
+  MessageCircle,
+  PackageCheck,
+  ShieldCheck,
+  Sparkles,
+  Tag,
+  Truck,
+  Wrench
+} from "lucide-react";
+import { products, findProductBySlug, formatCRC } from "@/lib/catalog";
+import { ProductActions } from "@/components/ProductActions";
+import { ProductCard } from "@/components/ProductCard";
+
+export function generateStaticParams() {
+  return products.map((product) => ({
+    slug: product.slug
+  }));
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = findProductBySlug(slug);
+
+  if (!product) {
+    return {
+      title: "Producto no encontrado"
+    };
+  }
+
+  return {
+    title: `${product.name} | Auto Decoracion G&V`,
+    description: product.description
+  };
+}
+
+export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const product = findProductBySlug(slug);
+
+  if (!product) notFound();
+
+  const related = products
+    .filter(
+      (item) => item.id !== product.id && item.categorySlug === product.categorySlug
+    )
+    .concat(products.filter((item) => item.id !== product.id && item.featured))
+    .filter((item, index, list) => list.findIndex((match) => match.id === item.id) === index)
+    .slice(0, 4);
+
+  const statusLabel =
+    product.status === "available"
+      ? "Disponible"
+      : product.status === "on_request"
+        ? "Bajo pedido"
+        : "Agotado";
+
+  return (
+    <>
+      <section className="product-detail-hero">
+        <Link href="/catalogo" className="text-link product-detail__back">
+          <ArrowLeft size={18} /> Volver al catalogo
+        </Link>
+
+        <div className="product-detail__grid">
+          <div className="product-gallery">
+            <div className="product-gallery__main">
+              {product.oldPrice && <span className="badge">Oferta</span>}
+              <img src={product.images[0]} alt={product.name} />
+            </div>
+            {product.images.length > 1 && (
+              <div className="product-gallery__thumbs" aria-label="Imagenes del producto">
+                {product.images.map((image, index) => (
+                  <span key={`${image}-${index}`}>
+                    <img src={image} alt={`${product.name} ${index + 1}`} />
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="product-info">
+            <div className="product-info__topline">
+              <span className="eyebrow">{product.categoryName}</span>
+              <span className="product-status">{statusLabel}</span>
+            </div>
+
+            <h1>{product.name}</h1>
+            <p>{product.description}</p>
+
+            <div className="product-info__price-card">
+              <span>{product.saleMode === "price_quote" ? "Precio de referencia" : "Cotizacion"}</span>
+              <div>
+                {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
+                <strong>
+                  {product.saleMode === "price_quote"
+                    ? formatCRC(product.price)
+                    : "Consultar precio"}
+                </strong>
+              </div>
+            </div>
+
+            <ProductActions product={product} />
+
+            <div className="detail-list">
+              <div>
+                <PackageCheck size={18} />
+                <span>{statusLabel}</span>
+              </div>
+              <div>
+                <MessageCircle size={18} />
+                <span>Cotizacion por WhatsApp del negocio</span>
+              </div>
+              <div>
+                <Wrench size={18} />
+                <span>Instalacion disponible segun producto y vehiculo</span>
+              </div>
+              <div>
+                <Truck size={18} />
+                <span>Consulta disponibilidad antes de visitar</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="section product-detail-content">
+        <div className="product-detail-card compatibility-box">
+          <div className="product-detail-card__title">
+            <ShieldCheck size={20} />
+            <strong>Compatibilidad</strong>
+          </div>
+          {product.compatibilityMode === "universal" ? (
+            <p>Producto universal o adaptable a varios vehiculos. Recomendamos confirmar medidas o version antes de instalar.</p>
+          ) : (
+            <ul>
+              {product.vehicles.map((vehicle) => (
+                <li key={`${vehicle.make}-${vehicle.model}`}>
+                  <CheckCircle2 size={17} />
+                  <span>
+                    {vehicle.make} {vehicle.model}{" "}
+                    {vehicle.fromYear && vehicle.toYear
+                      ? `${vehicle.fromYear}-${vehicle.toYear}`
+                      : ""}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+
+        <div className="product-detail-card">
+          <div className="product-detail-card__title">
+            <Tag size={20} />
+            <strong>Etiquetas</strong>
+          </div>
+          <div className="product-tags">
+            {product.tags.map((tag) => (
+              <span key={tag}>{tag}</span>
+            ))}
+          </div>
+        </div>
+
+        <div className="product-detail-card product-detail-card--dark">
+          <div className="product-detail-card__title">
+            <Sparkles size={20} />
+            <strong>Como cotizar mas rapido</strong>
+          </div>
+          <p>
+            Envie el modelo, ano del vehiculo y una foto si ya tiene una pieza de
+            referencia. Asi podemos confirmar precio, disponibilidad e instalacion.
+          </p>
+        </div>
+      </section>
+
+      {related.length > 0 && (
+        <section className="section section--tight">
+          <div className="section__header">
+            <div>
+              <span className="eyebrow">Tambien le puede servir</span>
+              <h2>Productos relacionados</h2>
+            </div>
+            <Link href="/catalogo" className="text-link">
+              Ver catalogo completo
+            </Link>
+          </div>
+          <div className="product-grid">
+            {related.map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))}
+          </div>
+        </section>
+      )}
+    </>
+  );
+}
