@@ -13,11 +13,11 @@ export default async function CatalogPage() {
     <>
       <section className="page-hero page-hero--catalog">
         <span className="eyebrow">Catálogo G&V</span>
-        <h1>Seleccione, revise compatibilidad y cotice por WhatsApp</h1>
+        <h1>Explore el catálogo y cotice por WhatsApp</h1>
         <p>
-          Producto disponible en el local o bajo pedido con nuestros
-          distribuidores de confianza. Si no lo ve aquí,{" "}
-          <a href="/contacto">cuéntenos qué busca</a> y se lo conseguimos.
+          Producto disponible en nuestro local o bajo pedido. Si no encuentra
+          lo que busca, <a href="/contacto">cuéntenos qué necesita</a> y lo
+          conseguimos por usted.
         </p>
       </section>
 

@@ -117,15 +117,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </div>
               <div>
                 <MessageCircle size={18} />
-                <span>Cotizacion por WhatsApp del negocio</span>
+                <span>Cotización por WhatsApp en minutos</span>
               </div>
               <div>
                 <Wrench size={18} />
-                <span>Instalación disponible en nuestro taller en Liberia</span>
+                <span>Instalación profesional en nuestro taller de Liberia</span>
               </div>
               <div>
                 <Truck size={18} />
-                <span>Si no está en stock, lo pedimos a distribuidores de confianza</span>
+                <span>Disponible bajo pedido con distribuidores de confianza</span>
               </div>
             </div>
           </div>
@@ -175,8 +175,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <strong>Como cotizar mas rapido</strong>
           </div>
           <p>
-            Envie el modelo, ano del vehiculo y una foto si ya tiene una pieza de
-            referencia. Asi podemos confirmar precio, disponibilidad e instalacion.
+            Envíenos la marca, el modelo y el año de su vehículo — y una foto
+            de referencia si la tiene. Le confirmamos precio, disponibilidad e
+            instalación en un solo mensaje.
           </p>
         </div>
       </section>

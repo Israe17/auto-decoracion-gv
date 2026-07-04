@@ -29,8 +29,8 @@ export function ContactForm() {
       <div>
         <h2>¿No encontró lo que busca?</h2>
         <p>
-          Cuéntenos qué necesita y lo conseguimos con nuestros distribuidores de
-          confianza. El mensaje nos llega directo al WhatsApp del negocio.
+          Cuéntenos qué necesita y para cuál vehículo. Recibimos su mensaje
+          directamente en WhatsApp y le respondemos con precio y disponibilidad.
         </p>
       </div>
 
@@ -71,7 +71,7 @@ export function ContactForm() {
       </label>
 
       <button className="button button--primary" type="submit">
-        <MessageCircle size={18} /> Enviar por WhatsApp
+        <MessageCircle size={18} /> Solicitar cotización
       </button>
     </form>
   );
