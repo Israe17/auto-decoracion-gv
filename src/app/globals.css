@@ -3270,6 +3270,13 @@ body {
   white-space: nowrap;
 }
 
+/* Mas especifico que ".admin-list-header > div" para que las acciones
+   no hereden su display: grid y queden apiladas. */
+.admin-list-header > .admin-header-actions {
+  display: flex;
+  gap: 10px;
+}
+
 .admin-list-header > div {
   display: grid;
   gap: 3px;
@@ -3294,8 +3301,8 @@ body {
   color: #667085;
   display: flex;
   gap: 8px;
-  min-width: 190px;
   padding: 0 12px;
+  width: 240px;
 }
 
 .admin-search input {
