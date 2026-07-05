@@ -30,21 +30,43 @@ function addToQuote(product: Product) {
   window.dispatchEvent(new Event("gv-quote-updated"));
 }
 
-export function ProductActions({ product }: { product: Product }) {
+export function ProductActions({
+  product,
+  primaryFirst = false
+}: {
+  product: Product;
+  primaryFirst?: boolean;
+}) {
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
     setOrigin(window.location.origin);
   }, []);
 
+  const whatsAppAction = (
+    <a className="button button--primary" href={productWhatsAppUrl(product, origin)} target="_blank">
+      <MessageCircle size={18} /> Cotizar por WhatsApp
+    </a>
+  );
+  const quoteAction = (
+    <button className="button button--secondary" onClick={() => addToQuote(product)}>
+      <Plus size={18} /> Agregar a cotizacion
+    </button>
+  );
+
   return (
-    <div className="product-actions">
-      <a className="button button--primary" href={productWhatsAppUrl(product, origin)} target="_blank">
-        <MessageCircle size={18} /> Cotizar por WhatsApp
-      </a>
-      <button className="button button--secondary" onClick={() => addToQuote(product)}>
-        <Plus size={18} /> Agregar a cotizacion
-      </button>
+    <div className={`product-actions ${primaryFirst ? "product-actions--primary-first" : ""}`}>
+      {primaryFirst ? (
+        <>
+          {whatsAppAction}
+          {quoteAction}
+        </>
+      ) : (
+        <>
+          {quoteAction}
+          {whatsAppAction}
+        </>
+      )}
     </div>
   );
 }
