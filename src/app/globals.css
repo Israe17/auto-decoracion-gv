@@ -1105,7 +1105,9 @@ img {
 
   to {
     opacity: 1;
-    transform: translateY(0);
+    /* "none" evita que el transform retenido por fill-mode:both convierta
+       a la seccion en containing block de los modales position:fixed. */
+    transform: none;
   }
 }
 

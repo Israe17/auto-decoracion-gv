@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   Car,
   Edit3,
@@ -1041,7 +1042,9 @@ function AdminDialog({
   children: ReactNode;
   onClose: () => void;
 }) {
-  return (
+  // Portal al <body>: si el modal queda dentro de una seccion con transform
+  // (animaciones fadeUp), el backdrop fixed no cubriria el viewport completo.
+  return createPortal(
     <div className="admin-dialog-backdrop" role="presentation">
       <div className="admin-dialog" role="dialog" aria-modal="true" aria-label={title}>
         <div className="admin-dialog__header">
@@ -1052,7 +1055,8 @@ function AdminDialog({
         </div>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
