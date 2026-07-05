@@ -114,6 +114,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                     : "Consultar precio"}
                 </strong>
               </div>
+              {product.oldPrice && product.price && (
+                <span className="price-card__savings">
+                  Usted ahorra {formatCRC(product.oldPrice - product.price)}
+                </span>
+              )}
+              {product.saleMode === "quote_only" && (
+                <span className="price-card__note">
+                  El precio depende del modelo y la versión de su vehículo.
+                </span>
+              )}
             </div>
 
             <ProductActions product={product} />
