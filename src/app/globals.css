@@ -237,8 +237,14 @@ img {
 }
 
 .button--secondary {
-  background: var(--charcoal);
-  color: white;
+  background: white;
+  border: 1px solid var(--line);
+  color: var(--ink);
+}
+
+.button--secondary:hover {
+  border-color: var(--red);
+  color: var(--red);
 }
 
 .button--ghost {
@@ -621,7 +627,7 @@ img {
 
 .quote-tray {
   align-items: center;
-  background: var(--ink);
+  background: linear-gradient(120deg, #f05a28, var(--red));
   bottom: 20px;
   color: white;
   display: flex;
@@ -917,17 +923,17 @@ img {
 }
 
 .product-info__price-card {
-  background:
-    linear-gradient(135deg, #11151c, #242a33);
+  background: var(--soft);
+  border: 1px solid var(--line);
   border-radius: 22px;
-  color: white;
+  color: var(--ink);
   display: grid;
   gap: 8px;
   padding: 20px;
 }
 
 .product-info__price-card span {
-  color: rgba(255, 255, 255, 0.68);
+  color: var(--muted);
   font-size: 13px;
   font-weight: 800;
   text-transform: uppercase;
@@ -958,11 +964,11 @@ img {
 }
 
 .product-info__price-card del {
-  color: rgba(255, 255, 255, 0.52);
+  color: var(--muted);
 }
 
 .product-info__price-card strong {
-  color: white;
+  color: var(--red-dark);
   font-size: clamp(28px, 4vw, 42px);
   font-weight: 820;
 }
@@ -1068,17 +1074,18 @@ img {
 }
 
 .product-detail-card--dark {
-  background: linear-gradient(135deg, #11151c, #252c36);
-  color: white;
+  background: linear-gradient(135deg, #fff8e5, #ffefc4);
+  border-color: rgba(255, 199, 44, 0.5);
+  color: var(--ink);
 }
 
 .product-detail-card--dark .product-detail-card__title svg,
 .product-detail-card--dark .product-detail-card__title strong {
-  color: var(--yellow);
+  color: var(--red-dark);
 }
 
 .product-detail-card--dark p {
-  color: rgba(255, 255, 255, 0.74);
+  color: #6b5b2a;
 }
 
 @media (max-width: 980px) {
@@ -1386,7 +1393,7 @@ body {
 }
 
 .button--secondary {
-  background: linear-gradient(135deg, #222831, #11151c);
+  background: white;
 }
 
 .button--ghost {
@@ -3951,7 +3958,7 @@ body {
 /* Banda CTA "no lo encontro" */
 .cta-band {
   align-items: center;
-  background: var(--charcoal);
+  background: linear-gradient(120deg, #f05a28, var(--red));
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   color: white;
@@ -3959,6 +3966,16 @@ body {
   flex-wrap: wrap;
   gap: 22px;
   padding: 30px 34px;
+}
+
+.cta-band .button {
+  background: white;
+  color: var(--red-dark);
+}
+
+.cta-band .button:hover {
+  background: var(--yellow);
+  color: #241a00;
 }
 
 .cta-band svg {
@@ -3977,7 +3994,7 @@ body {
 }
 
 .cta-band p {
-  color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.88);
   margin: 0;
 }
 
