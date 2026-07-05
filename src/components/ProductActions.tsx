@@ -39,12 +39,12 @@ export function ProductActions({ product }: { product: Product }) {
 
   return (
     <div className="product-actions">
-      <button className="button button--secondary" onClick={() => addToQuote(product)}>
-        <Plus size={18} /> Agregar a cotizacion
-      </button>
       <a className="button button--primary" href={productWhatsAppUrl(product, origin)} target="_blank">
         <MessageCircle size={18} /> Cotizar por WhatsApp
       </a>
+      <button className="button button--secondary" onClick={() => addToQuote(product)}>
+        <Plus size={18} /> Agregar a cotizacion
+      </button>
     </div>
   );
 }
