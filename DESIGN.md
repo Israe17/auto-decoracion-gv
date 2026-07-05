@@ -5,6 +5,12 @@ Todo cambio visual del sitio debe respetar este documento. Los tokens
 viven en `src/app/globals.css` (`:root`); si un valor cambia, actualizar
 ambos archivos.
 
+**Referencia visual de la marca**: estilo Dribbble minimal (tipo Ronas IT):
+superficies claras y aireadas, canvas neutro plano, tarjetas blancas,
+botones píldora de color plano, sombras suaves y difusas, chips
+redondeados, un solo acento fuerte (el rojo G&V), fotos protagonistas en
+tiles con overlay.
+
 ## 1. Color
 
 Tokens:
@@ -22,10 +28,11 @@ Tokens:
 | `--green` | `#0a9f73` | SOLO estados positivos (disponible, checks) |
 | WhatsApp | `#25d366` | SOLO el botón flotante de WhatsApp |
 
-Gradiente de marca: `linear-gradient(120deg, #f05a28, var(--red))` — topbar,
-banda CTA, bandeja de cotización.
-
 Reglas:
+- **Colores planos**: nada de gradientes en botones ni franjas. Topbar,
+  banda CTA y bandeja de cotización van en `var(--red)` plano; el primario
+  hace hover a `--red-dark`.
+- Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
   (foto con sombreado) y el footer.
@@ -44,9 +51,12 @@ Reglas:
 
 ## 3. Spacing
 
-- Padding de tarjetas: 22-30px según jerarquía.
+- Padding de tarjetas: 22-30px según jerarquía; el aire es parte del estilo.
 - Gaps internos: 14-20px; listas compactas 10-12px.
-- Radios: botones 8px; chips/pills 999px; tarjetas 22-28px; inputs 12px.
+- Radios: **botones píldora 999px**; chips/pills 999px; tarjetas 20-28px;
+  inputs 12px.
+- Sombras SIEMPRE suaves y difusas (tokens `--shadow-sm/md/lg`); nunca
+  sombras duras u oscuras.
 - Ritmo vertical por secciones `.section` / `.section--tight`.
 
 ## 4. Layout

@@ -1,5 +1,5 @@
 :root {
-  --bg: #fbfcfd;
+  --bg: #f6f7f8;
   --ink: #11151c;
   --muted: #697383;
   --line: #e2e7ee;
@@ -12,9 +12,9 @@
   --surface: #ffffff;
   --surface-strong: #f8fafc;
   --blue: #2563eb;
-  --shadow-sm: 0 10px 25px rgba(17, 21, 28, 0.08);
-  --shadow-md: 0 18px 45px rgba(17, 21, 28, 0.12);
-  --shadow-lg: 0 28px 70px rgba(17, 21, 28, 0.18);
+  --shadow-sm: 0 6px 18px rgba(17, 21, 28, 0.05);
+  --shadow-md: 0 14px 34px rgba(17, 21, 28, 0.08);
+  --shadow-lg: 0 22px 55px rgba(17, 21, 28, 0.12);
   --radius: 18px;
   --max: 1200px;
 }
@@ -25,9 +25,7 @@
 
 body {
   margin: 0;
-  background:
-    radial-gradient(circle at top left, rgba(230, 33, 53, 0.08), transparent 34rem),
-    linear-gradient(180deg, #ffffff 0%, var(--bg) 42%, #f6f8fb 100%);
+  background: var(--bg);
   color: var(--ink);
   font-family:
     Arial,
@@ -55,7 +53,7 @@ img {
 
 .topbar {
   align-items: center;
-  background: linear-gradient(90deg, #f05a28, var(--red));
+  background: var(--red);
   color: white;
   display: flex;
   font-size: 14px;
@@ -217,14 +215,14 @@ img {
 .button {
   align-items: center;
   border: 0;
-  border-radius: 8px;
+  border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
   font-weight: 800;
   gap: 9px;
   justify-content: center;
   min-height: 48px;
-  padding: 0 18px;
+  padding: 0 22px;
 }
 
 .button--primary {
@@ -627,7 +625,7 @@ img {
 
 .quote-tray {
   align-items: center;
-  background: linear-gradient(120deg, #f05a28, var(--red));
+  background: var(--red);
   bottom: 20px;
   color: white;
   display: flex;
@@ -1398,12 +1396,12 @@ body {
 }
 
 .button--primary {
-  background: linear-gradient(135deg, #ef3348, var(--red-dark));
-  box-shadow: 0 14px 30px rgba(230, 33, 53, 0.26);
+  background: var(--red);
+  box-shadow: 0 10px 24px rgba(230, 33, 53, 0.18);
 }
 
 .button--primary:hover {
-  background: linear-gradient(135deg, #fa4054, #aa1021);
+  background: var(--red-dark);
 }
 
 .button--secondary {
@@ -3972,7 +3970,7 @@ body {
 /* Banda CTA "no lo encontro" */
 .cta-band {
   align-items: center;
-  background: linear-gradient(120deg, #f05a28, var(--red));
+  background: var(--red);
   border-radius: var(--radius);
   box-shadow: var(--shadow-md);
   color: white;
