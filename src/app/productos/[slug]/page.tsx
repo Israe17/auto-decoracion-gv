@@ -175,12 +175,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="product-detail-panel__block product-detail-panel__block--tip">
             <div className="product-detail-card__title">
               <Sparkles size={20} />
-              <strong>Como cotizar mas rapido</strong>
+              <strong>Cotice este producto para su vehículo</strong>
             </div>
             <p>
-              Envíenos la marca, el modelo y el año de su vehículo — y una foto
-              de referencia si la tiene. Le confirmamos precio, disponibilidad e
-              instalación en un solo mensaje.
+              Envíenos la marca, el modelo, el año y la versión de su vehículo.
+              Le confirmamos precio, disponibilidad e instalación de este
+              producto en un solo mensaje.
             </p>
             <a
               className="button button--primary"
@@ -188,7 +188,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               target="_blank"
               rel="noopener"
             >
-              <MessageCircle size={18} /> Cotizar por WhatsApp
+              <MessageCircle size={18} /> Cotizar este producto
             </a>
           </div>
         </div>
