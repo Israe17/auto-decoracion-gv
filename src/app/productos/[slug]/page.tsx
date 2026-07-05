@@ -2,10 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
-  BadgeCheck,
-  CalendarCheck,
   CheckCircle2,
-  Clock3,
   MessageCircle,
   ShieldCheck,
   Sparkles,
@@ -51,7 +48,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   if (!product) notFound();
 
   const related = products
-    .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
+    .filter(
+      (item) => item.id !== product.id && item.categorySlug === product.categorySlug
+    )
     .concat(products.filter((item) => item.id !== product.id && item.featured))
     .filter((item, index, list) => list.findIndex((match) => match.id === item.id) === index)
     .slice(0, 4);
@@ -62,15 +61,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       : product.status === "on_request"
         ? "Bajo pedido"
         : "Agotado";
-  const hasPublicPrice = product.saleMode === "price_quote";
-  const priceLabel = hasPublicPrice ? "Precio de referencia" : "Precio por cotizacion";
-  const priceText = hasPublicPrice ? formatCRC(product.price) : "Consultar precio";
-  const savings =
-    product.oldPrice && product.price && product.oldPrice > product.price
-      ? product.oldPrice - product.price
-      : undefined;
-  const discount =
-    savings && product.oldPrice ? Math.round((savings / product.oldPrice) * 100) : undefined;
 
   return (
     <>
@@ -81,15 +71,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
         <div className="product-detail__grid">
           <div className="product-gallery">
-            <div className="product-gallery__stage">
-              <div className="product-gallery__main">
-                {product.oldPrice && <span className="badge">Oferta</span>}
-                <img src={product.images[0]} alt={product.name} />
-              </div>
-              <div className="product-gallery__floating-card">
-                <span>Asesoria G&V</span>
-                <strong>Confirmamos compatibilidad antes de instalar</strong>
-              </div>
+            <div className="product-gallery__main">
+              {product.oldPrice && <span className="badge">Oferta</span>}
+              <img src={product.images[0]} alt={product.name} />
             </div>
             {product.images.length > 1 && (
               <div className="product-gallery__thumbs" aria-label="Imagenes del producto">
@@ -111,55 +95,52 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h1>{product.name}</h1>
             <p>{product.description}</p>
 
-            <div className="product-conversion-pills" aria-label="Beneficios de compra">
-              <span>
-                <Clock3 size={16} /> Respuesta rapida
-              </span>
-              <span>
-                <Wrench size={16} /> Instalacion disponible
-              </span>
-              <span>
-                <BadgeCheck size={16} /> Revisamos medidas
-              </span>
-            </div>
-
             <div className="product-info__price-card">
               <div className="product-info__price-card-top">
-                <span>{priceLabel}</span>
-                {discount && <span className="price-card__badge">Oferta -{discount}%</span>}
+                <span>
+                  {product.saleMode === "price_quote" ? "Precio de referencia" : "Cotizacion"}
+                </span>
+                {product.oldPrice && product.price && (
+                  <span className="price-card__badge">
+                    Oferta −{Math.round((1 - product.price / product.oldPrice) * 100)}%
+                  </span>
+                )}
               </div>
               <div>
                 {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
-                <strong>{priceText}</strong>
+                <strong>
+                  {product.saleMode === "price_quote"
+                    ? formatCRC(product.price)
+                    : "Consultar precio"}
+                </strong>
               </div>
-              {savings && <span className="price-card__savings">Usted ahorra {formatCRC(savings)}</span>}
-              <small>
-                {hasPublicPrice
-                  ? "El precio puede variar segun modelo, disponibilidad e instalacion."
-                  : "Le confirmamos precio exacto por WhatsApp segun vehiculo y version."}
-              </small>
+              {product.oldPrice && product.price && (
+                <span className="price-card__savings">
+                  Usted ahorra {formatCRC(product.oldPrice - product.price)}
+                </span>
+              )}
+              {product.saleMode === "quote_only" && (
+                <span className="price-card__note">
+                  El precio depende del modelo y la versión de su vehículo.
+                </span>
+              )}
             </div>
 
-            <ProductActions product={product} primaryFirst />
+            <ProductActions product={product} />
 
             <div className="detail-list">
               <div>
                 <MessageCircle size={18} />
-                <span>Cotizacion por WhatsApp en minutos</span>
+                <span>Cotización por WhatsApp en minutos</span>
               </div>
               <div>
                 <Wrench size={18} />
-                <span>Instalacion profesional en nuestro taller de Liberia</span>
+                <span>Instalación profesional en nuestro taller de Liberia</span>
               </div>
               <div>
                 <Truck size={18} />
                 <span>Disponible bajo pedido con distribuidores de confianza</span>
               </div>
-            </div>
-
-            <div className="product-fast-quote">
-              <strong>Para cotizar mas rapido</strong>
-              <span>Envienos marca, modelo, ano y una foto del vehiculo si aplica.</span>
             </div>
           </div>
         </div>
@@ -174,8 +155,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
             {product.compatibilityMode === "universal" ? (
               <p>
-                Producto universal o adaptable a varios vehiculos. Recomendamos confirmar medidas
-                o version antes de instalar.
+                Producto universal o adaptable a varios vehículos. Recomendamos
+                confirmar medidas o versión antes de instalar.
               </p>
             ) : (
               <ul>
@@ -204,11 +185,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="product-detail-panel__block product-detail-panel__block--tip">
             <div className="product-detail-card__title">
               <Sparkles size={20} />
-              <strong>Cotice este producto para su vehiculo</strong>
+              <strong>Cotice este producto para su vehículo</strong>
             </div>
             <p>
-              Envienos la marca, el modelo, el ano y la version de su vehiculo.
-              Le confirmamos precio, disponibilidad e instalacion en un solo mensaje.
+              Envíenos la marca, el modelo, el año y la versión de su vehículo.
+              Le confirmamos precio, disponibilidad e instalación de este
+              producto en un solo mensaje.
             </p>
             <a
               className="button button--primary"
@@ -219,29 +201,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <MessageCircle size={18} /> Cotizar este producto
             </a>
           </div>
-        </div>
-
-        <div className="product-detail-card product-detail-card--dark">
-          <div className="product-detail-card__title">
-            <Sparkles size={20} />
-            <strong>Proceso recomendado</strong>
-          </div>
-          <div className="product-process">
-            <span>1. Nos escribe por WhatsApp</span>
-            <span>2. Confirmamos compatibilidad</span>
-            <span>3. Coordinamos precio, disponibilidad e instalacion</span>
-          </div>
-        </div>
-
-        <div className="product-detail-card">
-          <div className="product-detail-card__title">
-            <CalendarCheck size={20} />
-            <strong>Compra con menos vueltas</strong>
-          </div>
-          <p>
-            Si el producto requiere instalacion, le indicamos si aplica para su vehiculo
-            y que datos necesitamos antes de que visite el taller.
-          </p>
         </div>
       </section>
 
