@@ -6,12 +6,12 @@ import {
   MessageCircle,
   ShieldCheck,
   Sparkles,
-  Tag,
   Truck,
   Wrench
 } from "lucide-react";
 import { products as seedProducts, formatCRC } from "@/lib/catalog";
 import { fetchPublicCatalog } from "@/lib/store";
+import { productWhatsAppUrl } from "@/lib/whatsapp";
 import { ProductActions } from "@/components/ProductActions";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -137,52 +137,60 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       </section>
 
       <section className="section product-detail-content">
-        <div className="product-detail-card compatibility-box">
-          <div className="product-detail-card__title">
-            <ShieldCheck size={20} />
-            <strong>Compatibilidad</strong>
+        <div className="product-detail-panel">
+          <div className="product-detail-panel__block">
+            <div className="product-detail-card__title">
+              <ShieldCheck size={20} />
+              <strong>Compatibilidad</strong>
+            </div>
+            {product.compatibilityMode === "universal" ? (
+              <p>
+                Producto universal o adaptable a varios vehículos. Recomendamos
+                confirmar medidas o versión antes de instalar.
+              </p>
+            ) : (
+              <ul>
+                {product.vehicles.map((vehicle) => (
+                  <li key={`${vehicle.make}-${vehicle.model}`}>
+                    <CheckCircle2 size={17} />
+                    <span>
+                      {vehicle.make} {vehicle.model}{" "}
+                      {vehicle.fromYear && vehicle.toYear
+                        ? `${vehicle.fromYear}-${vehicle.toYear}`
+                        : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {product.tags.length > 0 && (
+              <div className="product-tags">
+                {product.tags.map((tag) => (
+                  <span key={tag}>{tag}</span>
+                ))}
+              </div>
+            )}
           </div>
-          {product.compatibilityMode === "universal" ? (
-            <p>Producto universal o adaptable a varios vehiculos. Recomendamos confirmar medidas o version antes de instalar.</p>
-          ) : (
-            <ul>
-              {product.vehicles.map((vehicle) => (
-                <li key={`${vehicle.make}-${vehicle.model}`}>
-                  <CheckCircle2 size={17} />
-                  <span>
-                    {vehicle.make} {vehicle.model}{" "}
-                    {vehicle.fromYear && vehicle.toYear
-                      ? `${vehicle.fromYear}-${vehicle.toYear}`
-                      : ""}
-                  </span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
 
-        <div className="product-detail-card">
-          <div className="product-detail-card__title">
-            <Tag size={20} />
-            <strong>Etiquetas</strong>
+          <div className="product-detail-panel__block product-detail-panel__block--tip">
+            <div className="product-detail-card__title">
+              <Sparkles size={20} />
+              <strong>Cotice este producto para su vehículo</strong>
+            </div>
+            <p>
+              Envíenos la marca, el modelo, el año y la versión de su vehículo.
+              Le confirmamos precio, disponibilidad e instalación de este
+              producto en un solo mensaje.
+            </p>
+            <a
+              className="button button--primary"
+              href={productWhatsAppUrl(product)}
+              target="_blank"
+              rel="noopener"
+            >
+              <MessageCircle size={18} /> Cotizar este producto
+            </a>
           </div>
-          <div className="product-tags">
-            {product.tags.map((tag) => (
-              <span key={tag}>{tag}</span>
-            ))}
-          </div>
-        </div>
-
-        <div className="product-detail-card product-detail-card--dark">
-          <div className="product-detail-card__title">
-            <Sparkles size={20} />
-            <strong>Como cotizar mas rapido</strong>
-          </div>
-          <p>
-            Envíenos la marca, el modelo y el año de su vehículo — y una foto
-            de referencia si la tiene. Le confirmamos precio, disponibilidad e
-            instalación en un solo mensaje.
-          </p>
         </div>
       </section>
 
