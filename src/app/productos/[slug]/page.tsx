@@ -4,7 +4,6 @@ import {
   ArrowLeft,
   CheckCircle2,
   MessageCircle,
-  PackageCheck,
   ShieldCheck,
   Sparkles,
   Tag,
@@ -97,7 +96,16 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <p>{product.description}</p>
 
             <div className="product-info__price-card">
-              <span>{product.saleMode === "price_quote" ? "Precio de referencia" : "Cotizacion"}</span>
+              <div className="product-info__price-card-top">
+                <span>
+                  {product.saleMode === "price_quote" ? "Precio de referencia" : "Cotizacion"}
+                </span>
+                {product.oldPrice && product.price && (
+                  <span className="price-card__badge">
+                    Oferta −{Math.round((1 - product.price / product.oldPrice) * 100)}%
+                  </span>
+                )}
+              </div>
               <div>
                 {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
                 <strong>
@@ -111,10 +119,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <ProductActions product={product} />
 
             <div className="detail-list">
-              <div>
-                <PackageCheck size={18} />
-                <span>{statusLabel}</span>
-              </div>
               <div>
                 <MessageCircle size={18} />
                 <span>Cotización por WhatsApp en minutos</span>
