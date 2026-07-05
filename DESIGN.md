@@ -1,0 +1,119 @@
+# DESIGN.md — Sistema de diseño Auto Decoración G&V
+
+Esquema de 9 secciones (estándar Open Design / awesome-claude-design).
+Todo cambio visual del sitio debe respetar este documento. Los tokens
+viven en `src/app/globals.css` (`:root`); si un valor cambia, actualizar
+ambos archivos.
+
+## 1. Color
+
+Tokens:
+
+| Token | Valor | Uso |
+|---|---|---|
+| `--red` | `#e62135` | Acción primaria, acentos, iconos de marca |
+| `--red-dark` | `#b91527` | Precios, hovers de enlaces, texto sobre amarillo claro |
+| `--yellow` | `#ffc72c` | Badges de oferta, acentos sobre fondos oscuros/rojos, hover de CTA invertido |
+| `--ink` | `#11151c` | Texto principal |
+| `--muted` | `#697383` | Texto secundario |
+| `--line` | `#e2e7ee` | Bordes y separadores |
+| `--soft` | `#f3f6f9` | Fondos suaves de tarjetas internas |
+| `--surface` / `--surface-strong` | `#fff` / `#f8fafc` | Superficies de tarjetas |
+| `--green` | `#0a9f73` | SOLO estados positivos (disponible, checks) |
+| WhatsApp | `#25d366` | SOLO el botón flotante de WhatsApp |
+
+Gradiente de marca: `linear-gradient(120deg, #f05a28, var(--red))` — topbar,
+banda CTA, bandeja de cotización.
+
+Reglas:
+- Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
+  (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
+  (foto con sombreado) y el footer.
+- El rojo es el único color de acción primaria; no competirlo con otros
+  botones llamativos en la misma vista.
+- Amarillo cálido (`#fff8e5 → #ffefc4`) para tarjetas de consejo/apoyo.
+
+## 2. Typography
+
+- Familia: Arial / Helvetica (system stack, sin webfonts).
+- H1 de ficha/página: `clamp(30px, 3vw, 42px)`, peso 760.
+- H2 de sección: ~1.35-1.6rem, peso 700-760.
+- Eyebrow (etiqueta sobre títulos): 13px, 800, uppercase, color rojo o muted.
+- Cuerpo: 15-17px, `line-height: 1.55`, color `--muted` para descripciones.
+- Español correcto con tildes en textos visibles ("díganos", nunca "dígnos").
+
+## 3. Spacing
+
+- Padding de tarjetas: 22-30px según jerarquía.
+- Gaps internos: 14-20px; listas compactas 10-12px.
+- Radios: botones 8px; chips/pills 999px; tarjetas 22-28px; inputs 12px.
+- Ritmo vertical por secciones `.section` / `.section--tight`.
+
+## 4. Layout
+
+- Contenedor: `--max: 1200px` centrado.
+- Grids con proporciones intencionales (1fr 1fr, 1.4fr 1fr) — nunca anchos
+  arbitrarios que dejen tarjetas desparejas.
+- Breakpoints: 980px (2→1 columnas en detalle), 720px (admin/listas), 900px
+  (contacto/servicios).
+- Elementos flotantes: WhatsApp `bottom: 20px; right: 20px; z-index 40`;
+  bandeja de cotización encima (`bottom: 92px`, z-30); modales z-80.
+
+## 5. Components
+
+- `button--primary`: rojo, texto blanco. Un solo primario por bloque, siempre
+  ANTES que el secundario.
+- `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
+- `button--ghost`: solo sobre fotos/fondos oscuros.
+- Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`.
+- Chips (`product-tags`, estados): pill 999px con fondo tenue del color.
+- Tarjeta de precio: fondo `--soft`, precio grande en `--red-dark`, badge
+  amarillo "Oferta −N%" calculado.
+- Bloques relacionados se unifican en paneles con divisores internos, no
+  tarjetas sueltas de alturas dispares.
+- Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
+  `rgba(15,23,42,.48)` a viewport completo.
+
+## 6. Motion
+
+- Animación de entrada: `fadeUp` 180-560ms ease.
+- Los keyframes que animan `transform` deben terminar en `transform: none`
+  (un transform retenido convierte al contenedor en containing block y
+  rompe los `position: fixed` internos — bug ya sufrido).
+- Hovers: `translateY(-1px a -3px)` + sombra; transiciones 180ms ease.
+- Nada de animaciones infinitas llamativas salvo el pulso sutil de la
+  bandeja de cotización.
+
+## 7. Voice
+
+- Tono: profesional que vende — seguro, directo, sin jerga interna ni
+  coloquialismos ("entra su carro, sale otro" ❌).
+- Trato de "usted" (norma en Costa Rica).
+- Hablar del beneficio del cliente, no de la operación de la tienda
+  ("stock real" ❌ → "llévelo el mismo día" ✅).
+- Botones de acción: fórmula verbo + objeto ("Cotizar polarizado",
+  "Solicitar cotización", "Cotizar este producto").
+- WhatsApp es el canal de cierre: cada bloque comercial termina en un CTA.
+
+## 8. Brand
+
+- Negocio: Auto Decoración G&V (G&V System), Liberia, Guanacaste.
+- Local físico con inventario + pedidos a distribuidores de confianza +
+  servicios de polarizado e instalación (audio/video, accesorios, 4x4).
+- Datos del negocio centralizados en `src/lib/business.ts` (dirección,
+  horario, enlaces de Maps) — nunca hardcodear en componentes.
+- Mensajes de WhatsApp: helpers de `src/lib/whatsapp.ts` (no armar URLs a
+  mano).
+
+## 9. Anti-patterns (prohibido)
+
+1. Bloques grandes negros/charcoal como fondo de contenido.
+2. Lenguaje interno de tienda en el copy ("stock real", "seed", "demo").
+3. Información duplicada en la misma vista (ej. estado como chip Y como fila).
+4. Botón secundario antes que el primario.
+5. Tarjetas casi vacías que no justifican su espacio.
+6. Grids con anchos arbitrarios y alturas desparejas.
+7. Faltas de ortografía o imperativos inventados ("Dígnos").
+8. Emojis en la interfaz.
+9. URLs de WhatsApp armadas a mano fuera de `src/lib/whatsapp.ts`.
+10. Modales renderizados dentro de secciones animadas sin portal.
