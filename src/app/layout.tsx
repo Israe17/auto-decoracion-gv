@@ -3,6 +3,7 @@ import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { QuoteTray } from "@/components/QuoteTray";
+import { ScrollFx } from "@/components/ScrollFx";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 export const metadata: Metadata = {
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body>
         <Header />
         <main>{children}</main>
+        <ScrollFx />
         <QuoteTray />
         <WhatsAppFloat />
         <Footer />

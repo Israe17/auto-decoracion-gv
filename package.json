@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "firebase": "latest",
+    "gsap": "^3.15.0",
     "lucide-react": "latest",
     "next": "latest",
     "react": "latest",
