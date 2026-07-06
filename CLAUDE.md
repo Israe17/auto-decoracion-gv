@@ -20,6 +20,15 @@ describe el flujo completo: reusar tokens y clases de
 `src/app/globals.css`, verificar con build + captura, y pasar el checklist
 de anti-patrones.
 
+## Componentes externos (MCP de shadcn)
+
+Los componentes de terceros se buscan con el servidor MCP `shadcn`
+(`.mcp.json`); el registro `@reactbits` está configurado en
+`components.json` (usar las variantes JS + CSS, el proyecto NO usa
+Tailwind). Nunca pegar el código tal cual: adaptarlo SIEMPRE a DESIGN.md
+— tokens y clases de `src/app/globals.css`, enlaces internos con
+`next/link` y efecto apagado en touch/reduced-motion cuando aplique.
+
 ## Arquitectura breve
 
 - `src/lib/store.ts` — lectura/escritura Firestore con fallback a datos de
