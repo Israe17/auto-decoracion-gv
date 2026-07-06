@@ -62,6 +62,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         ? "Bajo pedido"
         : "Agotado";
 
+  const discount =
+    product.oldPrice && product.price
+      ? Math.round((1 - product.price / product.oldPrice) * 100)
+      : 0;
+
   return (
     <>
       <section className="product-detail-hero">
@@ -72,7 +77,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         <div className="product-detail__grid">
           <div className="product-gallery">
             <div className="product-gallery__main">
-              {product.oldPrice && <span className="badge">Oferta</span>}
+              {discount > 0 && <span className="badge badge--discount">−{discount}%</span>}
               <img src={product.images[0]} alt={product.name} />
             </div>
             {product.images.length > 1 && (
@@ -95,52 +100,37 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h1>{product.name}</h1>
             <p>{product.description}</p>
 
-            <div className="product-info__price-card">
-              <div className="product-info__price-card-top">
-                <span>
-                  {product.saleMode === "price_quote" ? "Precio de referencia" : "Cotizacion"}
-                </span>
-                {product.oldPrice && product.price && (
-                  <span className="price-card__badge">
-                    Oferta −{Math.round((1 - product.price / product.oldPrice) * 100)}%
-                  </span>
-                )}
-              </div>
-              <div>
-                {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
-                <strong>
-                  {product.saleMode === "price_quote"
-                    ? formatCRC(product.price)
-                    : "Consultar precio"}
-                </strong>
-              </div>
+            <div className="product-price-hero">
+              {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
+              <strong>
+                {product.saleMode === "price_quote"
+                  ? formatCRC(product.price)
+                  : "Consultar precio"}
+              </strong>
               {product.oldPrice && product.price && (
-                <span className="price-card__savings">
-                  Usted ahorra {formatCRC(product.oldPrice - product.price)}
-                </span>
-              )}
-              {product.saleMode === "quote_only" && (
-                <span className="price-card__note">
-                  El precio depende del modelo y la versión de su vehículo.
+                <span className="price-chip--save">
+                  Ahorra {formatCRC(product.oldPrice - product.price)}
                 </span>
               )}
             </div>
+            {product.saleMode === "quote_only" && (
+              <p className="product-price-note">
+                El precio depende del modelo y la versión de su vehículo.
+              </p>
+            )}
 
             <ProductActions product={product} />
 
-            <div className="detail-list">
-              <div>
-                <MessageCircle size={18} />
-                <span>Cotización por WhatsApp en minutos</span>
-              </div>
-              <div>
-                <Wrench size={18} />
-                <span>Instalación profesional en nuestro taller de Liberia</span>
-              </div>
-              <div>
-                <Truck size={18} />
-                <span>Disponible bajo pedido con distribuidores de confianza</span>
-              </div>
+            <div className="product-info__meta">
+              <span>
+                <Wrench size={15} /> Instalación en taller
+              </span>
+              <span>
+                <Truck size={15} /> Bajo pedido disponible
+              </span>
+              <span>
+                <MessageCircle size={15} /> Respuesta en minutos
+              </span>
             </div>
           </div>
         </div>

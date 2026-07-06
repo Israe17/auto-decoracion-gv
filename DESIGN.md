@@ -77,8 +77,10 @@ Reglas:
 - `button--ghost`: solo sobre fotos/fondos oscuros.
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`.
 - Chips (`product-tags`, estados): pill 999px con fondo tenue del color.
-- Tarjeta de precio: fondo `--soft`, precio grande en `--red-dark`, badge
-  amarillo "Oferta −N%" calculado.
+- Ficha de producto: **precio héroe sin cajón** (número grande en
+  `--red-dark` junto al tachado y chip verde "Ahorra ₡X"); badge de
+  descuento "−N%" en píldora sobre la foto; acciones lado a lado 1.5:1
+  (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
@@ -86,11 +88,19 @@ Reglas:
 
 ## 6. Motion
 
-- Animación de entrada: `fadeUp` 180-560ms ease.
-- Los keyframes que animan `transform` deben terminar en `transform: none`
-  (un transform retenido convierte al contenedor en containing block y
-  rompe los `position: fixed` internos — bug ya sufrido).
-- Hovers: `translateY(-1px a -3px)` + sombra; transiciones 180ms ease.
+- Motor de animación de scroll: **GSAP + ScrollTrigger** vía
+  `src/components/ScrollFx.tsx` (montado en el layout). Reveals de 0.7s
+  `power2.out` al 88% del viewport, staggers de 0.08s en grillas, parallax
+  sutil en la galería del producto y pop del precio héroe. Nuevas
+  secciones/grillas se registran en los selectores de ese componente.
+- `prefers-reduced-motion: reduce` desactiva todas las animaciones.
+- Estados iniciales los pone GSAP (no CSS): sin JavaScript el contenido se
+  ve completo.
+- CSS keyframes (`fadeUp`) solo para micro-elementos (diálogos del admin,
+  paneles del acordeón); los keyframes con `transform` deben terminar en
+  `transform: none` (un transform retenido convierte al contenedor en
+  containing block y rompe los `position: fixed` internos).
+- Hovers: `translateY(-2px)` + sombra; transiciones 180ms ease.
 - Nada de animaciones infinitas llamativas salvo el pulso sutil de la
   bandeja de cotización.
 
