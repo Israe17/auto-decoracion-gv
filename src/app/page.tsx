@@ -1,7 +1,6 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  CheckCircle2,
   Film,
   MessageCircle,
   PackageSearch,
@@ -11,6 +10,7 @@ import {
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
+import { CompatShowcase } from "@/components/CompatShowcase";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
@@ -129,15 +129,18 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="compat-band">
-          <div className="compat-band__copy">
+        <div className="section__header">
+          <div>
             <span className="eyebrow">Compatibilidad garantizada</span>
             <h2>¿Le queda a su carro? Confírmelo en segundos</h2>
-            <p>
-              Elija la marca, el modelo y el año, y vea únicamente los
-              productos que le sirven a su vehículo.
-            </p>
+          </div>
+        </div>
 
+        <div className="compat-band">
+          <CompatShowcase products={featured.length ? featured : products.slice(0, 4)} />
+
+          <div className="compat-band__form">
+            <VehicleFinder vehicles={vehicles} />
             <div className="compat-band__models">
               <span>Búsquedas populares:</span>
               {vehicles.slice(0, 4).map((vehicle) => (
@@ -150,24 +153,7 @@ export default async function Home() {
                 </Link>
               ))}
             </div>
-
-            <div className="compat-band__checks">
-              <div>
-                <CheckCircle2 size={17} />
-                <span>Confirmamos la compatibilidad antes de que pague</span>
-              </div>
-              <div>
-                <CheckCircle2 size={17} />
-                <span>Producto en el local o bajo pedido con distribuidores</span>
-              </div>
-              <div>
-                <CheckCircle2 size={17} />
-                <span>Instalación disponible en nuestro taller</span>
-              </div>
-            </div>
           </div>
-
-          <VehicleFinder vehicles={vehicles} />
         </div>
       </section>
 

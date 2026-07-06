@@ -119,6 +119,11 @@ Móvil (iPhone-first):
   otros elementos.
 - El desplegable de sugerencias es vidrio ligero: fondo blanco translúcido
   + `backdrop-filter: blur(16px)` + borde rojo transparente.
+- **Escaparate cinemático** (`CompatShowcase`): crossfade + Ken Burns
+  (escala 1.06→1.16 en ~4.4s, ease none) en loop con barra de info glass
+  oscura sobre el borde inferior de la foto y parallax scrub sutil;
+  respeta reduced-motion (primer slide estático). Es el patrón aprobado
+  para vitrinas de producto animadas.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
