@@ -1139,11 +1139,15 @@ img {
 @keyframes softPulse {
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(230, 33, 53, 0.22);
+    box-shadow:
+      0 0 0 0 rgba(230, 33, 53, 0.55),
+      0 0 18px 2px rgba(230, 33, 53, 0.35);
   }
 
   50% {
-    box-shadow: 0 0 0 10px rgba(230, 33, 53, 0);
+    box-shadow:
+      0 0 0 14px rgba(230, 33, 53, 0),
+      0 0 26px 6px rgba(230, 33, 53, 0.12);
   }
 }
 
@@ -1706,7 +1710,8 @@ input[type="checkbox"] {
 .quote-tray {
   border-radius: 22px;
   box-shadow: var(--shadow-lg);
-  animation: fadeUp 280ms ease both, softPulse 2400ms ease infinite;
+  animation: fadeUp 280ms ease both, softPulse 1800ms ease infinite;
+  border: 1px solid rgba(230, 33, 53, 0.55);
 }
 
 .quote-tray button {
@@ -4509,5 +4514,167 @@ textarea {
 
   .quote-link {
     flex: 0 0 auto;
+  }
+}
+
+/* ===== Busqueda y filtros por vehiculo ===== */
+
+.filter-block select {
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 12px;
+  width: 100%;
+}
+
+.catalog-clear {
+  align-items: center;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 13.5px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 8px 14px;
+  transition: border-color 180ms ease, color 180ms ease;
+}
+
+.catalog-clear:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.catalog-compat-note {
+  color: var(--muted);
+  font-size: 13.5px;
+  margin: 0 0 16px;
+}
+
+.catalog-empty {
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: 12px;
+  justify-items: center;
+  padding: 54px 26px;
+  text-align: center;
+}
+
+.catalog-empty svg {
+  color: var(--red);
+}
+
+.catalog-empty h3 {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
+.catalog-empty p {
+  color: var(--muted);
+  margin: 0;
+  max-width: 440px;
+}
+
+.search-box--menu {
+  align-items: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  display: flex;
+  gap: 8px;
+  padding: 0 14px;
+}
+
+.search-box--menu input {
+  background: transparent;
+  border: 0;
+  height: 46px;
+  outline: 0;
+  width: 100%;
+}
+
+/* Filtro por vehiculo en el admin */
+.admin-vehicle-filter {
+  background: #f7f9fc;
+  border: 1px solid #dfe6ef;
+  border-radius: 999px;
+  color: #384252;
+  font-weight: 600;
+  height: 44px;
+  max-width: 210px;
+  padding: 0 12px;
+}
+
+/* Editor de filas de vehiculos compatibles */
+.vehicle-rows {
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  display: grid;
+  gap: 12px;
+  padding: 14px;
+}
+
+.vehicle-rows__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.vehicle-rows__header .button {
+  min-height: 38px;
+  padding: 0 14px;
+}
+
+.vehicle-rows__empty {
+  color: var(--muted);
+  font-size: 14px;
+  margin: 0;
+}
+
+.vehicle-row {
+  align-items: center;
+  display: grid;
+  gap: 8px;
+  grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(70px, 0.7fr)) auto;
+}
+
+.vehicle-row:has(input[placeholder="Marca"]) {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, 1fr) repeat(2, minmax(64px, 0.6fr)) auto;
+}
+
+.vehicle-row__remove {
+  align-items: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.vehicle-row__remove:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+@media (max-width: 720px) {
+  .vehicle-row,
+  .vehicle-row:has(input[placeholder="Marca"]) {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .admin-vehicle-filter {
+    max-width: none;
+    width: 100%;
   }
 }
