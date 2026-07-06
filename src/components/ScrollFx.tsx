@@ -11,6 +11,7 @@ const revealSelectors = [
   ".home-showcase",
   ".section__header",
   ".split__copy",
+  ".compat-hero",
   ".vehicle-finder",
   ".cta-band",
   ".product-gallery",

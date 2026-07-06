@@ -10,6 +10,7 @@ import {
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
+import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
@@ -127,19 +128,10 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section section--muted">
-        <div className="split">
+      <section className="section">
+        <CompatHero>
           <VehicleFinder vehicles={vehicles} />
-          <div className="split__copy">
-            <span className="eyebrow">Compatibilidad garantizada</span>
-            <h2>Confirme la compatibilidad antes de comprar</h2>
-            <p>
-              Indíquenos la marca, el modelo y el año de su vehículo, y le
-              confirmamos que la pieza es la correcta antes de realizar la
-              compra.
-            </p>
-          </div>
-        </div>
+        </CompatHero>
       </section>
 
       <section className="section">

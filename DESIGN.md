@@ -119,6 +119,13 @@ Móvil (iPhone-first):
   otros elementos.
 - El desplegable de sugerencias es vidrio ligero: fondo blanco translúcido
   + `backdrop-filter: blur(16px)` + borde rojo transparente.
+- **Hero del logo** (`CompatHero`): escena oscura radial (excepción
+  aprobada por el dueño, junto a carrusel/footer/bandeja) con el logo
+  flotando (bob 2.6s), halo rojo que respira, brillos que derivan y
+  **giro rotateY ligado al scroll** (scrub) tipo secuencia; el formulario
+  flota encima en vidrio (`blur 16px`). Respeta reduced-motion.
+- El logo en alta resolución vive en `public/gv-system-logo.png` (256px,
+  extraído del .ico).
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
