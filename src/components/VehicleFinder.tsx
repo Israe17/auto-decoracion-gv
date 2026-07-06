@@ -65,8 +65,7 @@ export function VehicleFinder({
     >
       {!compact && (
         <div>
-          <span className="eyebrow">Encuentre piezas más rápido</span>
-          <h3>Datos del vehículo</h3>
+          <h3>Busque por su vehículo</h3>
         </div>
       )}
       <label>

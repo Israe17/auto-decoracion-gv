@@ -9,7 +9,7 @@ export function Footer() {
       <div className="footer__brand">
         <Link className="brand brand--footer" href="/">
           <span className="brand__mark">
-            <img src="/gv-system-logo.ico" alt="" />
+            <img src="/gv-system-logo.png" alt="" />
           </span>
           <span>
             <strong>Auto Decoracion</strong>

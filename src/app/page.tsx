@@ -128,7 +128,7 @@ export default async function Home() {
         </div>
       </section>
 
-      <section className="section">
+      <section className="section section--tight">
         <CompatHero>
           <VehicleFinder vehicles={vehicles} />
         </CompatHero>
