@@ -4777,3 +4777,55 @@ textarea {
   color: var(--red-dark);
   font-weight: 700;
 }
+
+/* Desplegable de sugerencias: vidrio ligero con acento rojo que respira,
+   la misma firma visual de la bandeja de cotizacion */
+@keyframes suggestGlow {
+  0%,
+  100% {
+    box-shadow:
+      0 14px 34px rgba(17, 21, 28, 0.08),
+      0 0 0 0 rgba(230, 33, 53, 0.3);
+  }
+
+  50% {
+    box-shadow:
+      0 14px 34px rgba(17, 21, 28, 0.08),
+      0 0 0 9px rgba(230, 33, 53, 0);
+  }
+}
+
+.search-suggest {
+  animation: fadeUp 160ms ease both, suggestGlow 1800ms ease infinite;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, 0.86);
+  border: 1px solid rgba(230, 33, 53, 0.3);
+  border-radius: 20px;
+}
+
+.search-box:focus-within {
+  animation: suggestGlow 1800ms ease infinite;
+  border-color: rgba(230, 33, 53, 0.45);
+}
+
+.search-suggest__item {
+  padding: 9px 13px;
+}
+
+.search-suggest__item:hover {
+  background: rgba(230, 33, 53, 0.06);
+}
+
+.search-suggest .search-suggest__all {
+  background: rgba(230, 33, 53, 0.05);
+  border-top: 1px solid rgba(230, 33, 53, 0.16);
+}
+
+.search-suggest .search-suggest__all:hover {
+  background: rgba(230, 33, 53, 0.1);
+}
+
+.search-suggest__item img {
+  border: 1px solid rgba(230, 33, 53, 0.12);
+}
