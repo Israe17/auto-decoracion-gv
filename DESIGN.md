@@ -113,8 +113,13 @@ Móvil (iPhone-first):
   `transform: none` (un transform retenido convierte al contenedor en
   containing block y rompe los `position: fixed` internos).
 - Hovers: `translateY(-2px)` + sombra; transiciones 180ms ease.
-- Nada de animaciones infinitas llamativas salvo el pulso sutil de la
-  bandeja de cotización.
+- El **pulso rojo que respira** es la firma de los elementos de cotización:
+  bandeja flotante, buscador enfocado y su desplegable de sugerencias
+  (keyframes `softPulse`/`suggestGlow`, solo `box-shadow`). No usarlo en
+  otros elementos.
+- El desplegable de sugerencias es vidrio ligero: fondo blanco translúcido
+  + `backdrop-filter: blur(16px)` + borde rojo transparente.
+- Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
 
