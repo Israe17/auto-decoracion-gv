@@ -10,7 +10,7 @@ import {
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
-import { CompatShowcase } from "@/components/CompatShowcase";
+import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
@@ -129,32 +129,21 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="section__header">
-          <div>
-            <span className="eyebrow">Compatibilidad garantizada</span>
-            <h2>¿Le queda a su carro? Confírmelo en segundos</h2>
+        <CompatHero>
+          <VehicleFinder vehicles={vehicles} />
+          <div className="compat-band__models compat-band__models--dark">
+            <span>Búsquedas populares:</span>
+            {vehicles.slice(0, 4).map((vehicle) => (
+              <Link
+                key={vehicle.id}
+                className="compat-chip compat-chip--dark"
+                href={`/catalogo?marca=${encodeURIComponent(vehicle.make)}&modelo=${encodeURIComponent(vehicle.model)}`}
+              >
+                {vehicle.make} {vehicle.model}
+              </Link>
+            ))}
           </div>
-        </div>
-
-        <div className="compat-band">
-          <CompatShowcase products={featured.length ? featured : products.slice(0, 4)} />
-
-          <div className="compat-band__form">
-            <VehicleFinder vehicles={vehicles} />
-            <div className="compat-band__models">
-              <span>Búsquedas populares:</span>
-              {vehicles.slice(0, 4).map((vehicle) => (
-                <Link
-                  key={vehicle.id}
-                  className="compat-chip"
-                  href={`/catalogo?marca=${encodeURIComponent(vehicle.make)}&modelo=${encodeURIComponent(vehicle.model)}`}
-                >
-                  {vehicle.make} {vehicle.model}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </div>
+        </CompatHero>
       </section>
 
       <section className="section">
