@@ -30,7 +30,13 @@ function addToQuote(product: Product) {
   window.dispatchEvent(new Event("gv-quote-updated"));
 }
 
-export function ProductActions({ product }: { product: Product }) {
+export function ProductActions({
+  product,
+  compact = false
+}: {
+  product: Product;
+  compact?: boolean;
+}) {
   const [origin, setOrigin] = useState("");
 
   useEffect(() => {
@@ -43,7 +49,7 @@ export function ProductActions({ product }: { product: Product }) {
         <MessageCircle size={18} /> Cotizar por WhatsApp
       </a>
       <button className="button button--secondary" onClick={() => addToQuote(product)}>
-        <Plus size={18} /> Agregar a cotizacion
+        <Plus size={18} /> {compact ? "Agregar" : "Agregar a cotizacion"}
       </button>
     </div>
   );
