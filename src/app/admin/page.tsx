@@ -27,7 +27,13 @@ import {
   upsertProduct,
   upsertVehicle
 } from "@/lib/store";
-import { Category, Product, SaleMode, VehicleModel } from "@/types";
+import {
+  Category,
+  Product,
+  SaleMode,
+  VehicleCompatibility,
+  VehicleModel
+} from "@/types";
 
 type AdminTab = "products" | "offers" | "vehicles" | "categories";
 
@@ -87,6 +93,7 @@ export default function AdminPage() {
   const [editingVehicle, setEditingVehicle] = useState<VehicleModel | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [query, setQuery] = useState("");
+  const [vehicleFilter, setVehicleFilter] = useState("all");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
@@ -114,15 +121,49 @@ export default function AdminPage() {
 
   const filteredProducts = useMemo(() => {
     const term = query.trim().toLowerCase();
-    if (!term) return products;
 
-    return products.filter((product) =>
-      [product.name, product.categoryName, product.status, product.tags.join(" ")]
-        .join(" ")
-        .toLowerCase()
-        .includes(term)
-    );
-  }, [products, query]);
+    return products.filter((product) => {
+      if (term) {
+        const haystack = [
+          product.name,
+          product.categoryName,
+          product.status,
+          product.tags.join(" ")
+        ]
+          .join(" ")
+          .toLowerCase();
+        if (!haystack.includes(term)) return false;
+      }
+
+      if (vehicleFilter === "universal") {
+        return product.compatibilityMode === "universal";
+      }
+      if (vehicleFilter !== "all") {
+        const model = vehicles.find((item) => item.id === vehicleFilter);
+        if (!model) return true;
+        return product.vehicles.some(
+          (entry) =>
+            entry.make.toLowerCase() === model.make.toLowerCase() &&
+            entry.model.toLowerCase() === model.model.toLowerCase()
+        );
+      }
+      return true;
+    });
+  }, [products, query, vehicleFilter, vehicles]);
+
+  const productCountByVehicle = useMemo(() => {
+    const counts: Record<string, number> = {};
+    vehicles.forEach((model) => {
+      counts[model.id] = products.filter((product) =>
+        product.vehicles.some(
+          (entry) =>
+            entry.make.toLowerCase() === model.make.toLowerCase() &&
+            entry.model.toLowerCase() === model.model.toLowerCase()
+        )
+      ).length;
+    });
+    return counts;
+  }, [products, vehicles]);
 
   const offerProducts = products.filter((product) => product.oldPrice || product.featured);
 
@@ -306,9 +347,12 @@ export default function AdminPage() {
   }
 
   function confirmDeleteVehicle(vehicle: VehicleModel) {
+    const linked = productCountByVehicle[vehicle.id] || 0;
     setConfirmState({
       title: "Eliminar modelo",
-      body: `Se eliminara "${vehicle.make} ${vehicle.model}" de compatibilidad.`,
+      body: linked
+        ? `"${vehicle.make} ${vehicle.model}" esta vinculado a ${linked} producto(s); esos productos conservaran su compatibilidad, pero el modelo dejara de aparecer en los filtros y formularios.`
+        : `Se eliminara "${vehicle.make} ${vehicle.model}" de compatibilidad.`,
       actionLabel: "Eliminar modelo",
       tone: "danger",
       onConfirm: async () => {
@@ -410,6 +454,9 @@ export default function AdminPage() {
           products={filteredProducts}
           query={query}
           onQueryChange={setQuery}
+          vehicles={vehicles}
+          vehicleFilter={vehicleFilter}
+          onVehicleFilterChange={setVehicleFilter}
           onCreate={() => setProductDialog(emptyProduct(categories))}
           onEdit={setProductDialog}
           onOffer={setOfferDialog}
@@ -472,10 +519,11 @@ export default function AdminPage() {
             items={vehicles.map((vehicle) => ({
               id: vehicle.id,
               title: `${vehicle.make} ${vehicle.model}`,
-              meta:
+              meta: `${
                 vehicle.fromYear && vehicle.toYear
                   ? `${vehicle.fromYear}-${vehicle.toYear}`
-                  : "Sin rango definido",
+                  : "Sin rango definido"
+              } · ${productCountByVehicle[vehicle.id] || 0} producto(s)`,
               onEdit: () => setEditingVehicle(vehicle),
               onDelete: () => confirmDeleteVehicle(vehicle)
             }))}
@@ -538,6 +586,7 @@ export default function AdminPage() {
         <ProductDialog
           product={productDialog}
           categories={categories}
+          vehicleOptions={vehicles}
           onClose={() => setProductDialog(null)}
           onSave={saveProduct}
         />
@@ -570,6 +619,9 @@ function ProductAdminPanel({
   products,
   query,
   onQueryChange,
+  vehicles,
+  vehicleFilter,
+  onVehicleFilterChange,
   onCreate,
   onEdit,
   onOffer,
@@ -578,6 +630,9 @@ function ProductAdminPanel({
   products: Product[];
   query: string;
   onQueryChange: (value: string) => void;
+  vehicles: VehicleModel[];
+  vehicleFilter: string;
+  onVehicleFilterChange: (value: string) => void;
   onCreate: () => void;
   onEdit: (product: Product) => void;
   onOffer: (product: Product) => void;
@@ -591,6 +646,20 @@ function ProductAdminPanel({
           <span>{products.length} resultado(s)</span>
         </div>
         <div className="admin-header-actions">
+          <select
+            className="admin-vehicle-filter"
+            aria-label="Filtrar por vehiculo"
+            value={vehicleFilter}
+            onChange={(event) => onVehicleFilterChange(event.target.value)}
+          >
+            <option value="all">Todos los vehículos</option>
+            <option value="universal">Universales</option>
+            {vehicles.map((vehicle) => (
+              <option key={vehicle.id} value={vehicle.id}>
+                {vehicle.make} {vehicle.model}
+              </option>
+            ))}
+          </select>
           <label className="admin-search">
             <Search size={17} />
             <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Buscar..." />
@@ -635,14 +704,45 @@ function ProductAdminPanel({
 function ProductDialog({
   product,
   categories,
+  vehicleOptions,
   onClose,
   onSave
 }: {
   product: Product;
   categories: Category[];
+  vehicleOptions: VehicleModel[];
   onClose: () => void;
   onSave: (product: Product) => void;
 }) {
+  const [compatibilityMode, setCompatibilityMode] = useState(product.compatibilityMode);
+  const [vehicleRows, setVehicleRows] = useState<VehicleCompatibility[]>(
+    product.vehicles.length ? product.vehicles : []
+  );
+
+  const optionKey = (make: string, model: string) => `${make}|${model}`;
+
+  function isManagedRow(row: VehicleCompatibility) {
+    return vehicleOptions.some(
+      (option) => optionKey(option.make, option.model) === optionKey(row.make, row.model)
+    );
+  }
+
+  function updateRow(index: number, patch: Partial<VehicleCompatibility>) {
+    setVehicleRows((rows) =>
+      rows.map((row, i) => (i === index ? { ...row, ...patch } : row))
+    );
+  }
+
+  function addRow() {
+    const first = vehicleOptions[0];
+    setVehicleRows((rows) => [
+      ...rows,
+      first
+        ? { make: first.make, model: first.model, fromYear: first.fromYear, toYear: first.toYear }
+        : { make: "", model: "" }
+    ]);
+  }
+
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -667,17 +767,10 @@ function ProductDialog({
       price: canShowPrice ? price : undefined,
       oldPrice: canShowPrice ? product.oldPrice : undefined,
       status: String(form.get("status")) as Product["status"],
-      compatibilityMode: String(form.get("compatibilityMode")) as Product["compatibilityMode"],
+      compatibilityMode,
       vehicles:
-        String(form.get("compatibilityMode")) === "specific"
-          ? [
-              {
-                make: String(form.get("make") || ""),
-                model: String(form.get("model") || ""),
-                fromYear: Number(form.get("fromYear")) || undefined,
-                toYear: Number(form.get("toYear")) || undefined
-              }
-            ]
+        compatibilityMode === "specific"
+          ? vehicleRows.filter((row) => row.make.trim() && row.model.trim())
           : [],
       images: images.length
         ? images
@@ -747,7 +840,13 @@ function ProductDialog({
         <div className="form-grid">
           <label>
             Compatibilidad
-            <select name="compatibilityMode" defaultValue={product.compatibilityMode}>
+            <select
+              name="compatibilityMode"
+              value={compatibilityMode}
+              onChange={(event) =>
+                setCompatibilityMode(event.target.value as Product["compatibilityMode"])
+              }
+            >
               <option value="universal">Universal / varios vehiculos</option>
               <option value="specific">Vehiculo especifico</option>
             </select>
@@ -758,24 +857,108 @@ function ProductDialog({
           </label>
         </div>
 
-        <div className="form-grid form-grid--four">
-          <label>
-            Marca
-            <input name="make" defaultValue={product.vehicles[0]?.make} />
-          </label>
-          <label>
-            Modelo
-            <input name="model" defaultValue={product.vehicles[0]?.model} />
-          </label>
-          <label>
-            Desde ano
-            <input name="fromYear" type="number" defaultValue={product.vehicles[0]?.fromYear} />
-          </label>
-          <label>
-            Hasta ano
-            <input name="toYear" type="number" defaultValue={product.vehicles[0]?.toYear} />
-          </label>
-        </div>
+        {compatibilityMode === "specific" && (
+          <div className="vehicle-rows">
+            <div className="vehicle-rows__header">
+              <strong>Vehículos compatibles</strong>
+              <button className="button button--secondary" type="button" onClick={addRow}>
+                <Plus size={16} /> Agregar vehículo
+              </button>
+            </div>
+
+            {vehicleRows.length === 0 && (
+              <p className="vehicle-rows__empty">
+                Agregue al menos un vehículo compatible, o cambie a
+                &quot;Universal&quot;.
+              </p>
+            )}
+
+            {vehicleRows.map((row, index) => {
+              const managed = isManagedRow(row);
+              return (
+                <div className="vehicle-row" key={index}>
+                  <select
+                    aria-label="Modelo administrado"
+                    value={managed ? optionKey(row.make, row.model) : "custom"}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      if (value === "custom") {
+                        updateRow(index, { make: "", model: "" });
+                        return;
+                      }
+                      const option = vehicleOptions.find(
+                        (item) => optionKey(item.make, item.model) === value
+                      );
+                      if (option) {
+                        updateRow(index, {
+                          make: option.make,
+                          model: option.model,
+                          fromYear: option.fromYear,
+                          toYear: option.toYear
+                        });
+                      }
+                    }}
+                  >
+                    {vehicleOptions.map((option) => (
+                      <option key={option.id} value={optionKey(option.make, option.model)}>
+                        {option.make} {option.model}
+                      </option>
+                    ))}
+                    <option value="custom">Otro vehículo…</option>
+                  </select>
+
+                  {!managed && (
+                    <>
+                      <input
+                        placeholder="Marca"
+                        value={row.make}
+                        onChange={(event) => updateRow(index, { make: event.target.value })}
+                      />
+                      <input
+                        placeholder="Modelo"
+                        value={row.model}
+                        onChange={(event) => updateRow(index, { model: event.target.value })}
+                      />
+                    </>
+                  )}
+
+                  <input
+                    type="number"
+                    placeholder="Desde"
+                    aria-label="Desde ano"
+                    value={row.fromYear ?? ""}
+                    onChange={(event) =>
+                      updateRow(index, {
+                        fromYear: Number(event.target.value) || undefined
+                      })
+                    }
+                  />
+                  <input
+                    type="number"
+                    placeholder="Hasta"
+                    aria-label="Hasta ano"
+                    value={row.toYear ?? ""}
+                    onChange={(event) =>
+                      updateRow(index, {
+                        toYear: Number(event.target.value) || undefined
+                      })
+                    }
+                  />
+                  <button
+                    type="button"
+                    className="vehicle-row__remove"
+                    aria-label="Quitar vehiculo"
+                    onClick={() =>
+                      setVehicleRows((rows) => rows.filter((_, i) => i !== index))
+                    }
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        )}
 
         <div className="admin-dialog-actions">
           <button className="button button--secondary" type="button" onClick={onClose}>

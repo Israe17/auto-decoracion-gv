@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ArrowRight, Menu, MessageCircle, X } from "lucide-react";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
+import { SearchBox } from "./SearchBox";
 
 const links = [
   { href: "/catalogo", label: "Catálogo" },
@@ -64,6 +65,8 @@ export function MobileMenu() {
                   <X size={20} />
                 </button>
               </div>
+
+              <SearchBox className="search-box search-box--menu" />
 
               <div className="mobile-menu__links">
                 {links.map((link) => (

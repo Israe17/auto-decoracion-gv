@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { MessageCircle, Search, UserRound } from "lucide-react";
+import { MessageCircle, UserRound } from "lucide-react";
 import { MobileMenu } from "./MobileMenu";
+import { SearchBox } from "./SearchBox";
 
 export function Header() {
   return (
@@ -25,10 +26,7 @@ export function Header() {
           <Link href="/contacto">Contacto</Link>
         </nav>
         <div className="nav__tools">
-          <label className="search-box">
-            <Search size={18} />
-            <input placeholder="Buscar productos..." />
-          </label>
+          <SearchBox />
           <Link className="quote-link" href="/catalogo">
             <MessageCircle size={18} />
             Cotizar

@@ -53,23 +53,43 @@ function sortProducts(products: Product[]) {
 
 // --- Catalogo publico: Firestore si esta configurado, datos de ejemplo si no ---
 
+function sortVehicles(vehicles: VehicleModel[]) {
+  return [...vehicles].sort(
+    (a, b) => a.make.localeCompare(b.make) || a.model.localeCompare(b.model)
+  );
+}
+
 export async function fetchPublicCatalog(): Promise<{
   products: Product[];
   categories: Category[];
+  vehicles: VehicleModel[];
 }> {
   if (!firebaseEnabled) {
-    return { products: seedProducts, categories: seedCategories };
+    return {
+      products: seedProducts,
+      categories: seedCategories,
+      vehicles: sortVehicles(seedVehicles)
+    };
   }
 
   try {
-    const [products, categories] = await Promise.all([
+    const [products, categories, vehicles] = await Promise.all([
       listCollection<Product>(PRODUCTS),
-      listCollection<Category>(CATEGORIES)
+      listCollection<Category>(CATEGORIES),
+      listCollection<VehicleModel>(VEHICLES)
     ]);
-    return { products: sortProducts(products), categories };
+    return {
+      products: sortProducts(products),
+      categories,
+      vehicles: sortVehicles(vehicles)
+    };
   } catch (error) {
     console.error("No se pudo leer el catalogo desde Firestore.", error);
-    return { products: seedProducts, categories: seedCategories };
+    return {
+      products: seedProducts,
+      categories: seedCategories,
+      vehicles: sortVehicles(seedVehicles)
+    };
   }
 }
 

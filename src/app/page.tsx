@@ -19,7 +19,7 @@ import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 export const revalidate = 60;
 
 export default async function Home() {
-  const { products, categories } = await fetchPublicCatalog();
+  const { products, categories, vehicles } = await fetchPublicCatalog();
   const featured = products.filter((product) => product.featured).slice(0, 4);
 
   return (
@@ -129,7 +129,7 @@ export default async function Home() {
 
       <section className="section section--muted">
         <div className="split">
-          <VehicleFinder />
+          <VehicleFinder vehicles={vehicles} />
           <div className="split__copy">
             <span className="eyebrow">Compatibilidad garantizada</span>
             <h2>Confirme la compatibilidad antes de comprar</h2>

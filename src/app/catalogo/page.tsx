@@ -1,13 +1,12 @@
-import { SlidersHorizontal } from "lucide-react";
+import { Suspense } from "react";
+import { CatalogExplorer } from "@/components/CatalogExplorer";
 import { CategoryCard } from "@/components/CategoryCard";
-import { ProductCard } from "@/components/ProductCard";
-import { VehicleFinder } from "@/components/VehicleFinder";
 import { fetchPublicCatalog } from "@/lib/store";
 
 export const revalidate = 60;
 
 export default async function CatalogPage() {
-  const { products, categories } = await fetchPublicCatalog();
+  const { products, categories, vehicles } = await fetchPublicCatalog();
 
   return (
     <>
@@ -15,58 +14,27 @@ export default async function CatalogPage() {
         <span className="eyebrow">Catálogo G&V</span>
         <h1>Explore el catálogo y cotice por WhatsApp</h1>
         <p>
-          Producto disponible en nuestro local o bajo pedido. Si no encuentra
-          lo que busca, <a href="/contacto">cuéntenos qué necesita</a> y lo
+          Filtre por su vehículo y vea solo lo que le sirve. Si no encuentra lo
+          que busca, <a href="/contacto">cuéntenos qué necesita</a> y lo
           conseguimos por usted.
         </p>
       </section>
 
       <section className="section section--tight">
-        <div className="catalog-layout">
-          <aside className="filters">
-            <div className="filters__title">
-              <SlidersHorizontal size={18} />
-              Filtros
-            </div>
-            <VehicleFinder compact />
-            <div className="filter-block">
-              <strong>Modo de venta</strong>
-              <label>
-                <input type="checkbox" defaultChecked /> Precio + cotizar
-              </label>
-              <label>
-                <input type="checkbox" defaultChecked /> Solo cotizar
-              </label>
-            </div>
-            <div className="filter-block">
-              <strong>Estado</strong>
-              <label>
-                <input type="checkbox" defaultChecked /> Disponible
-              </label>
-              <label>
-                <input type="checkbox" defaultChecked /> Bajo pedido
-              </label>
-            </div>
-          </aside>
-          <div>
-            <div className="catalog-toolbar">
-              <span>Mostrando {products.length} producto(s)</span>
-              <span>Orden: destacados primero</span>
-            </div>
-            <div className="product-grid product-grid--catalog">
-              {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </div>
+        <Suspense fallback={null}>
+          <CatalogExplorer
+            products={products}
+            categories={categories}
+            vehicles={vehicles}
+          />
+        </Suspense>
       </section>
 
       <section className="section" id="categorias">
         <div className="section__header">
           <div>
-            <span className="eyebrow">Categorias completas</span>
-            <h2>Lineas de producto</h2>
+            <span className="eyebrow">Categorías completas</span>
+            <h2>Líneas de producto</h2>
           </div>
         </div>
         <div className="category-grid">
