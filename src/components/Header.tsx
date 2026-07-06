@@ -13,7 +13,7 @@ export function Header() {
       <div className="nav">
         <Link className="brand" href="/">
           <span className="brand__mark">
-            <img src="/gv-system-logo.ico" alt="" />
+            <img src="/gv-system-logo.png" alt="" />
           </span>
           <span>
             <strong>Auto Decoracion</strong>

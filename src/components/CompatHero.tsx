@@ -60,7 +60,6 @@ export function CompatHero({ children }: { children: ReactNode }) {
         </div>
 
         <div className="compat-hero__brandinfo">
-          <span className="eyebrow eyebrow--light">Compatibilidad garantizada</span>
           <strong>{business.name}</strong>
           <p>Accesorios, polarizado e instalación · {business.city}</p>
         </div>
