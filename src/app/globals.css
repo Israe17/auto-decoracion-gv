@@ -4678,3 +4678,102 @@ textarea {
     width: 100%;
   }
 }
+
+/* Sugerencias en vivo del buscador */
+.search-box {
+  position: relative;
+}
+
+.search-suggest {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  left: 0;
+  overflow: hidden;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 60;
+}
+
+.search-suggest__item {
+  align-items: center;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 42px minmax(0, 1fr) auto;
+  padding: 10px 14px;
+  transition: background 150ms ease;
+}
+
+.search-suggest__item:hover {
+  background: var(--soft);
+}
+
+.search-suggest__item img {
+  background: var(--soft);
+  border-radius: 10px;
+  height: 42px;
+  object-fit: cover;
+  width: 42px;
+}
+
+.search-suggest__item span {
+  display: grid;
+  min-width: 0;
+}
+
+.search-suggest__item strong {
+  font-size: 14.5px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.search-suggest__item small {
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.search-suggest__item em {
+  color: var(--red-dark);
+  font-size: 14px;
+  font-style: normal;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* Mas especifico que ".nav__tools button" para que no herede el 44x44 */
+.search-suggest .search-suggest__all {
+  align-items: center;
+  background: var(--surface-strong);
+  border: 0;
+  border-radius: 0;
+  border-top: 1px solid var(--line);
+  color: var(--red-dark);
+  cursor: pointer;
+  display: flex;
+  font-size: 14px;
+  font-weight: 700;
+  gap: 7px;
+  height: auto;
+  justify-content: center;
+  padding: 12px;
+  width: 100%;
+}
+
+.search-suggest .search-suggest__all:hover {
+  background: var(--soft);
+}
+
+.search-suggest__empty {
+  color: var(--muted);
+  font-size: 14px;
+  padding: 14px 16px;
+}
+
+.search-suggest__empty a {
+  color: var(--red-dark);
+  font-weight: 700;
+}

@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder, VehicleQuery } from "@/components/VehicleFinder";
+import { normalize } from "@/lib/text";
 import { Category, Product, VehicleModel } from "@/types";
 
 type Filters = {
@@ -19,14 +20,6 @@ type Filters = {
   disponible: boolean;
   bajoPedido: boolean;
 };
-
-// Busqueda insensible a mayusculas y tildes ("camara" encuentra "Cámara").
-function normalize(value: string) {
-  return value
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
 
 function vehicleMatches(product: Product, filters: Filters) {
   if (!filters.marca && !filters.modelo && !filters.ano) return true;
