@@ -625,7 +625,7 @@ img {
 
 .quote-tray {
   align-items: center;
-  background: var(--red);
+  background: var(--ink);
   bottom: 20px;
   color: white;
   display: flex;
@@ -967,6 +967,7 @@ img {
 
 .product-info .button {
   min-height: 52px;
+  white-space: nowrap;
 }
 
 /* Meta compacta como chips */

@@ -35,7 +35,8 @@ Reglas:
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
-  (foto con sombreado) y el footer.
+  (foto con sombreado), el footer y la bandeja flotante de cotización
+  (`--ink`, decisión del dueño).
 - El rojo es el único color de acción primaria; no competirlo con otros
   botones llamativos en la misma vista.
 - Amarillo cálido (`#fff8e5 → #ffefc4`) para tarjetas de consejo/apoyo.

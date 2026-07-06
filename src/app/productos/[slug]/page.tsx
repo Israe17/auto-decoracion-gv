@@ -119,7 +119,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </p>
             )}
 
-            <ProductActions product={product} />
+            <ProductActions product={product} compact />
 
             <div className="product-info__meta">
               <span>
