@@ -36,19 +36,10 @@ export function CompatHero({ children }: { children: ReactNode }) {
         repeat: -1
       });
 
-      // Brillos de fondo que derivan lentamente
-      gsap.to(".compat-hero__glow--red", {
-        xPercent: 14,
-        yPercent: -10,
-        duration: 7,
-        ease: "sine.inOut",
-        yoyo: true,
-        repeat: -1
-      });
-      gsap.to(".compat-hero__glow--yellow", {
-        xPercent: -12,
-        yPercent: 12,
-        duration: 8,
+      // La tira LED de la entrada parpadea sutil, como en el local
+      gsap.to(".compat-hero__led", {
+        opacity: 0.65,
+        duration: 1.4,
         ease: "sine.inOut",
         yoyo: true,
         repeat: -1
@@ -78,8 +69,7 @@ export function CompatHero({ children }: { children: ReactNode }) {
   return (
     <div className="compat-hero" ref={rootRef}>
       <div className="compat-hero__bg" aria-hidden="true">
-        <span className="compat-hero__glow compat-hero__glow--red" />
-        <span className="compat-hero__glow compat-hero__glow--yellow" />
+        <span className="compat-hero__led" />
       </div>
 
       <div className="compat-hero__info">

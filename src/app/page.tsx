@@ -131,18 +131,6 @@ export default async function Home() {
       <section className="section">
         <CompatHero>
           <VehicleFinder vehicles={vehicles} />
-          <div className="compat-band__models compat-band__models--dark">
-            <span>Búsquedas populares:</span>
-            {vehicles.slice(0, 4).map((vehicle) => (
-              <Link
-                key={vehicle.id}
-                className="compat-chip compat-chip--dark"
-                href={`/catalogo?marca=${encodeURIComponent(vehicle.make)}&modelo=${encodeURIComponent(vehicle.model)}`}
-              >
-                {vehicle.make} {vehicle.model}
-              </Link>
-            ))}
-          </div>
         </CompatHero>
       </section>
 
