@@ -4274,3 +4274,239 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* ===== Experiencia movil (iPhone-first) ===== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* iOS Safari hace zoom al enfocar inputs con fuente < 16px */
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+.button:active {
+  transform: scale(0.97);
+}
+
+/* Elementos fijos respetan el home indicator del iPhone */
+.wa-float {
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: calc(20px + env(safe-area-inset-right));
+}
+
+.quote-tray {
+  bottom: calc(92px + env(safe-area-inset-bottom));
+}
+
+.footer {
+  padding-bottom: calc(34px + env(safe-area-inset-bottom));
+}
+
+/* Menu movil */
+.nav__menu-btn {
+  cursor: pointer;
+}
+
+@media (min-width: 981px) {
+  .nav__menu-btn {
+    display: none !important;
+  }
+}
+
+.mobile-menu__backdrop {
+  background: rgba(15, 23, 42, 0.48);
+  inset: 0;
+  position: fixed;
+  z-index: 90;
+}
+
+.mobile-menu {
+  animation: menuIn 220ms ease both;
+  background: white;
+  border-radius: 24px 0 0 24px;
+  bottom: 0;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  align-content: start;
+  gap: 18px;
+  max-width: 360px;
+  overflow-y: auto;
+  padding: 22px 22px calc(26px + env(safe-area-inset-bottom));
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 84vw;
+}
+
+@keyframes menuIn {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.mobile-menu__header {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.mobile-menu__header strong {
+  font-size: 18px;
+}
+
+.mobile-menu__header button {
+  align-items: center;
+  background: var(--soft);
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  height: 44px;
+  justify-content: center;
+  width: 44px;
+}
+
+.mobile-menu__links {
+  display: grid;
+}
+
+.mobile-menu__links a {
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  font-size: 17px;
+  font-weight: 700;
+  justify-content: space-between;
+  min-height: 54px;
+}
+
+.mobile-menu__links a svg {
+  color: var(--red);
+}
+
+.mobile-menu .button {
+  margin-top: 6px;
+}
+
+/* Header movil compacto: una sola fila, el menu cubre los links */
+@media (max-width: 980px) {
+  .nav__links {
+    display: none;
+  }
+
+  .nav {
+    flex-wrap: nowrap;
+  }
+}
+
+@media (max-width: 640px) {
+  /* Topbar de una sola linea */
+  .topbar {
+    display: flex;
+    justify-content: center;
+  }
+
+  .topbar strong {
+    display: none;
+  }
+
+  /* En el catalogo, los productos van primero y los filtros despues */
+  .catalog-layout .filters {
+    order: 2;
+  }
+
+  /* El icono de admin vive en el menu */
+  .nav__tools .icon-link {
+    display: none;
+  }
+}
+
+@media (max-width: 980px) {
+  .catalog-layout .filters {
+    order: 2;
+  }
+}
+
+/* Scrollers horizontales suaves sin barra visible */
+.product-gallery__thumbs {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.product-gallery__thumbs::-webkit-scrollbar {
+  display: none;
+}
+
+.product-gallery__thumbs span {
+  flex-shrink: 0;
+}
+
+/* Correcciones del header movil: que todo quepa en una fila de 390px */
+@media (max-width: 980px) {
+  .nav {
+    gap: 12px;
+    justify-content: space-between;
+  }
+
+  .brand {
+    flex-shrink: 1;
+    min-width: 0;
+  }
+
+  .nav__tools {
+    flex-shrink: 0;
+    gap: 8px;
+  }
+
+  /* El carrusel primero; el acordeon de categorias despues */
+  .home-showcase .category-accordion {
+    order: 2;
+  }
+}
+
+@media (max-width: 640px) {
+  .brand strong {
+    font-size: 16px;
+  }
+
+  .brand small {
+    font-size: 11px;
+  }
+
+  .quote-link {
+    font-size: 14px;
+    padding: 0 14px;
+  }
+
+  .topbar span {
+    font-size: 12.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+/* Anula reglas del layout movil anterior: la fila unica no estira nada */
+@media (max-width: 640px) {
+  .nav__tools {
+    width: auto;
+  }
+
+  .quote-link {
+    flex: 0 0 auto;
+  }
+}

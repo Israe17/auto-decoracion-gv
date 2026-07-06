@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { Menu, MessageCircle, Search, UserRound } from "lucide-react";
+import { MessageCircle, Search, UserRound } from "lucide-react";
+import { MobileMenu } from "./MobileMenu";
 
 export function Header() {
   return (
@@ -35,9 +36,7 @@ export function Header() {
           <Link className="icon-link" href="/admin" aria-label="Panel admin">
             <UserRound size={20} />
           </Link>
-          <button aria-label="Menu">
-            <Menu size={20} />
-          </button>
+          <MobileMenu />
         </div>
       </div>
     </header>

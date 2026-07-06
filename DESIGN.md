@@ -67,7 +67,18 @@ Reglas:
 - Breakpoints: 980px (2→1 columnas en detalle), 720px (admin/listas), 900px
   (contacto/servicios).
 - Elementos flotantes: WhatsApp `bottom: 20px; right: 20px; z-index 40`;
-  bandeja de cotización encima (`bottom: 92px`, z-30); modales z-80.
+  bandeja de cotización encima (`bottom: 92px`, z-30); modales z-80; menú
+  móvil z-90.
+
+Móvil (iPhone-first):
+- Todo elemento fijo inferior suma `env(safe-area-inset-bottom)` (home
+  indicator); el viewport se declara con `viewportFit: "cover"` en
+  `layout.tsx`.
+- Inputs/select/textarea SIEMPRE ≥16px (evita el auto-zoom de iOS Safari).
+- Tap targets ≥44px; feedback táctil con `.button:active { scale(0.97) }`.
+- Navegación móvil: menú drawer (`MobileMenu`) por portal al body; el
+  header móvil es UNA fila (logo + CTA + hamburguesa).
+- En listados con filtros, el producto va primero y los filtros después.
 
 ## 5. Components
 

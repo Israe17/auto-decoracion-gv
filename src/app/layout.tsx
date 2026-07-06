@@ -1,10 +1,17 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { QuoteTray } from "@/components/QuoteTray";
 import { ScrollFx } from "@/components/ScrollFx";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#e62135"
+};
 
 export const metadata: Metadata = {
   title: "Auto Decoracion G&V",
