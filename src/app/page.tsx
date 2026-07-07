@@ -62,7 +62,8 @@ export default async function Home() {
           </div>
         </div>
         <div className="service-grid">
-          <article className="service-card">
+          <article className="service-card glare-host">
+            <span className="glare" aria-hidden="true" />
             <Film />
             <h3>Polarizado</h3>
             <p>
@@ -78,7 +79,8 @@ export default async function Home() {
               <MessageCircle size={17} /> Cotizar polarizado
             </a>
           </article>
-          <article className="service-card">
+          <article className="service-card glare-host">
+            <span className="glare" aria-hidden="true" />
             <Speaker />
             <h3>Audio y video</h3>
             <p>
@@ -94,7 +96,8 @@ export default async function Home() {
               <MessageCircle size={17} /> Cotizar instalación
             </a>
           </article>
-          <article className="service-card">
+          <article className="service-card glare-host">
+            <span className="glare" aria-hidden="true" />
             <Wrench />
             <h3>Accesorios y 4x4</h3>
             <p>
@@ -154,7 +157,8 @@ export default async function Home() {
       </section>
 
       <section className="section section--tight">
-        <div className="cta-band">
+        <div className="cta-band glare-host">
+          <span className="glare" aria-hidden="true" />
           <PackageSearch size={34} />
           <div>
             <h2>¿No encontró lo que busca?</h2>
