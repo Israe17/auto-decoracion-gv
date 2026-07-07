@@ -188,21 +188,68 @@ export const products: Product[] = [
   },
   {
     id: "p-003",
-    slug: "alfombras-3d-universales",
-    name: "Alfombras 3D de uso pesado",
+    slug: "alfombras-5d-hilux-revo",
+    name: "Alfombras 5D para Toyota Hilux Revo",
     categorySlug: "alfombras",
     categoryName: "Alfombras",
     saleMode: "price_quote",
     price: 42000,
     status: "available",
-    compatibilityMode: "universal",
-    vehicles: [],
-    images: [
-      "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=900&q=80"
-    ],
+    compatibilityMode: "specific",
+    vehicles: [{ make: "Toyota", model: "Hilux", fromYear: 2016, toYear: 2023 }],
+    images: ["/products/alfombras-5d-hilux-revo.webp"],
     description:
-      "Alfombras resistentes para proteger el interior del vehículo contra agua, barro y uso diario.",
-    tags: ["Interior", "Universal", "Protección"]
+      "Alfombras 5D a la medida para Toyota Hilux Revo 2016-2023: protegen el piso original contra agua y barro, en material TPE premium antideslizante y fáciles de limpiar.",
+    tags: ["Interior", "Hilux", "Protección"],
+    featured: true
+  },
+  {
+    id: "p-007",
+    slug: "alfombras-5d-isuzu-dmax",
+    name: "Alfombras 5D para Isuzu D-Max",
+    categorySlug: "alfombras",
+    categoryName: "Alfombras",
+    saleMode: "price_quote",
+    price: 42000,
+    status: "available",
+    compatibilityMode: "specific",
+    vehicles: [{ make: "Isuzu", model: "D-Max", fromYear: 2020, toYear: 2026 }],
+    images: ["/products/alfombras-5d-isuzu-dmax.webp"],
+    description:
+      "Alfombras 5D con ajuste perfecto para Isuzu D-Max 2020 en adelante: cobertura total del piso, impermeables y de larga vida útil.",
+    tags: ["Interior", "D-Max", "Protección"]
+  },
+  {
+    id: "p-008",
+    slug: "alfombras-5d-navara-d40",
+    name: "Alfombras 5D para Nissan Navara D40",
+    categorySlug: "alfombras",
+    categoryName: "Alfombras",
+    saleMode: "price_quote",
+    price: 42000,
+    status: "available",
+    compatibilityMode: "specific",
+    vehicles: [{ make: "Nissan", model: "Navara", fromYear: 2008, toYear: 2014 }],
+    images: ["/products/alfombras-5d-navara-d40.webp"],
+    description:
+      "Alfombras 5D diseñadas a la medida para Nissan Navara D40 2008-2014: protección máxima del interior con instalación rápida y segura.",
+    tags: ["Interior", "Navara", "Protección"]
+  },
+  {
+    id: "p-009",
+    slug: "alfombras-5d-jeep-wrangler-jk",
+    name: "Alfombras 5D para Jeep Wrangler JK",
+    categorySlug: "alfombras",
+    categoryName: "Alfombras",
+    saleMode: "price_quote",
+    price: 42000,
+    status: "available",
+    compatibilityMode: "specific",
+    vehicles: [{ make: "Jeep", model: "Wrangler", fromYear: 2007, toYear: 2018 }],
+    images: ["/products/alfombras-5d-jeep-wrangler-jk.webp"],
+    description:
+      "Alfombras 5D para Jeep Wrangler JK 2007-2018: juego completo antideslizante que protege el piso original en cualquier aventura.",
+    tags: ["Interior", "Wrangler", "4x4"]
   },
   {
     id: "p-004",

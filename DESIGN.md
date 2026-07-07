@@ -102,9 +102,12 @@ Móvil (iPhone-first):
 
 - Motor de animación de scroll: **GSAP + ScrollTrigger** vía
   `src/components/ScrollFx.tsx` (montado en el layout). Reveals de 0.7s
-  `power2.out` al 88% del viewport, staggers de 0.08s en grillas, parallax
-  sutil en la galería del producto y pop del precio héroe. Nuevas
-  secciones/grillas se registran en los selectores de ese componente.
+  `power2.out` al 88% del viewport, staggers de 0.08s en grillas y pop
+  del precio héroe. Nuevas secciones/grillas se registran en los
+  selectores de ese componente.
+- La imagen de producto se muestra COMPLETA: tarjeta con contenedor
+  cuadrado (los artes son 1:1) y galería con `object-fit: contain` sobre
+  blanco — sin parallax ni zooms que recorten el arte.
 - `prefers-reduced-motion: reduce` desactiva todas las animaciones.
 - Estados iniciales los pone GSAP (no CSS): sin JavaScript el contenido se
   ve completo.

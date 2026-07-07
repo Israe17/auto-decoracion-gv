@@ -24,7 +24,10 @@ export const seedVehicles: VehicleModel[] = [
   { id: "toyota-hilux", make: "Toyota", model: "Hilux", fromYear: 2016, toYear: 2026 },
   { id: "nissan-frontier", make: "Nissan", model: "Frontier", fromYear: 2021, toYear: 2026 },
   { id: "toyota-fortuner", make: "Toyota", model: "Fortuner", fromYear: 2017, toYear: 2026 },
-  { id: "mitsubishi-montero", make: "Mitsubishi", model: "Montero", fromYear: 2015, toYear: 2025 }
+  { id: "mitsubishi-montero", make: "Mitsubishi", model: "Montero", fromYear: 2015, toYear: 2025 },
+  { id: "isuzu-dmax", make: "Isuzu", model: "D-Max", fromYear: 2020, toYear: 2026 },
+  { id: "nissan-navara", make: "Nissan", model: "Navara", fromYear: 2008, toYear: 2014 },
+  { id: "jeep-wrangler", make: "Jeep", model: "Wrangler", fromYear: 2007, toYear: 2018 }
 ];
 
 function requireDb() {

@@ -5197,3 +5197,22 @@ textarea {
   background-color: #15181d;
   color: white;
 }
+
+/* ===== Imagenes de producto sin recorte =====
+   Los artes de producto son cuadrados (1:1): la tarjeta usa contenedor
+   cuadrado y la galeria muestra la imagen completa (contain). */
+.product-card__image {
+  aspect-ratio: 1;
+}
+
+.product-gallery__main {
+  background: white;
+}
+
+.product-gallery__main img {
+  object-fit: contain;
+}
+
+.product-gallery__main:hover img {
+  transform: none;
+}
