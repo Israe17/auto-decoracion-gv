@@ -95,12 +95,13 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
-- Carrusel del inicio: muestra las promociones de admin > Promociones
-  como lámina dividida — panel oscuro con título, subtítulo y botones
-  (primario al enlace + WhatsApp) y el arte COMPLETO (`contain`) sobre
-  un fondo ambiental del mismo banner difuminado. Sin promociones
-  activas cae a las líneas de catálogo (foto de la categoría + overlay
-  de texto).
+- Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
+  degradado oscuro a la izquierda y el texto encima — eyebrow, titular
+  grande, subtítulo y botones (primario al enlace + WhatsApp). Toma las
+  promociones de admin > Promociones; sin promociones activas cae a las
+  líneas de catálogo. Las fotos del hero son horizontales ambientales
+  (taller/vehículos/servicios), NUNCA los afiches cuadrados de producto.
+  Fotos de ejemplo self-hosted en `public/hero/`.
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
   `rgba(15,23,42,.48)` a viewport completo.
 

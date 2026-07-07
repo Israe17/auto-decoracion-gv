@@ -24,25 +24,36 @@ const localKeys = {
 
 export const seedPromos: Promo[] = [
   {
-    id: "promo-alfombras-hilux",
-    title: "Alfombras 5D a la medida para su Hilux",
+    id: "promo-marca",
+    title: "Todo para su vehículo, instalado por expertos",
     subtitle:
-      "Protección total del piso original: impermeables, antideslizantes y fáciles de limpiar. Toyota Hilux Revo 2016-2023.",
-    image: "/products/alfombras-5d-hilux-revo.webp",
-    link: "/productos/alfombras-5d-hilux-revo",
-    ctaLabel: "Ver alfombras Hilux",
+      "Accesorios, polarizado e instalación profesional en Liberia desde 2008. Lo tenemos en el local o se lo conseguimos.",
+    image: "/hero/vehiculo.jpg",
+    link: "/catalogo",
+    ctaLabel: "Ver catálogo",
     order: 1,
     active: true
   },
   {
-    id: "promo-alfombras-dmax",
-    title: "Estrene alfombras en su Isuzu D-Max",
+    id: "promo-audio-video",
+    title: "Convierta su auto en su espacio favorito",
     subtitle:
-      "Cobertura 5D con ajuste perfecto y material TPE premium para D-Max 2020 en adelante.",
-    image: "/products/alfombras-5d-isuzu-dmax.webp",
-    link: "/productos/alfombras-5d-isuzu-dmax",
-    ctaLabel: "Ver alfombras D-Max",
+      "Pantallas, cámaras de reversa, parlantes y amplificadores. Le conseguimos el equipo y se lo instalamos con conexiones limpias.",
+    image: "/hero/audio-video.jpg",
+    link: "/catalogo?categoria=audio-video",
+    ctaLabel: "Cotizar audio y video",
     order: 2,
+    active: true
+  },
+  {
+    id: "promo-iluminacion",
+    title: "Iluminación para cualquier aventura",
+    subtitle:
+      "Barras LED, faros auxiliares y halógenos. Le asesoramos, conseguimos el producto y lo instalamos.",
+    image: "/hero/iluminacion.jpg",
+    link: "/catalogo?categoria=iluminacion",
+    ctaLabel: "Ver iluminación",
+    order: 3,
     active: true
   }
 ];
