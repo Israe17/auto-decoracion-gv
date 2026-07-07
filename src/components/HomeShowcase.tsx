@@ -177,7 +177,8 @@ export function HomeShowcase({
         </Link>
       </aside>
 
-      <div className="home-carousel">
+      <div className="home-carousel glare-host">
+        <span className="glare" aria-hidden="true" />
         <div className="home-carousel__media" key={active.id}>
           <img src={active.image} alt={active.title} />
         </div>

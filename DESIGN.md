@@ -136,6 +136,11 @@ Móvil (iPhone-first):
   flota encima en vidrio (`blur 16px`). Respeta reduced-motion.
 - El logo en alta resolución vive en `public/gv-system-logo.png` (256px,
   extraído del .ico).
+- Efecto **glare** (destello diagonal que barre al pasar el mouse):
+  pieza reutilizable — contenedor con `.glare-host` + `<span class="glare">`.
+  Se usa en tarjetas de servicio, banda CTA y hero. Solo `:hover`, se
+  apaga en touch (`@media (hover: none)`) y con reduced-motion. No es
+  animación infinita; es un barrido único por hover.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
