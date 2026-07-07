@@ -25,17 +25,23 @@ const localKeys = {
 export const seedPromos: Promo[] = [
   {
     id: "promo-alfombras-hilux",
-    title: "Alfombras 5D para Toyota Hilux Revo",
+    title: "Alfombras 5D a la medida para su Hilux",
+    subtitle:
+      "Protección total del piso original: impermeables, antideslizantes y fáciles de limpiar. Toyota Hilux Revo 2016-2023.",
     image: "/products/alfombras-5d-hilux-revo.webp",
     link: "/productos/alfombras-5d-hilux-revo",
+    ctaLabel: "Ver alfombras Hilux",
     order: 1,
     active: true
   },
   {
     id: "promo-alfombras-dmax",
-    title: "Alfombras 5D para Isuzu D-Max",
+    title: "Estrene alfombras en su Isuzu D-Max",
+    subtitle:
+      "Cobertura 5D con ajuste perfecto y material TPE premium para D-Max 2020 en adelante.",
     image: "/products/alfombras-5d-isuzu-dmax.webp",
     link: "/productos/alfombras-5d-isuzu-dmax",
+    ctaLabel: "Ver alfombras D-Max",
     order: 2,
     active: true
   }

@@ -134,27 +134,53 @@ export function HomeShowcase({
 
       <div className={promoMode ? "home-carousel home-carousel--promo" : "home-carousel"}>
         {promoMode && activePromo ? (
-          <>
-            <div className="home-promo__media">
-              <img src={activePromo.image} alt={activePromo.title} />
-            </div>
-            {activePromo.link &&
-              (promoLinkExternal ? (
+          <div className="home-promo">
+            <div className="home-promo__panel">
+              <span className="home-carousel__tag">
+                <Sparkles size={15} />
+                Promoción G&V
+              </span>
+              <h1>{activePromo.title}</h1>
+              {activePromo.subtitle && <p>{activePromo.subtitle}</p>}
+
+              <div className="home-carousel__actions">
+                {activePromo.link &&
+                  (promoLinkExternal ? (
+                    <a
+                      className="button button--primary"
+                      href={activePromo.link}
+                      target="_blank"
+                      rel="noopener"
+                    >
+                      {activePromo.ctaLabel || "Ver promoción"} <ArrowRight size={18} />
+                    </a>
+                  ) : (
+                    <Link className="button button--primary" href={activePromo.link}>
+                      {activePromo.ctaLabel || "Ver promoción"} <ArrowRight size={18} />
+                    </Link>
+                  ))}
                 <a
-                  className="home-promo__link"
-                  href={activePromo.link}
+                  className="button button--ghost"
+                  href={generalWhatsAppUrl()}
                   target="_blank"
                   rel="noopener"
-                  aria-label={activePromo.title}
-                />
-              ) : (
-                <Link
-                  className="home-promo__link"
-                  href={activePromo.link}
-                  aria-label={activePromo.title}
-                />
-              ))}
-          </>
+                >
+                  <MessageCircle size={18} /> Cotizar por WhatsApp
+                </a>
+              </div>
+            </div>
+
+            <div className="home-promo__art">
+              <span className="home-promo__backdrop" aria-hidden="true">
+                <img src={activePromo.image} alt="" />
+              </span>
+              <img
+                className="home-promo__img"
+                src={activePromo.image}
+                alt={activePromo.title}
+              />
+            </div>
+          </div>
         ) : (
           activeCategory && (
             <>

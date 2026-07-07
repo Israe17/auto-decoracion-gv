@@ -323,8 +323,10 @@ export default function AdminPage() {
     const promo: Promo = {
       id: editingPromo?.id || `promo-${makeSlug(title)}`,
       title,
+      subtitle: String(form.get("promoSubtitle") || "").trim() || undefined,
       image: String(form.get("promoImage") || "").trim(),
       link: String(form.get("promoLink") || "").trim() || undefined,
+      ctaLabel: String(form.get("promoCta") || "").trim() || undefined,
       order: Number(form.get("promoOrder")) || undefined,
       active: form.get("promoActive") === "on"
     };
@@ -567,21 +569,39 @@ export default function AdminPage() {
                 </div>
               </div>
               <label>
-                Titulo interno
+                Titulo de la lamina
                 <input name="promoTitle" required defaultValue={editingPromo?.title} />
+              </label>
+              <label>
+                Subtitulo (opcional)
+                <textarea
+                  name="promoSubtitle"
+                  rows={2}
+                  defaultValue={editingPromo?.subtitle}
+                />
               </label>
               <label>
                 Imagen (URL del banner)
                 <input name="promoImage" required defaultValue={editingPromo?.image} />
               </label>
-              <label>
-                Enlace al hacer clic (opcional)
-                <input
-                  name="promoLink"
-                  placeholder="/catalogo?categoria=alfombras"
-                  defaultValue={editingPromo?.link}
-                />
-              </label>
+              <div className="form-grid form-grid--two">
+                <label>
+                  Enlace del boton
+                  <input
+                    name="promoLink"
+                    placeholder="/catalogo?categoria=alfombras"
+                    defaultValue={editingPromo?.link}
+                  />
+                </label>
+                <label>
+                  Texto del boton
+                  <input
+                    name="promoCta"
+                    placeholder="Ver promoción"
+                    defaultValue={editingPromo?.ctaLabel}
+                  />
+                </label>
+              </div>
               <div className="form-grid form-grid--two">
                 <label>
                   Orden

@@ -96,8 +96,9 @@ Móvil (iPhone-first):
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
 - Carrusel del inicio: muestra las promociones de admin > Promociones
-  (banner COMPLETO con `contain` sobre fondo oscuro, lámina clicable,
-  sin texto encimado — el banner ya es el mensaje). Sin promociones
+  como lámina dividida — panel oscuro con título, subtítulo y botones
+  (primario al enlace + WhatsApp) y el arte COMPLETO (`contain`) sobre
+  un fondo ambiental del mismo banner difuminado. Sin promociones
   activas cae a las líneas de catálogo (foto de la categoría + overlay
   de texto).
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop

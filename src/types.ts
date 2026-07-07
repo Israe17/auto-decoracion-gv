@@ -45,12 +45,15 @@ export type VehicleModel = {
   toYear?: number;
 };
 
-// Banner promocional del carrusel del home, administrado desde el admin.
+// Lamina promocional del carrusel del home, administrada desde el admin:
+// arte + titulo + subtitulo + boton de accion.
 export type Promo = {
   id: string;
   title: string;
+  subtitle?: string;
   image: string;
   link?: string;
+  ctaLabel?: string;
   order?: number;
   active?: boolean;
 };
