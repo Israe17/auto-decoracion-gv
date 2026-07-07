@@ -20,12 +20,12 @@ import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 export const revalidate = 60;
 
 export default async function Home() {
-  const { products, categories, vehicles } = await fetchPublicCatalog();
+  const { products, categories, vehicles, promos } = await fetchPublicCatalog();
   const featured = products.filter((product) => product.featured).slice(0, 4);
 
   return (
     <>
-      <HomeShowcase categories={categories} products={products} />
+      <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section section--tight">
         <div className="benefits">

@@ -8,46 +8,35 @@ import {
   ChevronLeft,
   ChevronRight,
   MessageCircle,
-  PackageSearch,
-  Sparkles
+  PackageSearch
 } from "lucide-react";
-import { formatCRC } from "@/lib/catalog";
-import { productWhatsAppUrl } from "@/lib/whatsapp";
-import { Category, Product } from "@/types";
+import { generalWhatsAppUrl } from "@/lib/whatsapp";
+import { Category, Product, Promo } from "@/types";
 
+type Slide = {
+  id: string;
+  eyebrow: string;
+  title: string;
+  description?: string;
+  image: string;
+  href?: string;
+  ctaLabel: string;
+  external: boolean;
+};
+
+// Carrusel del hero: foto horizontal a todo lo ancho con el texto sobre
+// un degradado oscuro y botones de accion. Toma las promociones de
+// admin > Promociones; sin promociones activas cae a las lineas de
+// catalogo (categorias). Hasta 5 laminas.
 export function HomeShowcase({
   categories,
-  products
+  products,
+  promos = []
 }: {
   categories: Category[];
   products: Product[];
+  promos?: Promo[];
 }) {
-  const slides = products.filter((product) => product.featured).slice(0, 4);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [openCategory, setOpenCategory] = useState(
-    () =>
-      categories.find((category) =>
-        products.some((product) => product.categorySlug === category.slug)
-      )?.slug ||
-      categories[0]?.slug ||
-      ""
-  );
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
-  useEffect(() => {
-    if (slides.length < 2) return;
-
-    const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % slides.length);
-    }, 5500);
-
-    return () => window.clearInterval(timer);
-  }, [slides.length]);
-
   const categoryCounts = useMemo(
     () =>
       categories.reduce<Record<string, number>>((acc, category) => {
@@ -59,17 +48,72 @@ export function HomeShowcase({
     [categories, products]
   );
 
-  const activeProduct = slides[activeSlide] || products[0];
+  const slides = useMemo<Slide[]>(() => {
+    const promoSlides = promos
+      .filter((promo) => promo.active !== false && promo.image)
+      .slice(0, 5)
+      .map((promo) => ({
+        id: promo.id,
+        eyebrow: "Auto Decoración G&V",
+        title: promo.title,
+        description: promo.subtitle,
+        image: promo.image,
+        href: promo.link,
+        ctaLabel: promo.ctaLabel || "Ver más",
+        external: Boolean(promo.link && /^https?:/i.test(promo.link))
+      }));
+
+    if (promoSlides.length) return promoSlides;
+
+    const withImage = categories.filter((category) => category.image);
+    const withProducts = withImage.filter((category) => categoryCounts[category.slug]);
+    const rest = withImage.filter((category) => !categoryCounts[category.slug]);
+    return [...withProducts, ...rest].slice(0, 5).map((category) => ({
+      id: category.id,
+      eyebrow: categoryCounts[category.slug]
+        ? `${categoryCounts[category.slug]} producto(s) en línea`
+        : "Línea de catálogo",
+      title: category.name,
+      description: category.description,
+      image: category.image,
+      href: `/catalogo?categoria=${category.slug}`,
+      ctaLabel: "Ver categoría",
+      external: false
+    }));
+  }, [promos, categories, categoryCounts]);
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [openCategory, setOpenCategory] = useState(
+    () =>
+      categories.find((category) =>
+        products.some((product) => product.categorySlug === category.slug)
+      )?.slug ||
+      categories[0]?.slug ||
+      ""
+  );
+
+  const slideCount = slides.length;
+
+  useEffect(() => {
+    if (slideCount < 2) return;
+
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slideCount);
+    }, 5500);
+
+    return () => window.clearInterval(timer);
+  }, [slideCount]);
 
   function moveSlide(direction: number) {
-    if (!slides.length) return;
-    setActiveSlide((current) => (current + direction + slides.length) % slides.length);
+    if (!slideCount) return;
+    setActiveSlide((current) => (current + direction + slideCount) % slideCount);
   }
 
-  if (!activeProduct) return null;
+  const active = slides[activeSlide % (slideCount || 1)];
+  if (!active) return null;
 
   return (
-    <section className="home-showcase" aria-label="Catalogo destacado">
+    <section className="home-showcase" aria-label="Destacados">
       <aside className="category-accordion">
         <div className="category-accordion__title">
           <PackageSearch size={20} />
@@ -115,76 +159,75 @@ export function HomeShowcase({
       </aside>
 
       <div className="home-carousel">
-        <div className="home-carousel__media">
-          <img src={activeProduct.images[0]} alt={activeProduct.name} />
+        <div className="home-carousel__media" key={active.id}>
+          <img src={active.image} alt={active.title} />
         </div>
         <div className="home-carousel__shade" />
 
-        <button
-          className="home-carousel__arrow home-carousel__arrow--left"
-          type="button"
-          aria-label="Producto anterior"
-          onClick={() => moveSlide(-1)}
-        >
-          <ChevronLeft size={24} />
-        </button>
-        <button
-          className="home-carousel__arrow home-carousel__arrow--right"
-          type="button"
-          aria-label="Producto siguiente"
-          onClick={() => moveSlide(1)}
-        >
-          <ChevronRight size={24} />
-        </button>
-
         <div className="home-carousel__content">
-          <span className="home-carousel__tag">
-            <Sparkles size={15} />
-            Destacado G&V
-          </span>
-          <span className="home-carousel__category">{activeProduct.categoryName}</span>
-          <h1>{activeProduct.name}</h1>
-          <p>{activeProduct.description}</p>
-
-          <div className="home-carousel__meta">
-            <div className="home-carousel__price">
-              {activeProduct.oldPrice && <del>{formatCRC(activeProduct.oldPrice)}</del>}
-              <strong>
-                {activeProduct.saleMode === "price_quote"
-                  ? formatCRC(activeProduct.price)
-                  : "Consultar precio"}
-              </strong>
-            </div>
-            <span>
-              {activeProduct.status === "available" ? "Disponible" : "Bajo pedido"}
-            </span>
-          </div>
+          <span className="home-carousel__eyebrow">{active.eyebrow}</span>
+          <h1>{active.title}</h1>
+          {active.description && <p>{active.description}</p>}
 
           <div className="home-carousel__actions">
+            {active.href &&
+              (active.external ? (
+                <a
+                  className="button button--primary"
+                  href={active.href}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {active.ctaLabel} <ArrowRight size={18} />
+                </a>
+              ) : (
+                <Link className="button button--primary" href={active.href}>
+                  {active.ctaLabel} <ArrowRight size={18} />
+                </Link>
+              ))}
             <a
-              className="button button--primary"
-              href={productWhatsAppUrl(activeProduct, origin)}
+              className="button button--ghost"
+              href={generalWhatsAppUrl()}
               target="_blank"
+              rel="noopener"
             >
-              <MessageCircle size={18} /> Cotizar
+              <MessageCircle size={18} /> Cotizar por WhatsApp
             </a>
-            <Link className="button button--ghost" href={`/productos/${activeProduct.slug}`}>
-              Ver detalle <ArrowRight size={18} />
-            </Link>
           </div>
         </div>
 
-        <div className="home-carousel__dots" aria-label="Seleccionar destacado">
-          {slides.map((product, index) => (
+        {slideCount > 1 && (
+          <>
             <button
-              key={product.id}
+              className="home-carousel__arrow home-carousel__arrow--left"
               type="button"
-              aria-label={`Ver ${product.name}`}
-              aria-current={index === activeSlide}
-              onClick={() => setActiveSlide(index)}
-            />
-          ))}
-        </div>
+              aria-label="Anterior"
+              onClick={() => moveSlide(-1)}
+            >
+              <ChevronLeft size={24} />
+            </button>
+            <button
+              className="home-carousel__arrow home-carousel__arrow--right"
+              type="button"
+              aria-label="Siguiente"
+              onClick={() => moveSlide(1)}
+            >
+              <ChevronRight size={24} />
+            </button>
+
+            <div className="home-carousel__dots" aria-label="Seleccionar lamina">
+              {slides.map((slide, index) => (
+                <button
+                  key={slide.id}
+                  type="button"
+                  aria-label={`Ver ${slide.title}`}
+                  aria-current={index === activeSlide}
+                  onClick={() => setActiveSlide(index)}
+                />
+              ))}
+            </div>
+          </>
+        )}
       </div>
     </section>
   );

@@ -6,6 +6,7 @@ import {
   Car,
   Edit3,
   FolderTree,
+  Megaphone,
   Plus,
   Save,
   Search,
@@ -22,20 +23,23 @@ import {
   importSeedCatalog,
   removeCategory,
   removeProduct,
+  removePromo,
   removeVehicle,
   upsertCategory,
   upsertProduct,
+  upsertPromo,
   upsertVehicle
 } from "@/lib/store";
 import {
   Category,
   Product,
+  Promo,
   SaleMode,
   VehicleCompatibility,
   VehicleModel
 } from "@/types";
 
-type AdminTab = "products" | "offers" | "vehicles" | "categories";
+type AdminTab = "products" | "offers" | "promos" | "vehicles" | "categories";
 
 type ConfirmState = {
   title: string;
@@ -91,6 +95,8 @@ export default function AdminPage() {
   const [offerDialog, setOfferDialog] = useState<Product | null | undefined>(undefined);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [editingVehicle, setEditingVehicle] = useState<VehicleModel | null>(null);
+  const [promos, setPromos] = useState<Promo[]>([]);
+  const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [query, setQuery] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("all");
@@ -105,6 +111,7 @@ export default function AdminPage() {
         setProducts(data.products);
         setCategories(data.categories);
         setVehicles(data.vehicles);
+        setPromos(data.promos);
       })
       .catch((error) => {
         console.error(error);
@@ -197,6 +204,7 @@ export default function AdminPage() {
       setProducts(data.products);
       setCategories(data.categories);
       setVehicles(data.vehicles);
+      setPromos(data.promos);
       setMessage("Catalogo de ejemplo importado.");
     } catch (error) {
       reportError(error);
@@ -305,6 +313,56 @@ export default function AdminPage() {
     } catch (error) {
       reportError(error);
     }
+  }
+
+  async function handlePromoSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const title = String(form.get("promoTitle") || "").trim();
+    const promo: Promo = {
+      id: editingPromo?.id || `promo-${makeSlug(title)}`,
+      title,
+      subtitle: String(form.get("promoSubtitle") || "").trim() || undefined,
+      image: String(form.get("promoImage") || "").trim(),
+      link: String(form.get("promoLink") || "").trim() || undefined,
+      ctaLabel: String(form.get("promoCta") || "").trim() || undefined,
+      order: Number(form.get("promoOrder")) || undefined,
+      active: form.get("promoActive") === "on"
+    };
+
+    const exists = promos.some((item) => item.id === promo.id);
+    try {
+      await upsertPromo(promo);
+      setPromos(
+        exists
+          ? promos.map((item) => (item.id === promo.id ? promo : item))
+          : [...promos, promo]
+      );
+      setMessage("Promociones actualizadas.");
+      setEditingPromo(null);
+      formElement.reset();
+    } catch (error) {
+      reportError(error);
+    }
+  }
+
+  function confirmDeletePromo(promo: Promo) {
+    setConfirmState({
+      title: "Eliminar promocion",
+      body: `Se eliminara "${promo.title}" del carrusel del inicio.`,
+      actionLabel: "Eliminar promocion",
+      tone: "danger",
+      onConfirm: async () => {
+        try {
+          await removePromo(promo.id);
+          setPromos((prev) => prev.filter((item) => item.id !== promo.id));
+          setMessage("Promocion eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    });
   }
 
   function confirmDeleteCategory(category: Category) {
@@ -450,6 +508,7 @@ export default function AdminPage() {
         {[
           ["products", "Productos"],
           ["offers", "Ofertas"],
+          ["promos", "Promociones"],
           ["vehicles", "Modelos de autos"],
           ["categories", "Categorias"]
         ].map(([id, label]) => (
@@ -492,6 +551,92 @@ export default function AdminPage() {
           onEdit={setOfferDialog}
           onRemove={confirmRemoveOffer}
         />
+      )}
+
+      {!loading && activeTab === "promos" && (
+        <div className="admin-workspace admin-workspace--simple">
+          <form
+            key={editingPromo?.id || "new-promo"}
+            className="admin-form admin-form--panel"
+            onSubmit={handlePromoSubmit}
+          >
+            <div className="form-section">
+              <div className="form-section__header">
+                <Megaphone size={20} />
+                <div>
+                  <strong>{editingPromo ? "Editar promocion" : "Nueva promocion"}</strong>
+                  <span>Banners del carrusel de inicio, en el orden que usted defina.</span>
+                </div>
+              </div>
+              <label>
+                Titulo de la lamina
+                <input name="promoTitle" required defaultValue={editingPromo?.title} />
+              </label>
+              <label>
+                Subtitulo (opcional)
+                <textarea
+                  name="promoSubtitle"
+                  rows={2}
+                  defaultValue={editingPromo?.subtitle}
+                />
+              </label>
+              <label>
+                Imagen (URL del banner)
+                <input name="promoImage" required defaultValue={editingPromo?.image} />
+              </label>
+              <div className="form-grid form-grid--two">
+                <label>
+                  Enlace del boton
+                  <input
+                    name="promoLink"
+                    placeholder="/catalogo?categoria=alfombras"
+                    defaultValue={editingPromo?.link}
+                  />
+                </label>
+                <label>
+                  Texto del boton
+                  <input
+                    name="promoCta"
+                    placeholder="Ver promoción"
+                    defaultValue={editingPromo?.ctaLabel}
+                  />
+                </label>
+              </div>
+              <div className="form-grid form-grid--two">
+                <label>
+                  Orden
+                  <input name="promoOrder" type="number" defaultValue={editingPromo?.order} />
+                </label>
+                <label className="checkbox-row">
+                  <input
+                    name="promoActive"
+                    type="checkbox"
+                    defaultChecked={editingPromo ? editingPromo.active !== false : true}
+                  />
+                  <span>Visible en el inicio</span>
+                </label>
+              </div>
+              <button className="button button--primary" type="submit">
+                <Save size={18} /> Guardar promocion
+              </button>
+            </div>
+          </form>
+
+          <AdminSimpleList
+            title="Promociones del inicio"
+            empty="No hay promociones; el carrusel muestra las categorias."
+            items={promos.map((promo) => ({
+              id: promo.id,
+              title: promo.title,
+              meta: `${promo.active === false ? "Oculta" : "Visible"} · orden ${
+                promo.order ?? "—"
+              }${promo.link ? ` · ${promo.link}` : ""}`,
+              image: promo.image,
+              onEdit: () => setEditingPromo(promo),
+              onDelete: () => confirmDeletePromo(promo)
+            }))}
+          />
+        </div>
       )}
 
       {!loading && activeTab === "vehicles" && (
