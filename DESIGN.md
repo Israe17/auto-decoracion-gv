@@ -156,6 +156,11 @@ Móvil (iPhone-first):
   adaptación de React Bits a GSAP (sin la dependencia `motion`). Se usa en
   el título del hero y re-anima al cambiar de slide. Texto accesible
   (`aria-label`), respeta reduced-motion.
+- Efecto **Border Glow** (anillo de luz roja que sigue el cursor en el
+  borde): componente `src/components/BorderGlow.tsx` — adaptación de React
+  Bits; envuelve la tarjeta y enciende un anillo según cercanía al borde y
+  ángulo del cursor. Se usa en las tarjetas de categoría/subcategoría
+  (`CategoryCard`). Se apaga en touch y reduced-motion.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
