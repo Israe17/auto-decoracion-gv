@@ -24,6 +24,20 @@ type Slide = {
   external: boolean;
 };
 
+// Lamina de respaldo: garantiza que el hero nunca quede vacio aunque no
+// haya promociones ni categorias con imagen.
+const FALLBACK_SLIDE: Slide = {
+  id: "fallback",
+  eyebrow: "Auto Decoración G&V",
+  title: "Todo para su vehículo, instalado por expertos",
+  description:
+    "Accesorios, polarizado e instalación profesional en Liberia desde 2008. Lo tenemos en el local o se lo conseguimos.",
+  image: "/hero/vehiculo.jpg",
+  href: "/catalogo",
+  ctaLabel: "Ver catálogo",
+  external: false
+};
+
 // Carrusel del hero: foto horizontal a todo lo ancho con el texto sobre
 // un degradado oscuro y botones de accion. Toma las promociones de
 // admin > Promociones; sin promociones activas cae a las lineas de
@@ -68,7 +82,7 @@ export function HomeShowcase({
     const withImage = categories.filter((category) => category.image);
     const withProducts = withImage.filter((category) => categoryCounts[category.slug]);
     const rest = withImage.filter((category) => !categoryCounts[category.slug]);
-    return [...withProducts, ...rest].slice(0, 5).map((category) => ({
+    const categorySlides = [...withProducts, ...rest].slice(0, 5).map((category) => ({
       id: category.id,
       eyebrow: categoryCounts[category.slug]
         ? `${categoryCounts[category.slug]} producto(s) en línea`
@@ -80,6 +94,8 @@ export function HomeShowcase({
       ctaLabel: "Ver categoría",
       external: false
     }));
+
+    return categorySlides.length ? categorySlides : [FALLBACK_SLIDE];
   }, [promos, categories, categoryCounts]);
 
   const [activeSlide, setActiveSlide] = useState(0);
