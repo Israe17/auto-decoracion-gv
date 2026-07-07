@@ -3,16 +3,16 @@
 import { ElementType, Fragment, useEffect, useRef } from "react";
 import gsap from "gsap";
 
-// Título que entra animándose letra por letra (stagger) con GSAP.
-// Adaptado de React Bits SplitText SIN el plugin de pago de GSAP: parte
-// el texto en palabras/letras a mano y las anima. Re-anima cuando cambia
-// `text`. Respeta prefers-reduced-motion y deja el texto accesible.
-export function SplitText({
+// Título que entra palabra por palabra desde arriba, desenfocado y se va
+// enfocando (blur → nítido). Adaptado de React Bits BlurText a GSAP (sin
+// la dependencia de motion). Re-anima al cambiar `text`, texto accesible
+// (aria-label) y respeta prefers-reduced-motion.
+export function BlurText({
   text,
   as: Tag = "h1" as ElementType,
   className = "",
-  delay = 38,
-  duration = 0.7
+  delay = 120,
+  duration = 0.55
 }: {
   text: string;
   as?: ElementType;
@@ -27,18 +27,18 @@ export function SplitText({
     if (!el) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    const chars = el.querySelectorAll<HTMLElement>(".split-char");
+    const words = el.querySelectorAll<HTMLElement>(".blur-word");
     const ctx = gsap.context(() => {
       gsap.fromTo(
-        chars,
-        { opacity: 0, yPercent: 60 },
+        words,
+        { filter: "blur(10px)", opacity: 0, y: -26 },
         {
+          filter: "blur(0px)",
           opacity: 1,
-          yPercent: 0,
+          y: 0,
           duration,
-          ease: "power3.out",
-          stagger: delay / 1000,
-          force3D: true
+          ease: "power2.out",
+          stagger: delay / 1000
         }
       );
     }, el);
@@ -49,15 +49,11 @@ export function SplitText({
   const words = text.split(" ");
 
   return (
-    <Tag ref={ref} className={`split-parent ${className}`.trim()} aria-label={text}>
+    <Tag ref={ref} className={`blur-parent ${className}`.trim()} aria-label={text}>
       {words.map((word, wi) => (
         <Fragment key={`${word}-${wi}`}>
-          <span className="split-word" aria-hidden="true">
-            {Array.from(word).map((char, ci) => (
-              <span className="split-char" key={ci}>
-                {char}
-              </span>
-            ))}
+          <span className="blur-word" aria-hidden="true">
+            {word}
           </span>
           {wi < words.length - 1 ? " " : null}
         </Fragment>

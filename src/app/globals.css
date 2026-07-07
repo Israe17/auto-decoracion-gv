@@ -5312,12 +5312,8 @@ textarea {
   }
 }
 
-/* ===== SplitText (titulo animado letra por letra) ===== */
-.split-word {
+/* ===== BlurText (titulo que entra desenfocado, palabra por palabra) ===== */
+.blur-word {
   display: inline-block;
-}
-
-.split-char {
-  display: inline-block;
-  will-change: transform, opacity;
+  will-change: transform, filter, opacity;
 }

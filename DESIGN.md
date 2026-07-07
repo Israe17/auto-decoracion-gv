@@ -146,11 +146,11 @@ Móvil (iPhone-first):
   Coordenadas por `onMouseMove`, color por prop (`--spot-color`). Blanco
   sobre fondos oscuros/foto (hero); rojo tenue sobre tarjetas claras
   (fila de beneficios). Se apaga en touch y reduced-motion.
-- Efecto **SplitText** (título que entra letra por letra en cascada):
-  componente `src/components/SplitText.tsx` — adaptación GRATIS de React
-  Bits (sin el plugin de pago de GSAP), parte el texto en palabras/letras
-  y las anima con stagger. Se usa en el título del hero y re-anima al
-  cambiar de slide. Texto accesible (`aria-label`), respeta reduced-motion.
+- Efecto **BlurText** (título que entra palabra por palabra desde arriba,
+  desenfocado → nítido): componente `src/components/BlurText.tsx` —
+  adaptación de React Bits a GSAP (sin la dependencia `motion`). Se usa en
+  el título del hero y re-anima al cambiar de slide. Texto accesible
+  (`aria-label`), respeta reduced-motion.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
