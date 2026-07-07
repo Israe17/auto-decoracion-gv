@@ -2,16 +2,17 @@ import Link from "next/link";
 import {
   ArrowRight,
   Film,
-  MessageCircle,
   PackageSearch,
-  Speaker,
+  Store,
+  Truck,
   Wrench
 } from "lucide-react";
-import { BenefitsShowcase } from "@/components/BenefitsShowcase";
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
+import { ServicesShowcase } from "@/components/ServicesShowcase";
+import { Spotlight } from "@/components/Spotlight";
 import { VehicleFinder } from "@/components/VehicleFinder";
 import { topCategories } from "@/lib/catalog";
 import { fetchPublicCatalog } from "@/lib/store";
@@ -29,7 +30,28 @@ export default async function Home() {
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section section--tight">
-        <BenefitsShowcase />
+        <div className="benefits">
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
+            <Store />
+            <strong>Disponible de inmediato</strong>
+            <span>Visite nuestro local en Liberia y llévese el producto el mismo día.</span>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
+            <Truck />
+            <strong>Lo conseguimos por usted</strong>
+            <span>Si no está disponible, lo pedimos a nuestros distribuidores de confianza.</span>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
+            <Wrench />
+            <strong>Instalación profesional</strong>
+            <span>Instalamos todo lo que vendemos, con acabado limpio y garantizado.</span>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
+            <Film />
+            <strong>Polarizado de calidad</strong>
+            <span>Protección solar, privacidad y un acabado uniforme para su vehículo.</span>
+          </Spotlight>
+        </div>
       </section>
 
       <section className="section" id="servicios">
@@ -39,59 +61,7 @@ export default async function Home() {
             <h2>Servicio completo en nuestro taller</h2>
           </div>
         </div>
-        <div className="service-grid">
-          <article className="service-card glare-host">
-            <span className="glare" aria-hidden="true" />
-            <Film />
-            <h3>Polarizado</h3>
-            <p>
-              Reduzca el calor, gane privacidad y mejore la apariencia de su
-              vehículo con un acabado uniforme y duradero.
-            </p>
-            <a
-              className="button button--secondary"
-              href={serviceWhatsAppUrl("polarizado")}
-              target="_blank"
-              rel="noopener"
-            >
-              <MessageCircle size={17} /> Cotizar polarizado
-            </a>
-          </article>
-          <article className="service-card glare-host">
-            <span className="glare" aria-hidden="true" />
-            <Speaker />
-            <h3>Audio y video</h3>
-            <p>
-              Pantallas, cámaras de reversa y sistemas de sonido instalados con
-              conexiones limpias y seguras.
-            </p>
-            <a
-              className="button button--secondary"
-              href={serviceWhatsAppUrl("instalacion de audio y video")}
-              target="_blank"
-              rel="noopener"
-            >
-              <MessageCircle size={17} /> Cotizar instalación
-            </a>
-          </article>
-          <article className="service-card glare-host">
-            <span className="glare" aria-hidden="true" />
-            <Wrench />
-            <h3>Accesorios y 4x4</h3>
-            <p>
-              Defensas, estribos, barras LED, racks y suspensión con montaje
-              profesional y seguro.
-            </p>
-            <a
-              className="button button--secondary"
-              href={serviceWhatsAppUrl("instalacion de accesorios")}
-              target="_blank"
-              rel="noopener"
-            >
-              <MessageCircle size={17} /> Cotizar instalación
-            </a>
-          </article>
-        </div>
+        <ServicesShowcase />
       </section>
 
       <section className="section">
