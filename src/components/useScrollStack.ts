@@ -1,33 +1,6 @@
 "use client";
 
-import { ElementType, useEffect, useRef, useState } from "react";
-import { Film, Store, Truck, Wrench } from "lucide-react";
-import { Spotlight } from "./Spotlight";
-
-type Benefit = { icon: ElementType; title: string; text: string };
-
-const ITEMS: Benefit[] = [
-  {
-    icon: Store,
-    title: "Disponible de inmediato",
-    text: "Visite nuestro local en Liberia y llévese el producto el mismo día."
-  },
-  {
-    icon: Truck,
-    title: "Lo conseguimos por usted",
-    text: "Si no está disponible, lo pedimos a nuestros distribuidores de confianza."
-  },
-  {
-    icon: Wrench,
-    title: "Instalación profesional",
-    text: "Instalamos todo lo que vendemos, con acabado limpio y garantizado."
-  },
-  {
-    icon: Film,
-    title: "Polarizado de calidad",
-    text: "Protección solar, privacidad y un acabado uniforme para su vehículo."
-  }
-];
+import { RefObject, useEffect, useState } from "react";
 
 // Posición absoluta en el documento, independiente de transforms (offsetTop
 // no se ve afectado por scale/translate, a diferencia de getBoundingClientRect).
@@ -41,21 +14,23 @@ function docTop(el: HTMLElement | null) {
   return top;
 }
 
-// Beneficios: en escritorio una cuadrícula con spotlight; en celular las
-// tarjetas se APILAN al hacer scroll (Scroll Stack de React Bits adaptado
-// a nuestro Lenis global, sin crear un segundo Lenis).
-export function BenefitsShowcase() {
+// Devuelve si el modo apilado está activo (solo móvil y sin reduced-motion).
+export function useIsStackMode() {
   const [stack, setStack] = useState(false);
-  const rootRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
     const mobile = window.matchMedia("(max-width: 640px)").matches;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     setStack(mobile && !reduce);
   }, []);
+  return stack;
+}
 
+// Aplica el efecto Scroll Stack (React Bits adaptado) a las
+// `.scroll-stack-card` dentro de `rootRef`, usando el Lenis global (loop
+// rAF propio que lee window.scrollY, sin crear un segundo Lenis).
+export function useScrollStack(rootRef: RefObject<HTMLElement | null>, active: boolean) {
   useEffect(() => {
-    if (!stack) return;
+    if (!active) return;
     const root = rootRef.current;
     if (!root) return;
 
@@ -103,32 +78,5 @@ export function BenefitsShowcase() {
 
     raf = requestAnimationFrame(update);
     return () => cancelAnimationFrame(raf);
-  }, [stack]);
-
-  if (stack) {
-    return (
-      <div className="benefit-stack" ref={rootRef}>
-        {ITEMS.map((item) => (
-          <div className="scroll-stack-card" key={item.title}>
-            <item.icon />
-            <strong>{item.title}</strong>
-            <span>{item.text}</span>
-          </div>
-        ))}
-        <div className="scroll-stack-end" aria-hidden="true" />
-      </div>
-    );
-  }
-
-  return (
-    <div className="benefits">
-      {ITEMS.map((item) => (
-        <Spotlight color="rgba(230, 33, 53, 0.14)" key={item.title}>
-          <item.icon />
-          <strong>{item.title}</strong>
-          <span>{item.text}</span>
-        </Spotlight>
-      ))}
-    </div>
-  );
+  }, [rootRef, active]);
 }

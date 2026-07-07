@@ -157,11 +157,12 @@ Móvil (iPhone-first):
   el título del hero y re-anima al cambiar de slide. Texto accesible
   (`aria-label`), respeta reduced-motion.
 - Efecto **Scroll Stack** (tarjetas que se apilan al hacer scroll):
-  `src/components/BenefitsShowcase.tsx` — adaptación de React Bits SOLO en
-  móvil para los beneficios; en escritorio queda la cuadrícula con
-  spotlight. Usa el Lenis GLOBAL (un loop `requestAnimationFrame` propio
-  que lee `window.scrollY`); NO crea un segundo Lenis. Se apaga con
-  reduced-motion.
+  hook `src/components/useScrollStack.ts` — adaptación de React Bits SOLO
+  en móvil. Se usa en **Servicios** (`ServicesShowcase`); en escritorio
+  queda la cuadrícula con glare. Usa el Lenis GLOBAL (un loop
+  `requestAnimationFrame` propio que lee `window.scrollY`); NO crea un
+  segundo Lenis. Se apaga con reduced-motion. Reutilizable vía
+  `useIsStackMode` + `useScrollStack` con `.scroll-stack` + `.scroll-stack-card`.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
