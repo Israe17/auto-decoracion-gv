@@ -180,6 +180,15 @@ export default function AdminPage() {
     setMessage("No se pudo guardar el cambio. Revise la conexion e intente de nuevo.");
   }
 
+  function confirmImportSeed() {
+    setConfirmState({
+      title: "Sincronizar catalogo de ejemplo",
+      body: "Se agregaran los productos, categorias y modelos de ejemplo nuevos. Los elementos de ejemplo ya existentes volveran a su version original; los que usted creo aparte no se tocan.",
+      actionLabel: "Sincronizar",
+      onConfirm: handleImportSeed
+    });
+  }
+
   async function handleImportSeed() {
     setImporting(true);
     try {
@@ -378,6 +387,16 @@ export default function AdminPage() {
         <div className="admin-heading__meta">
           <span>Modo actual</span>
           <strong>{firebaseEnabled ? "Firebase" : "Local demo"}</strong>
+          {firebaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
+            <button
+              className="button button--secondary"
+              type="button"
+              disabled={importing}
+              onClick={confirmImportSeed}
+            >
+              {importing ? "Importando..." : "Sincronizar catalogo de ejemplo"}
+            </button>
+          )}
         </div>
       </div>
 

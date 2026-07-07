@@ -5216,3 +5216,10 @@ textarea {
 .product-gallery__main:hover img {
   transform: none;
 }
+
+.admin-heading__meta .button {
+  font-size: 14px;
+  justify-content: center;
+  margin-top: 10px;
+  padding: 9px 14px;
+}
