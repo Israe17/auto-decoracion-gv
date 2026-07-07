@@ -5318,75 +5318,6 @@ textarea {
   will-change: transform, filter, opacity;
 }
 
-/* ===== Border Glow (anillo de luz que sigue el cursor en el borde) =====
-   Anillo rojo de la marca; aparece segun cercania al borde y direccion
-   del cursor. Va en un contenedor aparte para no tapar la foto. */
-.border-glow {
-  --edge-proximity: 0;
-  --cursor-angle: 0deg;
-  --edge-sensitivity: 42;
-  --glow: hsl(353 88% 60% / 0.95);
-  --glow-40: hsl(353 88% 60% / 0.4);
-  --glow-30: hsl(353 88% 60% / 0.3);
-  --glow-20: hsl(353 88% 60% / 0.2);
-  --glow-15: hsl(353 88% 60% / 0.15);
-  border-radius: var(--bg-radius, 22px);
-  position: relative;
-}
-
-.border-glow__ring {
-  border-radius: inherit;
-  inset: 0;
-  mix-blend-mode: plus-lighter;
-  opacity: calc(
-    (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity))
-  );
-  pointer-events: none;
-  position: absolute;
-  transition: opacity 300ms ease-out;
-  z-index: 3;
-  -webkit-mask-image: conic-gradient(
-    from var(--cursor-angle) at center,
-    #000 2.5%,
-    transparent 12%,
-    transparent 88%,
-    #000 97.5%
-  );
-  mask-image: conic-gradient(
-    from var(--cursor-angle) at center,
-    #000 2.5%,
-    transparent 12%,
-    transparent 88%,
-    #000 97.5%
-  );
-}
-
-.border-glow__ring::before {
-  border-radius: inherit;
-  box-shadow:
-    inset 0 0 0 1.5px var(--glow),
-    inset 0 0 8px 0 var(--glow-40),
-    inset 0 0 20px 0 var(--glow-20),
-    0 0 8px 0 var(--glow-30),
-    0 0 22px 2px var(--glow-15);
-  content: "";
-  inset: 0;
-  position: absolute;
-}
-
-/* La tarjeta con glow no se levanta (para que el anillo quede alineado);
-   el zoom de la foto sigue como feedback. */
-.border-glow .category-card,
-.border-glow .category-card:hover {
-  transform: none;
-}
-
-@media (hover: none), (prefers-reduced-motion: reduce) {
-  .border-glow__ring {
-    display: none;
-  }
-}
-
 /* ===== Lenis (scroll suave global) ===== */
 html.lenis,
 html.lenis body {
@@ -5407,4 +5338,53 @@ html.lenis body {
 
 .lenis.lenis-smooth iframe {
   pointer-events: none;
+}
+
+/* ===== Mejoras de experiencia movil ===== */
+@media (max-width: 640px) {
+  /* 1. Topbar: mostrar solo el mensaje corto y centrado, sin cortarse */
+  .topbar span {
+    display: none;
+  }
+
+  .topbar strong {
+    display: block;
+  }
+
+  .topbar {
+    justify-content: center;
+    padding: 0 14px;
+    text-align: center;
+  }
+
+  /* 2. Titulos de pagina mas pequenos: el contenido se ve antes */
+  .hero h1,
+  .page-hero h1 {
+    font-size: clamp(26px, 7.6vw, 33px);
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+
+  /* 3. Home mas corto: heroes y secciones mas compactos */
+  .page-hero {
+    margin-top: 12px;
+    padding: 38px 22px;
+  }
+
+  .page-hero p {
+    font-size: 15.5px;
+    margin-bottom: 20px;
+  }
+
+  .section {
+    padding: 40px 18px;
+  }
+
+  /* 4. Boton flotante de WhatsApp mas compacto para no tapar botones */
+  .wa-float {
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    height: 52px;
+    right: calc(14px + env(safe-area-inset-right));
+    width: 52px;
+  }
 }

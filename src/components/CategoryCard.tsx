@@ -1,9 +1,6 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types";
-import { BorderGlow } from "./BorderGlow";
 
 export function CategoryCard({
   category,
@@ -19,18 +16,16 @@ export function CategoryCard({
     href || (category.parent ? `/catalogo?categoria=${category.slug}` : `/categoria/${category.slug}`);
 
   return (
-    <BorderGlow>
-      <Link className="category-card" href={target}>
-        <img src={category.image} alt={category.name} />
-        <span className="category-card__overlay" />
-        <div>
-          <h3>{category.name}</h3>
-          <p>{category.description}</p>
-          <span>
-            Ver ahora <ArrowRight size={17} />
-          </span>
-        </div>
-      </Link>
-    </BorderGlow>
+    <Link className="category-card" href={target}>
+      <img src={category.image} alt={category.name} />
+      <span className="category-card__overlay" />
+      <div>
+        <h3>{category.name}</h3>
+        <p>{category.description}</p>
+        <span>
+          Ver ahora <ArrowRight size={17} />
+        </span>
+      </div>
+    </Link>
   );
 }
