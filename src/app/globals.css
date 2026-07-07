@@ -4396,12 +4396,16 @@ textarea {
   align-items: center;
   border-bottom: 1px solid var(--line);
   display: flex;
-  font-size: clamp(19px, 5vw, 22px);
-  font-weight: var(--font-bold);
+  font-size: 17px;
+  font-weight: 700;
   gap: 14px;
   letter-spacing: 0;
-  min-height: 62px;
+  min-height: 56px;
   padding: 10px 0;
+}
+
+.menu-overlay__links a small {
+  font-size: 12px;
 }
 
 /* Contenido del menu centrado (en pantallas anchas no queda pegado a
