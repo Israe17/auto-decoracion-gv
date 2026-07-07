@@ -48,8 +48,10 @@ export function useScrollStack(rootRef: RefObject<HTMLElement | null>, active: b
     function update() {
       const scrollTop = window.scrollY;
       const vh = window.innerHeight;
-      const stackPx = 0.16 * vh;
-      const scaleEndPx = 0.1 * vh;
+      // Punto donde se fijan las tarjetas: ~34% desde arriba para que el
+      // apilado quede centrado en la pantalla (no pegado arriba).
+      const stackPx = 0.34 * vh;
+      const scaleEndPx = 0.2 * vh;
       const endTop = endEl ? docTop(endEl) : 0;
       const pinEnd = endTop - vh / 2;
 
