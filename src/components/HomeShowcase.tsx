@@ -134,6 +134,22 @@ export function HomeShowcase({
 
   return (
     <section className="home-showcase" aria-label="Destacados">
+      {/* Movil: chips deslizables, un toque directo a la categoria */}
+      <nav className="category-chips" aria-label="Categorías">
+        {mainCategories.map((category) => (
+          <Link
+            className="category-chips__chip"
+            key={category.id}
+            href={`/categoria/${category.slug}`}
+          >
+            {category.name}
+          </Link>
+        ))}
+        <Link className="category-chips__chip category-chips__chip--all" href="/catalogo#categorias">
+          Ver todas <ArrowRight size={15} />
+        </Link>
+      </nav>
+
       <aside className="category-accordion">
         <div className="category-accordion__title">
           <PackageSearch size={20} />

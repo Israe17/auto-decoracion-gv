@@ -5418,6 +5418,61 @@ html.lenis body {
   text-align: center;
 }
 
+/* ===== Chips de categorias (solo movil) =====
+   Fila deslizable de pildoras: un toque directo a la categoria.
+   Reemplaza el acordeon en pantallas pequenas. */
+.category-chips {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .category-chips {
+    display: flex;
+    gap: 9px;
+    margin: 0 -18px;
+    overflow-x: auto;
+    padding: 4px 18px 10px;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  .category-chips__chip {
+    align-items: center;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    color: var(--ink);
+    display: inline-flex;
+    flex: 0 0 auto;
+    font-size: 14.5px;
+    font-weight: 700;
+    gap: 6px;
+    min-height: 44px;
+    padding: 10px 16px;
+    text-decoration: none;
+  }
+
+  .category-chips__chip:active {
+    transform: scale(0.97);
+  }
+
+  .category-chips__chip--all {
+    background: rgba(230, 33, 53, 0.08);
+    border-color: rgba(230, 33, 53, 0.25);
+    color: var(--red);
+  }
+
+  /* El acordeon se reemplaza por los chips en movil */
+  .category-accordion {
+    display: none;
+  }
+}
+
 /* ===== Mejoras de experiencia movil ===== */
 @media (max-width: 640px) {
   /* 1. Topbar: mostrar solo el mensaje corto y centrado, sin cortarse */
