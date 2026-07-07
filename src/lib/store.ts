@@ -6,19 +6,40 @@ import {
   setDoc,
   writeBatch
 } from "firebase/firestore";
-import { Category, Product, VehicleModel } from "@/types";
+import { Category, Product, Promo, VehicleModel } from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
 import { firebaseEnabled, getFirebaseServices } from "./firebase";
 
 const PRODUCTS = "products";
 const CATEGORIES = "categories";
 const VEHICLES = "vehicles";
+const PROMOS = "promos";
 
 const localKeys = {
   products: "gv-admin-products",
   categories: "gv-admin-categories",
-  vehicles: "gv-admin-vehicles"
+  vehicles: "gv-admin-vehicles",
+  promos: "gv-admin-promos"
 };
+
+export const seedPromos: Promo[] = [
+  {
+    id: "promo-alfombras-hilux",
+    title: "Alfombras 5D para Toyota Hilux Revo",
+    image: "/products/alfombras-5d-hilux-revo.webp",
+    link: "/productos/alfombras-5d-hilux-revo",
+    order: 1,
+    active: true
+  },
+  {
+    id: "promo-alfombras-dmax",
+    title: "Alfombras 5D para Isuzu D-Max",
+    image: "/products/alfombras-5d-isuzu-dmax.webp",
+    link: "/productos/alfombras-5d-isuzu-dmax",
+    order: 2,
+    active: true
+  }
+];
 
 export const seedVehicles: VehicleModel[] = [
   { id: "toyota-hilux", make: "Toyota", model: "Hilux", fromYear: 2016, toYear: 2026 },
@@ -62,36 +83,47 @@ function sortVehicles(vehicles: VehicleModel[]) {
   );
 }
 
+function sortPromos(promos: Promo[]) {
+  return [...promos].sort(
+    (a, b) => (a.order ?? 99) - (b.order ?? 99) || a.title.localeCompare(b.title)
+  );
+}
+
 export async function fetchPublicCatalog(): Promise<{
   products: Product[];
   categories: Category[];
   vehicles: VehicleModel[];
+  promos: Promo[];
 }> {
   if (!firebaseEnabled) {
     return {
       products: seedProducts,
       categories: seedCategories,
-      vehicles: sortVehicles(seedVehicles)
+      vehicles: sortVehicles(seedVehicles),
+      promos: sortPromos(seedPromos)
     };
   }
 
   try {
-    const [products, categories, vehicles] = await Promise.all([
+    const [products, categories, vehicles, promos] = await Promise.all([
       listCollection<Product>(PRODUCTS),
       listCollection<Category>(CATEGORIES),
-      listCollection<VehicleModel>(VEHICLES)
+      listCollection<VehicleModel>(VEHICLES),
+      listCollection<Promo>(PROMOS)
     ]);
     return {
       products: sortProducts(products),
       categories,
-      vehicles: sortVehicles(vehicles)
+      vehicles: sortVehicles(vehicles),
+      promos: sortPromos(promos)
     };
   } catch (error) {
     console.error("No se pudo leer el catalogo desde Firestore.", error);
     return {
       products: seedProducts,
       categories: seedCategories,
-      vehicles: sortVehicles(seedVehicles)
+      vehicles: sortVehicles(seedVehicles),
+      promos: sortPromos(seedPromos)
     };
   }
 }
@@ -127,22 +159,30 @@ export async function fetchAdminData(): Promise<{
   products: Product[];
   categories: Category[];
   vehicles: VehicleModel[];
+  promos: Promo[];
 }> {
   if (!firebaseEnabled) {
     return {
       products: readLocal(localKeys.products, seedProducts),
       categories: readLocal(localKeys.categories, seedCategories),
-      vehicles: readLocal(localKeys.vehicles, seedVehicles)
+      vehicles: readLocal(localKeys.vehicles, seedVehicles),
+      promos: sortPromos(readLocal(localKeys.promos, seedPromos))
     };
   }
 
-  const [products, categories, vehicles] = await Promise.all([
+  const [products, categories, vehicles, promos] = await Promise.all([
     listCollection<Product>(PRODUCTS),
     listCollection<Category>(CATEGORIES),
-    listCollection<VehicleModel>(VEHICLES)
+    listCollection<VehicleModel>(VEHICLES),
+    listCollection<Promo>(PROMOS)
   ]);
 
-  return { products: sortProducts(products), categories, vehicles };
+  return {
+    products: sortProducts(products),
+    categories,
+    vehicles,
+    promos: sortPromos(promos)
+  };
 }
 
 export async function upsertProduct(product: Product) {
@@ -193,6 +233,22 @@ export async function removeVehicle(id: string) {
   await deleteDoc(doc(requireDb(), VEHICLES, id));
 }
 
+export async function upsertPromo(promo: Promo) {
+  if (!firebaseEnabled) {
+    localUpsert(localKeys.promos, seedPromos, promo);
+    return;
+  }
+  await setDoc(doc(requireDb(), PROMOS, promo.id), clean(promo));
+}
+
+export async function removePromo(id: string) {
+  if (!firebaseEnabled) {
+    localRemove(localKeys.promos, seedPromos, id);
+    return;
+  }
+  await deleteDoc(doc(requireDb(), PROMOS, id));
+}
+
 export async function importSeedCatalog() {
   const db = requireDb();
   const batch = writeBatch(db);
@@ -202,6 +258,7 @@ export async function importSeedCatalog() {
     batch.set(doc(db, CATEGORIES, category.id), clean(category))
   );
   seedVehicles.forEach((vehicle) => batch.set(doc(db, VEHICLES, vehicle.id), clean(vehicle)));
+  seedPromos.forEach((promo) => batch.set(doc(db, PROMOS, promo.id), clean(promo)));
 
   await batch.commit();
 }

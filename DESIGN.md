@@ -95,6 +95,11 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
+- Carrusel del inicio: muestra las promociones de admin > Promociones
+  (banner COMPLETO con `contain` sobre fondo oscuro, lámina clicable,
+  sin texto encimado — el banner ya es el mensaje). Sin promociones
+  activas cae a las líneas de catálogo (foto de la categoría + overlay
+  de texto).
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
   `rgba(15,23,42,.48)` a viewport completo.
 

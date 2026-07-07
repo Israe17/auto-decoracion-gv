@@ -45,6 +45,16 @@ export type VehicleModel = {
   toYear?: number;
 };
 
+// Banner promocional del carrusel del home, administrado desde el admin.
+export type Promo = {
+  id: string;
+  title: string;
+  image: string;
+  link?: string;
+  order?: number;
+  active?: boolean;
+};
+
 export type QuoteItem = {
   id: string;
   name: string;

@@ -5223,3 +5223,31 @@ textarea {
   margin-top: 10px;
   padding: 9px 14px;
 }
+
+/* ===== Carrusel de promociones (admin > Promociones) =====
+   El banner se muestra COMPLETO (contain) sobre fondo oscuro y toda la
+   lamina es clicable; flechas y puntos quedan por encima del enlace. */
+.home-carousel--promo {
+  background: radial-gradient(circle at 50% 30%, #1c2028 0%, #0d0f13 72%);
+}
+
+.home-promo__media {
+  inset: 0;
+  position: absolute;
+}
+
+.home-promo__media img {
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
+}
+
+.home-promo__link {
+  inset: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.home-carousel--promo .home-carousel__dots {
+  z-index: 2;
+}

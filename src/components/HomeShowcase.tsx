@@ -11,42 +11,26 @@ import {
   PackageSearch,
   Sparkles
 } from "lucide-react";
-import { formatCRC } from "@/lib/catalog";
-import { productWhatsAppUrl } from "@/lib/whatsapp";
-import { Category, Product } from "@/types";
+import { generalWhatsAppUrl } from "@/lib/whatsapp";
+import { Category, Product, Promo } from "@/types";
 
+// Carrusel del hero. Con promociones activas (admin > Promociones)
+// muestra los banners completos y clicables; sin promociones cae a las
+// lineas de catalogo (categorias), cuyo contenido tambien se edita en
+// el admin. Hasta 5 laminas en ambos modos.
 export function HomeShowcase({
   categories,
-  products
+  products,
+  promos = []
 }: {
   categories: Category[];
   products: Product[];
+  promos?: Promo[];
 }) {
-  const slides = products.filter((product) => product.featured).slice(0, 4);
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [openCategory, setOpenCategory] = useState(
-    () =>
-      categories.find((category) =>
-        products.some((product) => product.categorySlug === category.slug)
-      )?.slug ||
-      categories[0]?.slug ||
-      ""
+  const promoSlides = useMemo(
+    () => promos.filter((promo) => promo.active !== false && promo.image).slice(0, 5),
+    [promos]
   );
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
-  useEffect(() => {
-    if (slides.length < 2) return;
-
-    const timer = window.setInterval(() => {
-      setActiveSlide((current) => (current + 1) % slides.length);
-    }, 5500);
-
-    return () => window.clearInterval(timer);
-  }, [slides.length]);
 
   const categoryCounts = useMemo(
     () =>
@@ -59,17 +43,51 @@ export function HomeShowcase({
     [categories, products]
   );
 
-  const activeProduct = slides[activeSlide] || products[0];
+  const categorySlides = useMemo(() => {
+    const withImage = categories.filter((category) => category.image);
+    const withProducts = withImage.filter((category) => categoryCounts[category.slug]);
+    const rest = withImage.filter((category) => !categoryCounts[category.slug]);
+    return [...withProducts, ...rest].slice(0, 5);
+  }, [categories, categoryCounts]);
+
+  const promoMode = promoSlides.length > 0;
+  const slideCount = promoMode ? promoSlides.length : categorySlides.length;
+
+  const [activeSlide, setActiveSlide] = useState(0);
+  const [openCategory, setOpenCategory] = useState(
+    () =>
+      categories.find((category) =>
+        products.some((product) => product.categorySlug === category.slug)
+      )?.slug ||
+      categories[0]?.slug ||
+      ""
+  );
+
+  useEffect(() => {
+    if (slideCount < 2) return;
+
+    const timer = window.setInterval(() => {
+      setActiveSlide((current) => (current + 1) % slideCount);
+    }, 5500);
+
+    return () => window.clearInterval(timer);
+  }, [slideCount]);
+
+  const activePromo = promoSlides[activeSlide % (promoSlides.length || 1)];
+  const activeCategory = categorySlides[activeSlide % (categorySlides.length || 1)];
 
   function moveSlide(direction: number) {
-    if (!slides.length) return;
-    setActiveSlide((current) => (current + direction + slides.length) % slides.length);
+    if (!slideCount) return;
+    setActiveSlide((current) => (current + direction + slideCount) % slideCount);
   }
 
-  if (!activeProduct) return null;
+  if (promoMode ? !activePromo : !activeCategory) return null;
+
+  const activeCount = activeCategory ? categoryCounts[activeCategory.slug] || 0 : 0;
+  const promoLinkExternal = Boolean(activePromo?.link && /^https?:/i.test(activePromo.link));
 
   return (
-    <section className="home-showcase" aria-label="Catalogo destacado">
+    <section className="home-showcase" aria-label="Lineas de catalogo">
       <aside className="category-accordion">
         <div className="category-accordion__title">
           <PackageSearch size={20} />
@@ -114,16 +132,75 @@ export function HomeShowcase({
         </Link>
       </aside>
 
-      <div className="home-carousel">
-        <div className="home-carousel__media">
-          <img src={activeProduct.images[0]} alt={activeProduct.name} />
-        </div>
-        <div className="home-carousel__shade" />
+      <div className={promoMode ? "home-carousel home-carousel--promo" : "home-carousel"}>
+        {promoMode && activePromo ? (
+          <>
+            <div className="home-promo__media">
+              <img src={activePromo.image} alt={activePromo.title} />
+            </div>
+            {activePromo.link &&
+              (promoLinkExternal ? (
+                <a
+                  className="home-promo__link"
+                  href={activePromo.link}
+                  target="_blank"
+                  rel="noopener"
+                  aria-label={activePromo.title}
+                />
+              ) : (
+                <Link
+                  className="home-promo__link"
+                  href={activePromo.link}
+                  aria-label={activePromo.title}
+                />
+              ))}
+          </>
+        ) : (
+          activeCategory && (
+            <>
+              <div className="home-carousel__media">
+                <img src={activeCategory.image} alt={activeCategory.name} />
+              </div>
+              <div className="home-carousel__shade" />
+
+              <div className="home-carousel__content">
+                <span className="home-carousel__tag">
+                  <Sparkles size={15} />
+                  Lineas G&V
+                </span>
+                <span className="home-carousel__category">
+                  {activeCount
+                    ? `${activeCount} producto(s) en linea`
+                    : "Disponible bajo pedido"}
+                </span>
+                <h1>{activeCategory.name}</h1>
+                <p>{activeCategory.description}</p>
+
+                <div className="home-carousel__actions">
+                  <Link
+                    className="button button--primary"
+                    href={`/catalogo?categoria=${activeCategory.slug}`}
+                  >
+                    Ver categoria <ArrowRight size={18} />
+                  </Link>
+                  <a
+                    className="button button--ghost"
+                    href={generalWhatsAppUrl()}
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    <MessageCircle size={18} /> Cotizar por WhatsApp
+                  </a>
+                </div>
+              </div>
+            </>
+          )
+        )}
 
         <button
           className="home-carousel__arrow home-carousel__arrow--left"
           type="button"
-          aria-label="Producto anterior"
+          aria-label="Anterior"
           onClick={() => moveSlide(-1)}
         >
           <ChevronLeft size={24} />
@@ -131,55 +208,21 @@ export function HomeShowcase({
         <button
           className="home-carousel__arrow home-carousel__arrow--right"
           type="button"
-          aria-label="Producto siguiente"
+          aria-label="Siguiente"
           onClick={() => moveSlide(1)}
         >
           <ChevronRight size={24} />
         </button>
 
-        <div className="home-carousel__content">
-          <span className="home-carousel__tag">
-            <Sparkles size={15} />
-            Destacado G&V
-          </span>
-          <span className="home-carousel__category">{activeProduct.categoryName}</span>
-          <h1>{activeProduct.name}</h1>
-          <p>{activeProduct.description}</p>
-
-          <div className="home-carousel__meta">
-            <div className="home-carousel__price">
-              {activeProduct.oldPrice && <del>{formatCRC(activeProduct.oldPrice)}</del>}
-              <strong>
-                {activeProduct.saleMode === "price_quote"
-                  ? formatCRC(activeProduct.price)
-                  : "Consultar precio"}
-              </strong>
-            </div>
-            <span>
-              {activeProduct.status === "available" ? "Disponible" : "Bajo pedido"}
-            </span>
-          </div>
-
-          <div className="home-carousel__actions">
-            <a
-              className="button button--primary"
-              href={productWhatsAppUrl(activeProduct, origin)}
-              target="_blank"
-            >
-              <MessageCircle size={18} /> Cotizar
-            </a>
-            <Link className="button button--ghost" href={`/productos/${activeProduct.slug}`}>
-              Ver detalle <ArrowRight size={18} />
-            </Link>
-          </div>
-        </div>
-
-        <div className="home-carousel__dots" aria-label="Seleccionar destacado">
-          {slides.map((product, index) => (
+        <div className="home-carousel__dots" aria-label="Seleccionar lamina">
+          {(promoMode
+            ? promoSlides.map((promo) => ({ id: promo.id, label: promo.title }))
+            : categorySlides.map((category) => ({ id: category.id, label: category.name }))
+          ).map((item, index) => (
             <button
-              key={product.id}
+              key={item.id}
               type="button"
-              aria-label={`Ver ${product.name}`}
+              aria-label={`Ver ${item.label}`}
               aria-current={index === activeSlide}
               onClick={() => setActiveSlide(index)}
             />
