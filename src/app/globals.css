@@ -5318,6 +5318,75 @@ textarea {
   will-change: transform, filter, opacity;
 }
 
+/* ===== Border Glow (anillo de luz que sigue el cursor en el borde) =====
+   Anillo rojo de la marca; aparece segun cercania al borde y direccion
+   del cursor. Va en un contenedor aparte para no tapar la foto. */
+.border-glow {
+  --edge-proximity: 0;
+  --cursor-angle: 0deg;
+  --edge-sensitivity: 42;
+  --glow: hsl(353 88% 60% / 0.95);
+  --glow-40: hsl(353 88% 60% / 0.4);
+  --glow-30: hsl(353 88% 60% / 0.3);
+  --glow-20: hsl(353 88% 60% / 0.2);
+  --glow-15: hsl(353 88% 60% / 0.15);
+  border-radius: var(--bg-radius, 22px);
+  position: relative;
+}
+
+.border-glow__ring {
+  border-radius: inherit;
+  inset: 0;
+  mix-blend-mode: plus-lighter;
+  opacity: calc(
+    (var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity))
+  );
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 300ms ease-out;
+  z-index: 3;
+  -webkit-mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    #000 2.5%,
+    transparent 12%,
+    transparent 88%,
+    #000 97.5%
+  );
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    #000 2.5%,
+    transparent 12%,
+    transparent 88%,
+    #000 97.5%
+  );
+}
+
+.border-glow__ring::before {
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1.5px var(--glow),
+    inset 0 0 8px 0 var(--glow-40),
+    inset 0 0 20px 0 var(--glow-20),
+    0 0 8px 0 var(--glow-30),
+    0 0 22px 2px var(--glow-15);
+  content: "";
+  inset: 0;
+  position: absolute;
+}
+
+/* La tarjeta con glow no se levanta (para que el anillo quede alineado);
+   el zoom de la foto sigue como feedback. */
+.border-glow .category-card,
+.border-glow .category-card:hover {
+  transform: none;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .border-glow__ring {
+    display: none;
+  }
+}
+
 /* ===== Lenis (scroll suave global) ===== */
 html.lenis,
 html.lenis body {
