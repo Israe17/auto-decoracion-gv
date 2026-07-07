@@ -3,7 +3,6 @@
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 // Selectores que se revelan como bloque al entrar al viewport.
 const revealSelectors = [
@@ -31,26 +30,40 @@ const staggerGroups: Array<[parent: string, children: string]> = [
   [".faq", "details"]
 ];
 
+// Reveals por IntersectionObserver + GSAP: el navegador detecta la
+// entrada al viewport sin posiciones precalculadas, asi los cambios de
+// layout (imagenes tardias, datos) no dejan secciones ocultas — el bug
+// clasico de los triggers con medidas viejas.
 export function ScrollFx() {
   const pathname = usePathname();
 
   useEffect(() => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    const observers: IntersectionObserver[] = [];
 
     const ctx = gsap.context(() => {
+      // Observa `el` y ejecuta `play` una sola vez cuando entra al viewport
+      // (equivalente a start "top 88%": margen inferior de -12%).
+      function onEnter(el: HTMLElement, play: () => void) {
+        const io = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              play();
+              io.unobserve(entry.target);
+            });
+          },
+          { rootMargin: "0px 0px -12% 0px" }
+        );
+        io.observe(el);
+        observers.push(io);
+      }
+
       gsap.utils.toArray<HTMLElement>(revealSelectors).forEach((el) => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, y: 28 },
-          {
-            autoAlpha: 1,
-            y: 0,
-            duration: 0.7,
-            ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 88%", once: true }
-          }
+        gsap.set(el, { autoAlpha: 0, y: 28 });
+        onEnter(el, () =>
+          gsap.to(el, { autoAlpha: 1, y: 0, duration: 0.7, ease: "power2.out" })
         );
       });
 
@@ -58,44 +71,36 @@ export function ScrollFx() {
         document.querySelectorAll<HTMLElement>(parentSelector).forEach((parent) => {
           const items = parent.querySelectorAll<HTMLElement>(childSelector);
           if (!items.length) return;
-          gsap.fromTo(
-            items,
-            { autoAlpha: 0, y: 24 },
-            {
+          gsap.set(items, { autoAlpha: 0, y: 24 });
+          onEnter(parent, () =>
+            gsap.to(items, {
               autoAlpha: 1,
               y: 0,
               duration: 0.6,
               ease: "power2.out",
-              stagger: 0.08,
-              scrollTrigger: { trigger: parent, start: "top 88%", once: true }
-            }
+              stagger: 0.08
+            })
           );
         });
       });
 
       // El precio heroe entra con un pequeno pop.
       document.querySelectorAll<HTMLElement>(".product-price-hero").forEach((el) => {
-        gsap.fromTo(
-          el,
-          { autoAlpha: 0, scale: 0.95 },
-          {
+        gsap.set(el, { autoAlpha: 0, scale: 0.95 });
+        onEnter(el, () =>
+          gsap.to(el, {
             autoAlpha: 1,
             scale: 1,
             duration: 0.55,
             delay: 0.15,
-            ease: "power2.out",
-            scrollTrigger: { trigger: el, start: "top 92%", once: true }
-          }
+            ease: "power2.out"
+          })
         );
       });
     });
 
-    // Las imagenes que cargan tarde mueven las posiciones calculadas.
-    const refresh = () => ScrollTrigger.refresh();
-    window.addEventListener("load", refresh);
-
     return () => {
-      window.removeEventListener("load", refresh);
+      observers.forEach((io) => io.disconnect());
       ctx.revert();
     };
   }, [pathname]);
