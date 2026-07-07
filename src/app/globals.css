@@ -5311,3 +5311,13 @@ textarea {
     display: none;
   }
 }
+
+/* ===== SplitText (titulo animado letra por letra) ===== */
+.split-word {
+  display: inline-block;
+}
+
+.split-char {
+  display: inline-block;
+  will-change: transform, opacity;
+}
