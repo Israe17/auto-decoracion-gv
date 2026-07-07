@@ -12,6 +12,7 @@ import {
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
+import { Spotlight } from "@/components/Spotlight";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
 import { topCategories } from "@/lib/catalog";
@@ -31,26 +32,26 @@ export default async function Home() {
 
       <section className="section section--tight">
         <div className="benefits">
-          <div>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
             <Store />
             <strong>Disponible de inmediato</strong>
             <span>Visite nuestro local en Liberia y llévese el producto el mismo día.</span>
-          </div>
-          <div>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
             <Truck />
             <strong>Lo conseguimos por usted</strong>
             <span>Si no está disponible, lo pedimos a nuestros distribuidores de confianza.</span>
-          </div>
-          <div>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
             <Wrench />
             <strong>Instalación profesional</strong>
             <span>Instalamos todo lo que vendemos, con acabado limpio y garantizado.</span>
-          </div>
-          <div>
+          </Spotlight>
+          <Spotlight color="rgba(230, 33, 53, 0.14)">
             <Film />
             <strong>Polarizado de calidad</strong>
             <span>Protección solar, privacidad y un acabado uniforme para su vehículo.</span>
-          </div>
+          </Spotlight>
         </div>
       </section>
 

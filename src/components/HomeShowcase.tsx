@@ -177,8 +177,17 @@ export function HomeShowcase({
         </Link>
       </aside>
 
-      <div className="home-carousel glare-host">
+      <div
+        className="home-carousel glare-host spotlight-host"
+        style={{ ["--spot-color" as string]: "rgba(255, 255, 255, 0.22)" }}
+        onMouseMove={(event) => {
+          const rect = event.currentTarget.getBoundingClientRect();
+          event.currentTarget.style.setProperty("--spot-x", `${event.clientX - rect.left}px`);
+          event.currentTarget.style.setProperty("--spot-y", `${event.clientY - rect.top}px`);
+        }}
+      >
         <span className="glare" aria-hidden="true" />
+        <span className="spotlight" aria-hidden="true" />
         <div className="home-carousel__media" key={active.id}>
           <img src={active.image} alt={active.title} />
         </div>
