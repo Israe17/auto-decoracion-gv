@@ -13,6 +13,7 @@ import {
 import { topCategories } from "@/lib/catalog";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 import { Category, Product, Promo } from "@/types";
+import { SplitText } from "./SplitText";
 
 type Slide = {
   id: string;
@@ -194,7 +195,7 @@ export function HomeShowcase({
 
         <div className="home-carousel__content">
           <span className="home-carousel__eyebrow">{active.eyebrow}</span>
-          <h1>{active.title}</h1>
+          <SplitText as="h1" text={active.title} key={active.id} />
           {active.description && <p>{active.description}</p>}
 
           <div className="home-carousel__actions">
