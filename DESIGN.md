@@ -141,6 +141,11 @@ Móvil (iPhone-first):
   Se usa en tarjetas de servicio, banda CTA y hero. Solo `:hover`, se
   apaga en touch (`@media (hover: none)`) y con reduced-motion. No es
   animación infinita; es un barrido único por hover.
+- Efecto **spotlight** (luz que sigue el cursor): componente
+  `src/components/Spotlight.tsx` (`.spotlight-host` + `<span class="spotlight">`).
+  Coordenadas por `onMouseMove`, color por prop (`--spot-color`). Blanco
+  sobre fondos oscuros/foto (hero); rojo tenue sobre tarjetas claras
+  (fila de beneficios). Se apaga en touch y reduced-motion.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice

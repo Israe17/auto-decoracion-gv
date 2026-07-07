@@ -5277,3 +5277,37 @@ textarea {
     display: none;
   }
 }
+
+/* ===== Spotlight (luz que sigue el cursor) =====
+   Contenedor con .spotlight-host + <span class="spotlight">. Las
+   coordenadas --spot-x/--spot-y las fija el componente Spotlight en
+   onMouseMove; --spot-color se pasa por prop. */
+.spotlight-host {
+  overflow: hidden;
+  position: relative;
+}
+
+.spotlight {
+  background: radial-gradient(
+    circle 240px at var(--spot-x, 50%) var(--spot-y, 50%),
+    var(--spot-color, rgba(255, 255, 255, 0.25)),
+    transparent 70%
+  );
+  border-radius: inherit;
+  inset: 0;
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+  transition: opacity 400ms ease;
+  z-index: 2;
+}
+
+.spotlight-host:hover .spotlight {
+  opacity: 1;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .spotlight {
+    display: none;
+  }
+}
