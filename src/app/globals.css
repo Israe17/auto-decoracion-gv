@@ -5340,29 +5340,71 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* ===== Scroll Stack (tarjetas que se apilan al hacer scroll, solo movil) =====
-   Las transforms las pone el hook useScrollStack. La tarjeta conserva su
-   estilo propio (p. ej. .service-card); aqui solo el apilado. */
-.scroll-stack {
-  padding-bottom: 8vh;
+/* ===== Sliding Cards (baraja deslizable, solo movil) =====
+   Se arrastra la tarjeta de arriba para pasar a la siguiente; las de
+   atras se ven con profundidad 3D. La tarjeta conserva su estilo propio
+   (.service-card). */
+.services-deck {
+  margin: 0 auto;
+  max-width: 380px;
+}
+
+.sliding-cards {
+  height: 330px;
   position: relative;
 }
 
-.scroll-stack .scroll-stack-card {
+.sliding-cards .service-card {
+  bottom: 0;
   box-shadow: var(--shadow-lg);
-  margin-bottom: 40px;
-  min-height: 220px;
-  transform-origin: top center;
+  left: 0;
+  margin: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  touch-action: pan-y;
+  transform-origin: center top;
+  user-select: none;
   will-change: transform;
 }
 
-.scroll-stack .scroll-stack-card:last-of-type {
-  margin-bottom: 0;
+.sliding-cards .service-card.is-front {
+  cursor: grab;
 }
 
-.scroll-stack-end {
-  height: 1px;
-  width: 100%;
+.sliding-cards .service-card.is-front:active {
+  cursor: grabbing;
+}
+
+.sliding-cards__dots {
+  align-items: center;
+  display: flex;
+  gap: 7px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.sliding-cards__dots button {
+  background: #c8d0da;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  height: 8px;
+  padding: 0;
+  transition: background 200ms ease, width 200ms ease;
+  width: 8px;
+}
+
+.sliding-cards__dots button.is-active {
+  background: var(--red);
+  width: 22px;
+}
+
+.sliding-cards__hint {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 10px 0 0;
+  text-align: center;
 }
 
 /* ===== Mejoras de experiencia movil ===== */

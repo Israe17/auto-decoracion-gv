@@ -156,13 +156,12 @@ Móvil (iPhone-first):
   adaptación de React Bits a GSAP (sin la dependencia `motion`). Se usa en
   el título del hero y re-anima al cambiar de slide. Texto accesible
   (`aria-label`), respeta reduced-motion.
-- Efecto **Scroll Stack** (tarjetas que se apilan al hacer scroll):
-  hook `src/components/useScrollStack.ts` — adaptación de React Bits SOLO
-  en móvil. Se usa en **Servicios** (`ServicesShowcase`); en escritorio
-  queda la cuadrícula con glare. Usa el Lenis GLOBAL (un loop
-  `requestAnimationFrame` propio que lee `window.scrollY`); NO crea un
-  segundo Lenis. Se apaga con reduced-motion. Reutilizable vía
-  `useIsStackMode` + `useScrollStack` con `.scroll-stack` + `.scroll-stack-card`.
+- Efecto **Sliding Cards** (baraja deslizable) en **Servicios** SOLO en
+  móvil (`ServicesShowcase`): se arrastra la tarjeta de arriba para pasar
+  a la siguiente, con profundidad 3D en las de atrás y puntos de posición;
+  en escritorio queda la cuadrícula con glare. Adaptación propia (sin
+  Tailwind) con pointer events; `touch-action: pan-y` para no bloquear el
+  scroll vertical.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
