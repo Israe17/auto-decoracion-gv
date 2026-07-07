@@ -6,6 +6,7 @@ import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder, VehicleQuery } from "@/components/VehicleFinder";
+import { categoryScope, childCategories, topCategories } from "@/lib/catalog";
 import { normalize } from "@/lib/text";
 import { Category, Product, VehicleModel } from "@/types";
 
@@ -103,7 +104,12 @@ export function CatalogExplorer({
         );
         if (!haystack.includes(term)) return false;
       }
-      if (filters.categoria && product.categorySlug !== filters.categoria) return false;
+      if (
+        filters.categoria &&
+        !categoryScope(categories, filters.categoria).includes(product.categorySlug)
+      ) {
+        return false;
+      }
       if (!vehicleMatches(product, filters)) return false;
       if (!filters.precioVisible && product.saleMode === "price_quote") return false;
       if (!filters.soloCotizar && product.saleMode === "quote_only") return false;
@@ -111,7 +117,7 @@ export function CatalogExplorer({
       if (!filters.bajoPedido && product.status === "on_request") return false;
       return true;
     });
-  }, [products, filters]);
+  }, [products, filters, categories]);
 
   const hasVehicleFilter = Boolean(filters.marca || filters.modelo || filters.ano);
   const hasAnyFilter =
@@ -150,11 +156,26 @@ export function CatalogExplorer({
             onChange={(event) => apply({ categoria: event.target.value })}
           >
             <option value="">Todas las categorías</option>
-            {categories.map((category) => (
-              <option key={category.id} value={category.slug}>
-                {category.name}
-              </option>
-            ))}
+            {topCategories(categories).map((category) => {
+              const children = childCategories(categories, category.slug);
+              if (!children.length) {
+                return (
+                  <option key={category.id} value={category.slug}>
+                    {category.name}
+                  </option>
+                );
+              }
+              return (
+                <optgroup key={category.id} label={category.name}>
+                  <option value={category.slug}>Toda la categoría</option>
+                  {children.map((child) => (
+                    <option key={child.id} value={child.slug}>
+                      {child.name}
+                    </option>
+                  ))}
+                </optgroup>
+              );
+            })}
           </select>
         </div>
 

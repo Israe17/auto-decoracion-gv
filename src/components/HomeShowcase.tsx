@@ -10,6 +10,7 @@ import {
   MessageCircle,
   PackageSearch
 } from "lucide-react";
+import { topCategories } from "@/lib/catalog";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 import { Category, Product, Promo } from "@/types";
 
@@ -79,7 +80,7 @@ export function HomeShowcase({
 
     if (promoSlides.length) return promoSlides;
 
-    const withImage = categories.filter((category) => category.image);
+    const withImage = topCategories(categories).filter((category) => category.image);
     const withProducts = withImage.filter((category) => categoryCounts[category.slug]);
     const rest = withImage.filter((category) => !categoryCounts[category.slug]);
     const categorySlides = [...withProducts, ...rest].slice(0, 5).map((category) => ({
@@ -90,7 +91,7 @@ export function HomeShowcase({
       title: category.name,
       description: category.description,
       image: category.image,
-      href: `/catalogo?categoria=${category.slug}`,
+      href: `/categoria/${category.slug}`,
       ctaLabel: "Ver categoría",
       external: false
     }));
@@ -98,13 +99,15 @@ export function HomeShowcase({
     return categorySlides.length ? categorySlides : [FALLBACK_SLIDE];
   }, [promos, categories, categoryCounts]);
 
+  const mainCategories = useMemo(() => topCategories(categories), [categories]);
+
   const [activeSlide, setActiveSlide] = useState(0);
   const [openCategory, setOpenCategory] = useState(
     () =>
-      categories.find((category) =>
+      mainCategories.find((category) =>
         products.some((product) => product.categorySlug === category.slug)
       )?.slug ||
-      categories[0]?.slug ||
+      mainCategories[0]?.slug ||
       ""
   );
 
@@ -137,7 +140,7 @@ export function HomeShowcase({
         </div>
 
         <div className="category-accordion__list">
-          {categories.slice(0, 9).map((category) => {
+          {mainCategories.slice(0, 9).map((category) => {
             const isOpen = openCategory === category.slug;
 
             return (
@@ -159,7 +162,7 @@ export function HomeShowcase({
                         ? `${categoryCounts[category.slug]} producto(s)`
                         : "Linea de catalogo"}
                     </span>
-                    <Link href={`/catalogo?categoria=${category.slug}`}>
+                    <Link href={`/categoria/${category.slug}`}>
                       Ver categoria <ArrowRight size={15} />
                     </Link>
                   </div>

@@ -132,7 +132,9 @@ export async function fetchPublicCatalog(): Promise<{
       products: sortProducts(products),
       categories,
       vehicles: sortVehicles(vehicles),
-      promos: sortPromos(promos)
+      // Sin promociones propias en Firestore, mostramos las de ejemplo
+      // para que el hero luzca completo sin depender de sincronizar.
+      promos: sortPromos(promos.length ? promos : seedPromos)
     };
   } catch (error) {
     console.error("No se pudo leer el catalogo desde Firestore.", error);

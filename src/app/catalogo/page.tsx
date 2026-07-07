@@ -1,12 +1,14 @@
 import { Suspense } from "react";
 import { CatalogExplorer } from "@/components/CatalogExplorer";
 import { CategoryCard } from "@/components/CategoryCard";
+import { topCategories } from "@/lib/catalog";
 import { fetchPublicCatalog } from "@/lib/store";
 
 export const revalidate = 60;
 
 export default async function CatalogPage() {
   const { products, categories, vehicles } = await fetchPublicCatalog();
+  const mainCategories = topCategories(categories);
 
   return (
     <>
@@ -38,7 +40,7 @@ export default async function CatalogPage() {
           </div>
         </div>
         <div className="category-grid">
-          {categories.map((category) => (
+          {mainCategories.map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
         </div>
