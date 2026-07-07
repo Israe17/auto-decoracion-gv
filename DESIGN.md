@@ -79,6 +79,10 @@ Móvil (iPhone-first):
 - Tap targets ≥44px; feedback táctil con `.button:active { scale(0.97) }`.
 - Navegación móvil: menú drawer (`MobileMenu`) por portal al body; el
   header móvil es UNA fila (logo + CTA + hamburguesa).
+- Categorías en móvil: **chips deslizables** (`.category-chips`, fila
+  horizontal de píldoras con scroll táctil, un toque directo a la
+  categoría + chip "Ver todas" en rojo tenue); el acordeón de categorías
+  es solo de escritorio.
 - En listados con filtros, el producto va primero y los filtros después.
 
 ## 5. Components
