@@ -4392,15 +4392,23 @@ textarea {
   align-items: center;
   border-bottom: 1px solid var(--line);
   display: flex;
-  font-size: clamp(20px, 5.4vw, 24px);
-  font-weight: 400;
+  font-size: clamp(19px, 5vw, 22px);
+  font-weight: 700;
   gap: 14px;
   letter-spacing: 0;
-  min-height: 64px;
+  min-height: 62px;
   padding: 10px 0;
 }
 
-/* El buscador ocupa todo lo ancho dentro del menu */
+/* Contenido del menu centrado (en pantallas anchas no queda pegado a
+   los bordes) y el buscador a todo lo ancho de esa columna */
+.menu-overlay > * {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 560px;
+  width: 100%;
+}
+
 .menu-overlay__search .search-box {
   width: 100%;
 }
