@@ -82,6 +82,46 @@ export const categories: Category[] = [
       "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=1200&q=80"
   },
   {
+    id: "ilum-barras-luz",
+    slug: "barras-de-luz",
+    name: "Barras de Luz",
+    description: "Barras LED de 1, 2 y 3 líneas para trabajo y aventura.",
+    image: "/hero/iluminacion.jpg",
+    parent: "iluminacion"
+  },
+  {
+    id: "ilum-led-driving",
+    slug: "led-driving-lights",
+    name: "LED Driving Lights",
+    description: "Focos redondos de largo alcance para ruta y off-road.",
+    image: "/hero/iluminacion.jpg",
+    parent: "iluminacion"
+  },
+  {
+    id: "ilum-led-pods",
+    slug: "led-pod-lights",
+    name: "LED Pod Lights",
+    description: "Focos cuadrados compactos para faldas, parrillas y batea.",
+    image: "/hero/iluminacion.jpg",
+    parent: "iluminacion"
+  },
+  {
+    id: "ilum-kit-leds",
+    slug: "kit-de-leds",
+    name: "Kit de LEDs",
+    description: "Bombillos LED de alta salida para luces originales.",
+    image: "/hero/iluminacion.jpg",
+    parent: "iluminacion"
+  },
+  {
+    id: "ilum-porta-halogenos",
+    slug: "porta-halogenos",
+    name: "Porta-halógenos",
+    description: "Soportes y bases para instalar halógenos y focos auxiliares.",
+    image: "/hero/iluminacion.jpg",
+    parent: "iluminacion"
+  },
+  {
     id: "levante",
     slug: "kits-levante-suspension",
     name: "Kits de Levante y Suspensión",
@@ -152,8 +192,8 @@ export const products: Product[] = [
     id: "p-001",
     slug: "barra-led-20-pulgadas",
     name: "Barra LED 20 pulgadas",
-    categorySlug: "iluminacion",
-    categoryName: "Iluminación",
+    categorySlug: "barras-de-luz",
+    categoryName: "Barras de Luz",
     saleMode: "price_quote",
     price: 65000,
     oldPrice: 78000,
@@ -317,4 +357,27 @@ export function formatCRC(price?: number) {
 
 export function findProductBySlug(slug: string) {
   return products.find((product) => product.slug === slug);
+}
+
+// --- Jerarquía de categorías (madre → subcategorías) ---
+
+// Categorías principales (sin madre).
+export function topCategories(categories: Category[]) {
+  return categories.filter((category) => !category.parent);
+}
+
+// Subcategorías directas de una categoría madre.
+export function childCategories(categories: Category[], parentSlug: string) {
+  return categories.filter((category) => category.parent === parentSlug);
+}
+
+// Slug de la categoría y, si es madre, los de sus subcategorías. Sirve
+// para que al filtrar por una madre se incluyan los productos de sus hijas.
+export function categoryScope(categories: Category[], slug: string): string[] {
+  const children = childCategories(categories, slug).map((category) => category.slug);
+  return [slug, ...children];
+}
+
+export function findCategoryBySlug(categories: Category[], slug: string) {
+  return categories.find((category) => category.slug === slug);
 }

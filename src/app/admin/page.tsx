@@ -291,12 +291,14 @@ export default function AdminPage() {
     const formElement = event.currentTarget;
     const form = new FormData(formElement);
     const name = String(form.get("categoryName") || "").trim();
+    const parent = String(form.get("categoryParent") || "").trim();
     const category: Category = {
       id: editingCategory?.id || makeSlug(name),
       slug: editingCategory?.slug || makeSlug(name),
       name,
       description: String(form.get("categoryDescription") || ""),
-      image: String(form.get("categoryImage") || "")
+      image: String(form.get("categoryImage") || ""),
+      parent: parent || undefined
     };
 
     const exists = categories.some((item) => item.id === category.id);
@@ -366,9 +368,12 @@ export default function AdminPage() {
   }
 
   function confirmDeleteCategory(category: Category) {
+    const children = categories.filter((item) => item.parent === category.slug);
     setConfirmState({
       title: "Eliminar categoria",
-      body: `Se eliminara "${category.name}" de la administracion.`,
+      body: children.length
+        ? `"${category.name}" tiene ${children.length} subcategoría(s). Al eliminarla, esas subcategorías quedarán sin madre (pasan a principales). Puede reasignarles otra madre después.`
+        : `Se eliminara "${category.name}" de la administracion.`,
       actionLabel: "Eliminar categoria",
       tone: "danger",
       onConfirm: async () => {
@@ -726,6 +731,24 @@ export default function AdminPage() {
                 Imagen
                 <input name="categoryImage" defaultValue={editingCategory?.image} />
               </label>
+              <label>
+                Categoría madre
+                <select
+                  name="categoryParent"
+                  defaultValue={editingCategory?.parent || ""}
+                >
+                  <option value="">Ninguna (categoría principal)</option>
+                  {categories
+                    .filter(
+                      (item) => !item.parent && item.id !== editingCategory?.id
+                    )
+                    .map((item) => (
+                      <option key={item.id} value={item.slug}>
+                        {item.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
               <button className="button button--primary" type="submit">
                 <Save size={18} /> Guardar categoria
               </button>
@@ -734,14 +757,27 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Categorias registradas"
-            items={categories.map((category) => ({
-              id: category.id,
-              title: category.name,
-              meta: category.description,
-              image: category.image,
-              onEdit: () => setEditingCategory(category),
-              onDelete: () => confirmDeleteCategory(category)
-            }))}
+            items={[...categories]
+              .sort((a, b) => {
+                const pa = a.parent || a.slug;
+                const pb = b.parent || b.slug;
+                return pa.localeCompare(pb) || (a.parent ? 1 : 0) - (b.parent ? 1 : 0);
+              })
+              .map((category) => {
+                const madre = category.parent
+                  ? categories.find((item) => item.slug === category.parent)
+                  : null;
+                return {
+                  id: category.id,
+                  title: madre ? `↳ ${category.name}` : category.name,
+                  meta: madre
+                    ? `Subcategoría de ${madre.name}`
+                    : category.description,
+                  image: category.image,
+                  onEdit: () => setEditingCategory(category),
+                  onDelete: () => confirmDeleteCategory(category)
+                };
+              })}
           />
         </div>
       )}
@@ -960,11 +996,30 @@ function ProductDialog({
           <label>
             Categoria
             <select name="categorySlug" required defaultValue={product.categorySlug}>
-              {categories.map((category) => (
-                <option key={category.id} value={category.slug}>
-                  {category.name}
-                </option>
-              ))}
+              {categories
+                .filter((category) => !category.parent)
+                .map((category) => {
+                  const children = categories.filter(
+                    (item) => item.parent === category.slug
+                  );
+                  if (!children.length) {
+                    return (
+                      <option key={category.id} value={category.slug}>
+                        {category.name}
+                      </option>
+                    );
+                  }
+                  return (
+                    <optgroup key={category.id} label={category.name}>
+                      <option value={category.slug}>{category.name} (general)</option>
+                      {children.map((child) => (
+                        <option key={child.id} value={child.slug}>
+                          {child.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  );
+                })}
             </select>
           </label>
           <label>

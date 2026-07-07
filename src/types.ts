@@ -17,6 +17,9 @@ export type Category = {
   name: string;
   description: string;
   image: string;
+  // Slug de la categoría madre. Vacío = categoría principal; con valor =
+  // subcategoría dentro de esa madre.
+  parent?: string;
 };
 
 export type Product = {

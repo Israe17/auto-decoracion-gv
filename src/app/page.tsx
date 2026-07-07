@@ -14,6 +14,7 @@ import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
+import { topCategories } from "@/lib/catalog";
 import { fetchPublicCatalog } from "@/lib/store";
 import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -22,6 +23,7 @@ export const revalidate = 60;
 export default async function Home() {
   const { products, categories, vehicles, promos } = await fetchPublicCatalog();
   const featured = products.filter((product) => product.featured).slice(0, 4);
+  const mainCategories = topCategories(categories);
 
   return (
     <>
@@ -122,7 +124,7 @@ export default async function Home() {
           </Link>
         </div>
         <div className="category-grid">
-          {categories.slice(0, 6).map((category) => (
+          {mainCategories.slice(0, 6).map((category) => (
             <CategoryCard key={category.id} category={category} />
           ))}
         </div>

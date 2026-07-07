@@ -154,6 +154,13 @@ Móvil (iPhone-first):
 - Negocio: Auto Decoración G&V (G&V System), Liberia, Guanacaste.
 - Local físico con inventario + pedidos a distribuidores de confianza +
   servicios de polarizado e instalación (audio/video, accesorios, 4x4).
+- Categorías en 2 niveles: madre (sin `parent`) → subcategorías (`parent`
+  = slug de la madre). Los productos viven en la subcategoría más
+  específica. La categoría madre agrupa y muestra los productos de sus
+  hijas (`categoryScope` en `src/lib/catalog.ts`). La madre lleva a
+  `/categoria/[slug]` (grid de subcategorías); la subcategoría/plana lleva
+  al catálogo filtrado. Utilidades: `topCategories`, `childCategories`,
+  `categoryScope`, `findCategoryBySlug`.
 - Datos del negocio centralizados en `src/lib/business.ts` (dirección,
   horario, enlaces de Maps) — nunca hardcodear en componentes.
 - Mensajes de WhatsApp: helpers de `src/lib/whatsapp.ts` (no armar URLs a
