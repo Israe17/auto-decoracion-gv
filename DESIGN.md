@@ -115,6 +115,11 @@ Móvil (iPhone-first):
 - La imagen de producto se muestra COMPLETA: tarjeta con contenedor
   cuadrado (los artes son 1:1) y galería con `object-fit: contain` sobre
   blanco — sin parallax ni zooms que recorten el arte.
+- **Scroll suave global** con Lenis (`src/components/SmoothScroll.tsx`),
+  equivalente libre del ScrollSmoother de pago de GSAP. Integrado con
+  ScrollTrigger (los reveals siguen funcionando), activo en escritorio y
+  táctil (`syncTouch`), con soporte de anclas. CSS de Lenis en
+  `globals.css`. Se desactiva con reduced-motion.
 - `prefers-reduced-motion: reduce` desactiva todas las animaciones.
 - Estados iniciales los pone GSAP (no CSS): sin JavaScript el contenido se
   ve completo.

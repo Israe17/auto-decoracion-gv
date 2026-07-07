@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
 import { QuoteTray } from "@/components/QuoteTray";
 import { ScrollFx } from "@/components/ScrollFx";
+import { SmoothScroll } from "@/components/SmoothScroll";
 import { WhatsAppFloat } from "@/components/WhatsAppFloat";
 
 export const viewport: Viewport = {
@@ -32,6 +33,7 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body>
+        <SmoothScroll />
         <Header />
         <main>{children}</main>
         <ScrollFx />
