@@ -107,11 +107,14 @@ Móvil (iPhone-first):
 
 ## 6. Motion
 
-- Motor de animación de scroll: **GSAP + ScrollTrigger** vía
-  `src/components/ScrollFx.tsx` (montado en el layout). Reveals de 0.7s
-  `power2.out` al 88% del viewport, staggers de 0.08s en grillas y pop
-  del precio héroe. Nuevas secciones/grillas se registran en los
-  selectores de ese componente.
+- Motor de animación de scroll: **GSAP** vía `src/components/ScrollFx.tsx`
+  (montado en el layout). Los reveals (0.7s `power2.out`), staggers (0.08s)
+  y el pop del precio héroe se disparan con **IntersectionObserver**
+  (rootMargin -12% ≈ "top 88%"), NO con posiciones de ScrollTrigger — así
+  los cambios tardíos de layout (imágenes/datos) no dejan secciones
+  ocultas. ScrollTrigger queda solo para efectos scrubbed (LogoSequence).
+  Nuevas secciones/grillas se registran en los selectores de ese
+  componente.
 - La imagen de producto se muestra COMPLETA: tarjeta con contenedor
   cuadrado (los artes son 1:1) y galería con `object-fit: contain` sobre
   blanco — sin parallax ni zooms que recorten el arte.
