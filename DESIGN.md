@@ -77,8 +77,12 @@ Móvil (iPhone-first):
   `layout.tsx`.
 - Inputs/select/textarea SIEMPRE ≥16px (evita el auto-zoom de iOS Safari).
 - Tap targets ≥44px; feedback táctil con `.button:active { scale(0.97) }`.
-- Navegación móvil: menú drawer (`MobileMenu`) por portal al body; el
-  header móvil es UNA fila (logo + CTA + hamburguesa).
+- Navegación móvil: menú **overlay de pantalla completa** (`MobileMenu`,
+  por portal al body): se despliega con un círculo desde el botón
+  (clip-path + GSAP), enlaces grandes numerados en cascada, buscador
+  arriba y WhatsApp + horario abajo; la salida es la reversa acelerada
+  (timeScale 1.8). Cierra con X, Escape o al navegar. El header móvil es
+  UNA fila (logo + CTA + hamburguesa).
 - Categorías en móvil: **chips deslizables** (`.category-chips`, fila
   horizontal de píldoras con scroll táctil, un toque directo a la
   categoría + chip "Ver todas" en rojo tenue); el acordeón de categorías
