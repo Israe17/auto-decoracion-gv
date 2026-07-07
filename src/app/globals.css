@@ -5340,6 +5340,57 @@ html.lenis body {
   pointer-events: none;
 }
 
+/* ===== Scroll Stack de beneficios (se renderiza solo en movil) =====
+   Las tarjetas se apilan al hacer scroll; las transforms las pone el
+   componente BenefitsShowcase. */
+.benefit-stack {
+  padding-bottom: 26vh;
+  position: relative;
+}
+
+.benefit-stack .scroll-stack-card {
+  align-content: center;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--shadow-lg);
+  display: grid;
+  gap: 12px;
+  margin-bottom: 60px;
+  min-height: 200px;
+  padding: 30px 28px;
+  transform-origin: top center;
+  will-change: transform;
+}
+
+.benefit-stack .scroll-stack-card:last-of-type {
+  margin-bottom: 0;
+}
+
+.benefit-stack .scroll-stack-card svg {
+  background: rgba(230, 33, 53, 0.09);
+  border-radius: 14px;
+  color: var(--red);
+  height: 46px;
+  padding: 11px;
+  width: 46px;
+}
+
+.benefit-stack .scroll-stack-card strong {
+  font-size: 21px;
+}
+
+.benefit-stack .scroll-stack-card span {
+  color: var(--muted);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.benefit-stack .scroll-stack-end {
+  height: 1px;
+  width: 100%;
+}
+
 /* ===== Mejoras de experiencia movil ===== */
 @media (max-width: 640px) {
   /* 1. Topbar: mostrar solo el mensaje corto y centrado, sin cortarse */
