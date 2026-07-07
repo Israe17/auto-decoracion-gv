@@ -44,10 +44,28 @@ Reglas:
 ## 2. Typography
 
 - Familia: Arial / Helvetica (system stack, sin webfonts).
-- H1 de ficha/página: `clamp(30px, 3vw, 42px)`, peso 760.
-- H2 de sección: ~1.35-1.6rem, peso 700-760.
-- Eyebrow (etiqueta sobre títulos): 13px, 800, uppercase, color rojo o muted.
-- Cuerpo: 15-17px, `line-height: 1.55`, color `--muted` para descripciones.
+- **Escala canónica por tokens** (`:root` de globals.css) — TODO
+  `font-size`/`font-weight` del sitio usa estos tokens, nunca valores
+  sueltos:
+
+| Token | Valor | Rol |
+|---|---|---|
+| `--type-2xs` | 12.5px | eyebrows, micro-meta |
+| `--type-xs` | 13.5px | badges, notas, labels chicos |
+| `--type-sm` | 14.5px | meta, labels de formulario |
+| `--type-base` | 16px | cuerpo (y mínimo de inputs en iOS) |
+| `--type-md` | 17px | cuerpo destacado / lead |
+| `--type-lg` | 18.5px | h3 de tarjetas |
+| `--type-xl` | 21px | precios de tarjeta, sub-títulos |
+| `--type-2xl` | 26px | títulos medianos |
+| `--type-3xl` | 30px | títulos grandes fijos |
+| `--type-title` | clamp(29px, 2.6vw, 37px) | h2 de sección, h1 interior, precios héroe |
+| `--type-display` | clamp(38px, 4.6vw, 58px) | h1 de heroes/carrusel |
+
+- **Pesos: SOLO dos** — `--font-regular` (400) y `--font-bold` (700).
+  Arial no tiene pesos intermedios: cualquier 500-900 renderiza 700, así
+  que declararlos es ruido. La jerarquía visual se controla con TAMAÑO.
+- Cuerpo con `line-height: 1.55`, color `--muted` para descripciones.
 - Español correcto con tildes en textos visibles ("díganos", nunca "dígnos").
 
 ## 3. Spacing
