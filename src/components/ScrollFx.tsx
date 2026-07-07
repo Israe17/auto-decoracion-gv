@@ -73,23 +73,6 @@ export function ScrollFx() {
         });
       });
 
-      // Parallax sutil en la imagen principal de la galeria del producto.
-      document
-        .querySelectorAll<HTMLElement>(".product-gallery__main img")
-        .forEach((img) => {
-          gsap.set(img, { scale: 1.12 });
-          gsap.to(img, {
-            yPercent: -6,
-            ease: "none",
-            scrollTrigger: {
-              trigger: img.parentElement,
-              start: "top bottom",
-              end: "bottom top",
-              scrub: 0.6
-            }
-          });
-        });
-
       // El precio heroe entra con un pequeno pop.
       document.querySelectorAll<HTMLElement>(".product-price-hero").forEach((el) => {
         gsap.fromTo(
