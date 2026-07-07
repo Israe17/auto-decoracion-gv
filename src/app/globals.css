@@ -3892,7 +3892,18 @@ body {
 .service-grid {
   display: grid;
   gap: 18px;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+}
+
+/* Botones de servicio en una sola linea, como siempre */
+.service-card .button {
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .service-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .service-card {

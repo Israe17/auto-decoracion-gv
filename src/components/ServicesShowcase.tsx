@@ -1,7 +1,7 @@
 "use client";
 
 import { ElementType, PointerEvent, useEffect, useRef, useState } from "react";
-import { Film, MessageCircle, Speaker, Wrench } from "lucide-react";
+import { Film, MessageCircle, PackageSearch, Speaker, Wrench } from "lucide-react";
 import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 
 type Service = {
@@ -33,6 +33,13 @@ const SERVICES: Service[] = [
     text: "Defensas, estribos, barras LED, racks y suspensión con montaje profesional y seguro.",
     cta: "Cotizar instalación",
     topic: "instalacion de accesorios"
+  },
+  {
+    icon: PackageSearch,
+    title: "Le conseguimos la pieza",
+    text: "¿No encuentra el repuesto o accesorio? Lo ubicamos con nuestros distribuidores de confianza y se lo conseguimos.",
+    cta: "Solicitar pieza",
+    topic: "conseguir un repuesto o pieza"
   }
 ];
 
@@ -106,6 +113,7 @@ function SlidingDeck() {
       <div className="sliding-cards">
         {order.map((cardIndex, pos) => {
           const isFront = pos === 0;
+          const depth = Math.min(pos, 2);
           const style = isFront
             ? {
                 transform: `translateX(${x}px) rotate(${x * 0.05}deg)`,
@@ -113,7 +121,8 @@ function SlidingDeck() {
                 zIndex: SERVICES.length
               }
             : {
-                transform: `translateY(${pos * 12}px) scale(${1 - pos * 0.05})`,
+                transform: `translateY(${depth * 12}px) scale(${1 - depth * 0.05})`,
+                opacity: pos > 2 ? 0 : 1,
                 zIndex: SERVICES.length - pos
               };
           return (
