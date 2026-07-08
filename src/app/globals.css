@@ -2238,9 +2238,20 @@ input[type="checkbox"] {
 }
 
 .home-carousel__shade {
+  /* Velo vertical: oscuro arriba (para que el marquee se funda con el hero
+     y no se vea una linea al tocar el header blanco), foto visible al
+     medio y oscuro abajo (para el titulo y los botones centrados). Tinte
+     rojo tenue al pie. */
   background:
-    linear-gradient(90deg, rgba(13, 19, 25, 0.88) 0%, rgba(13, 19, 25, 0.7) 45%, rgba(13, 19, 25, 0.18) 100%),
-    linear-gradient(0deg, rgba(230, 33, 53, 0.18), transparent 55%);
+    linear-gradient(
+      180deg,
+      rgba(13, 19, 25, 0.82) 0%,
+      rgba(13, 19, 25, 0.44) 22%,
+      rgba(13, 19, 25, 0.42) 50%,
+      rgba(13, 19, 25, 0.72) 80%,
+      rgba(13, 19, 25, 0.9) 100%
+    ),
+    linear-gradient(0deg, rgba(230, 33, 53, 0.16), transparent 45%);
   inset: 0;
   position: absolute;
   z-index: -1;
@@ -2249,9 +2260,12 @@ input[type="checkbox"] {
 .home-carousel__content {
   display: grid;
   gap: 16px;
-  max-width: 610px;
+  justify-items: center;
+  margin: 0 auto;
+  max-width: 680px;
   padding: 78px 68px;
   position: relative;
+  text-align: center;
   transform: none;
 }
 
@@ -2341,6 +2355,7 @@ input[type="checkbox"] {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  justify-content: center;
   margin-top: 4px;
 }
 
