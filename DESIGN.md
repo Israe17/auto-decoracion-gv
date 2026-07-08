@@ -109,7 +109,11 @@ Móvil (iPhone-first):
   tarjetas sueltas de alturas dispares.
 - Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
   degradado oscuro a la izquierda y el texto encima — eyebrow, titular
-  grande, subtítulo y botones (primario al enlace + WhatsApp). Toma las
+  grande, subtítulo y botones (primario al enlace + WhatsApp). El contenido
+  se alinea a la izquierda y queda **centrado verticalmente** (mismo espacio
+  arriba y abajo) en móvil y escritorio. El velo suma un oscurecido en el
+  borde superior para que el marquee de categorías se funda con el hero sin
+  línea visible. Toma las
   promociones de admin > Promociones; sin promociones activas cae a las
   líneas de catálogo. Las fotos del hero son horizontales ambientales
   (taller/vehículos/servicios), NUNCA los afiches cuadrados de producto.
