@@ -85,11 +85,12 @@ Móvil (iPhone-first):
   UNA fila (logo + CTA + hamburguesa).
 - Categorías en móvil: **marquee de píldoras de vidrio** (`.category-marquee`,
   estilo Logo Loop) que flotan sobre el espacio superior de la foto del
-  hero y avanzan en un loop continuo; píldoras translúcidas
-  (`rgba(255,255,255,.12)` + `backdrop-filter: blur`, texto blanco), bordes
-  desvanecidos con máscara, un toque directo a la categoría. Se detiene al
-  tocar/hover para elegir con calma; con reduced-motion queda estática. La
-  lista se duplica en el JSX (2ª copia `aria-hidden`) para un ciclo sin
+  hero; píldoras translúcidas (`rgba(255,255,255,.12)` +
+  `backdrop-filter: blur`, texto blanco), bordes desvanecidos con máscara,
+  un toque directo a la categoría. Es un scroll real: el usuario las
+  desliza a mano y en reposo avanzan solas despacio (auto-scroll por JS);
+  se pausan al tocar. Con reduced-motion quedan estáticas pero scrolleables.
+  La lista se duplica en el JSX (2ª copia `aria-hidden`) para un ciclo sin
   costura. El acordeón de categorías es solo de escritorio.
 - En listados con filtros, el producto va primero y los filtros después.
 
@@ -182,11 +183,14 @@ Móvil (iPhone-first):
   Tailwind) con pointer events; `touch-action: pan-y` para no bloquear el
   scroll vertical.
 - Efecto **marquee de categorías** (`.category-marquee`, estilo Logo Loop
-  de React Bits): loop horizontal infinito de píldoras de vidrio sobre el
-  hero en móvil (excepción a "sin animaciones infinitas", aprobada por el
-  dueño). Avance lento (30s lineal), se pausa al tocar/hover, bordes
-  desvanecidos con `mask-image` y se desactiva con reduced-motion. Es el
-  único marquee del sitio.
+  de React Bits): carril de píldoras de vidrio sobre el hero en móvil
+  (excepción a "sin animaciones infinitas", aprobada por el dueño). Es un
+  scroll horizontal **real** (`overflow-x: auto`): el usuario las desliza a
+  mano y, en reposo, un auto-scroll lento (~21px/s, vía `scrollLeft` en
+  `HomeShowcase`) las avanza; se pausa al tocar y reanuda al soltar. La
+  lista se duplica en el JSX para un ciclo sin costura, tiene `padding`
+  vertical para que la sombra no se corte, bordes desvanecidos con
+  `mask-image` y se desactiva con reduced-motion. Es el único marquee.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice

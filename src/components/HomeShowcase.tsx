@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -102,6 +102,73 @@ export function HomeShowcase({
 
   const mainCategories = useMemo(() => topCategories(categories), [categories]);
 
+  // Auto-scroll lento del carril de categorias (movil). Es un scroll real,
+  // asi que el usuario puede deslizarlas a mano; el auto-avance se pausa
+  // mientras interactua y reanuda al soltar. La lista va duplicada en el
+  // JSX, por eso al pasar la mitad se reinicia sin costura.
+  const marqueeRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = marqueeRef.current;
+    if (!el) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const SPEED = 0.35; // px por frame (~21px/s): avance lento
+    const ac = new AbortController();
+    let paused = false;
+    let pos = 0;
+    let raf = 0;
+    let resumeTimer = 0;
+
+    const pause = () => {
+      paused = true;
+    };
+    const resumeSoon = () => {
+      window.clearTimeout(resumeTimer);
+      resumeTimer = window.setTimeout(() => {
+        paused = false;
+      }, 1600);
+    };
+
+    const step = () => {
+      const half = el.scrollWidth / 2;
+      if (paused || half < 1 || el.scrollWidth <= el.clientWidth + 1) {
+        pos = el.scrollLeft; // sincroniza con el scroll manual
+      } else {
+        pos += SPEED;
+        if (pos >= half) pos -= half;
+        el.scrollLeft = pos;
+      }
+      raf = window.requestAnimationFrame(step);
+    };
+    raf = window.requestAnimationFrame(step);
+
+    const opts = { signal: ac.signal, passive: true } as const;
+    el.addEventListener("pointerdown", pause, opts);
+    el.addEventListener("pointerup", resumeSoon, opts);
+    el.addEventListener("pointercancel", resumeSoon, opts);
+    el.addEventListener("pointerenter", pause, opts);
+    el.addEventListener("pointerleave", resumeSoon, opts);
+    el.addEventListener("touchstart", pause, opts);
+    el.addEventListener("touchend", resumeSoon, opts);
+    // Nota: NO se escucha "scroll" porque el propio auto-scroll lo dispara y
+    // se auto-pausaria. El scroll manual se cubre con pointer/touch/wheel.
+    el.addEventListener(
+      "wheel",
+      () => {
+        pause();
+        resumeSoon();
+      },
+      opts
+    );
+
+    return () => {
+      window.cancelAnimationFrame(raf);
+      window.clearTimeout(resumeTimer);
+      ac.abort();
+    };
+  }, []);
+
   const [activeSlide, setActiveSlide] = useState(0);
   const [openCategory, setOpenCategory] = useState(
     () =>
@@ -196,7 +263,7 @@ export function HomeShowcase({
         {/* Movil: pildoras de vidrio de categorias flotando sobre la foto,
             en un loop continuo (estilo Logo Loop). Se duplica la lista para
             que el ciclo sea sin costura; la 2a copia es decorativa. */}
-        <div className="category-marquee" aria-label="Categorías">
+        <div className="category-marquee" aria-label="Categorías" ref={marqueeRef}>
           <div className="category-marquee__track">
             {[...mainCategories, ...mainCategories].map((category, index) => {
               const clone = index >= mainCategories.length;
