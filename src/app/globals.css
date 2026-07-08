@@ -2217,7 +2217,10 @@ input[type="checkbox"] {
   border-radius: 24px;
   box-shadow: var(--shadow-lg);
   color: white;
+  display: flex;
+  flex-direction: column;
   isolation: isolate;
+  justify-content: center;
   min-height: 520px;
   overflow: hidden;
   position: relative;
@@ -2238,20 +2241,13 @@ input[type="checkbox"] {
 }
 
 .home-carousel__shade {
-  /* Velo vertical: oscuro arriba (para que el marquee se funda con el hero
-     y no se vea una linea al tocar el header blanco), foto visible al
-     medio y oscuro abajo (para el titulo y los botones centrados). Tinte
-     rojo tenue al pie. */
+  /* Degradado oscuro a la izquierda (para el texto) + un velo superior que
+     oscurece el borde de arriba, asi el marquee de categorias se funde con
+     el hero y no se ve una linea al tocar el header blanco. Tinte rojo al pie. */
   background:
-    linear-gradient(
-      180deg,
-      rgba(13, 19, 25, 0.82) 0%,
-      rgba(13, 19, 25, 0.44) 22%,
-      rgba(13, 19, 25, 0.42) 50%,
-      rgba(13, 19, 25, 0.72) 80%,
-      rgba(13, 19, 25, 0.9) 100%
-    ),
-    linear-gradient(0deg, rgba(230, 33, 53, 0.16), transparent 45%);
+    linear-gradient(90deg, rgba(13, 19, 25, 0.88) 0%, rgba(13, 19, 25, 0.7) 45%, rgba(13, 19, 25, 0.18) 100%),
+    linear-gradient(180deg, rgba(13, 19, 25, 0.5) 0%, transparent 18%),
+    linear-gradient(0deg, rgba(230, 33, 53, 0.18), transparent 55%);
   inset: 0;
   position: absolute;
   z-index: -1;
@@ -2260,12 +2256,9 @@ input[type="checkbox"] {
 .home-carousel__content {
   display: grid;
   gap: 16px;
-  justify-items: center;
-  margin: 0 auto;
-  max-width: 680px;
+  max-width: 610px;
   padding: 78px 68px;
   position: relative;
-  text-align: center;
   transform: none;
 }
 
@@ -2355,7 +2348,6 @@ input[type="checkbox"] {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
-  justify-content: center;
   margin-top: 4px;
 }
 
@@ -2471,7 +2463,7 @@ input[type="checkbox"] {
 
   .home-carousel__content {
     max-width: none;
-    padding: 72px 26px 104px;
+    padding: 72px 26px;
     position: relative;
     width: auto;
   }
