@@ -134,22 +134,6 @@ export function HomeShowcase({
 
   return (
     <section className="home-showcase" aria-label="Destacados">
-      {/* Movil: chips deslizables, un toque directo a la categoria */}
-      <nav className="category-chips" aria-label="Categorías">
-        {mainCategories.map((category) => (
-          <Link
-            className="category-chips__chip"
-            key={category.id}
-            href={`/categoria/${category.slug}`}
-          >
-            {category.name}
-          </Link>
-        ))}
-        <Link className="category-chips__chip category-chips__chip--all" href="/catalogo#categorias">
-          Ver todas <ArrowRight size={15} />
-        </Link>
-      </nav>
-
       <aside className="category-accordion">
         <div className="category-accordion__title">
           <PackageSearch size={20} />
@@ -208,6 +192,28 @@ export function HomeShowcase({
           <img src={active.image} alt={active.title} />
         </div>
         <div className="home-carousel__shade" />
+
+        {/* Movil: pildoras de vidrio de categorias flotando sobre la foto,
+            en un loop continuo (estilo Logo Loop). Se duplica la lista para
+            que el ciclo sea sin costura; la 2a copia es decorativa. */}
+        <div className="category-marquee" aria-label="Categorías">
+          <div className="category-marquee__track">
+            {[...mainCategories, ...mainCategories].map((category, index) => {
+              const clone = index >= mainCategories.length;
+              return (
+                <Link
+                  className="category-marquee__pill"
+                  key={`${category.id}-${index}`}
+                  href={`/categoria/${category.slug}`}
+                  aria-hidden={clone || undefined}
+                  tabIndex={clone ? -1 : undefined}
+                >
+                  {category.name}
+                </Link>
+              );
+            })}
+          </div>
+        </div>
 
         <div className="home-carousel__content">
           <span className="home-carousel__eyebrow">{active.eyebrow}</span>

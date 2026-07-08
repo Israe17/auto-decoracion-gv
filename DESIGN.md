@@ -83,10 +83,14 @@ Móvil (iPhone-first):
   arriba y WhatsApp + horario abajo; la salida es la reversa acelerada
   (timeScale 1.8). Cierra con X, Escape o al navegar. El header móvil es
   UNA fila (logo + CTA + hamburguesa).
-- Categorías en móvil: **chips deslizables** (`.category-chips`, fila
-  horizontal de píldoras con scroll táctil, un toque directo a la
-  categoría + chip "Ver todas" en rojo tenue); el acordeón de categorías
-  es solo de escritorio.
+- Categorías en móvil: **marquee de píldoras de vidrio** (`.category-marquee`,
+  estilo Logo Loop) que flotan sobre el espacio superior de la foto del
+  hero y avanzan en un loop continuo; píldoras translúcidas
+  (`rgba(255,255,255,.12)` + `backdrop-filter: blur`, texto blanco), bordes
+  desvanecidos con máscara, un toque directo a la categoría. Se detiene al
+  tocar/hover para elegir con calma; con reduced-motion queda estática. La
+  lista se duplica en el JSX (2ª copia `aria-hidden`) para un ciclo sin
+  costura. El acordeón de categorías es solo de escritorio.
 - En listados con filtros, el producto va primero y los filtros después.
 
 ## 5. Components
@@ -173,6 +177,12 @@ Móvil (iPhone-first):
   en escritorio queda la cuadrícula con glare. Adaptación propia (sin
   Tailwind) con pointer events; `touch-action: pan-y` para no bloquear el
   scroll vertical.
+- Efecto **marquee de categorías** (`.category-marquee`, estilo Logo Loop
+  de React Bits): loop horizontal infinito de píldoras de vidrio sobre el
+  hero en móvil (excepción a "sin animaciones infinitas", aprobada por el
+  dueño). Avance lento (30s lineal), se pausa al tocar/hover, bordes
+  desvanecidos con `mask-image` y se desactiva con reduced-motion. Es el
+  único marquee del sitio.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
