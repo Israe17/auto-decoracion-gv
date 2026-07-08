@@ -4341,25 +4341,14 @@ textarea {
 /* ===== Menu movil de pantalla completa (overlay animado) ===== */
 .menu-overlay {
   background: #fff;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  align-content: start;
   gap: 20px;
   inset: 0;
   overflow-y: auto;
   padding: 14px 22px calc(26px + env(safe-area-inset-bottom));
   position: fixed;
   z-index: 90;
-}
-
-/* El encabezado (marca + cerrar) queda arriba; el buscador, los enlaces y
-   el boton de cotizar se centran verticalmente en el espacio restante para
-   que no quede todo pegado arriba con un hueco vacio abajo. */
-.menu-overlay__search {
-  margin-top: auto;
-}
-
-.menu-overlay__footer {
-  margin-bottom: auto;
 }
 
 .menu-overlay__header {
@@ -5466,7 +5455,7 @@ html.lenis body {
   .category-chips {
     display: flex;
     gap: 9px;
-    margin: 0 -18px;
+    margin: 0;
     overflow-x: auto;
     padding: 4px 18px 10px;
     scrollbar-width: none;
