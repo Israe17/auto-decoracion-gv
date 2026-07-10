@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { MessageCircle, UserRound } from "lucide-react";
 import { MobileMenu } from "./MobileMenu";
@@ -13,7 +14,7 @@ export function Header() {
       <div className="nav">
         <Link className="brand" href="/">
           <span className="brand__mark">
-            <img src="/gv-system-logo.png" alt="" />
+            <Image src="/gv-system-logo.png" alt="Auto Decoracion G&V" width={64} height={64} priority />
           </span>
           <span>
             <strong>Auto Decoracion</strong>

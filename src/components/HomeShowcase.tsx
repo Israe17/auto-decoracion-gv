@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import {
   ArrowRight,
@@ -256,7 +257,7 @@ export function HomeShowcase({
       >
         <span className="spotlight" aria-hidden="true" />
         <div className="home-carousel__media" key={active.id}>
-          <img src={active.image} alt={active.title} />
+          <Image src={active.image} alt={active.title} fill sizes="100vw" priority />
         </div>
         <div className="home-carousel__shade" />
 

@@ -22,9 +22,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { categories } = await fetchPublicCatalog();
   const category = findCategoryBySlug(categories, slug);
   if (!category) return { title: "Categoría" };
+  const title = `${category.name} — Auto Decoración G&V`;
   return {
-    title: `${category.name} — Auto Decoración G&V`,
-    description: category.description
+    title,
+    description: category.description,
+    openGraph: {
+      title,
+      description: category.description,
+      images: [{ url: category.image }]
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: category.description,
+      images: [category.image]
+    }
   };
 }
 

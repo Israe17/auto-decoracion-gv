@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { ArrowRight, Search } from "lucide-react";
@@ -109,7 +110,7 @@ export function SearchBox({ className = "search-box" }: { className?: string }) 
                   href={`/productos/${product.slug}`}
                   onClick={() => setOpen(false)}
                 >
-                  <img src={product.images[0]} alt="" />
+                  <Image src={product.images[0]} alt={product.name} width={42} height={42} />
                   <span>
                     <strong>{product.name}</strong>
                     <small>{product.categoryName}</small>

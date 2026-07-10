@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, Clock, MapPin, MessageCircle } from "lucide-react";
 import { business } from "@/lib/business";
@@ -9,7 +10,7 @@ export function Footer() {
       <div className="footer__brand">
         <Link className="brand brand--footer" href="/">
           <span className="brand__mark">
-            <img src="/gv-system-logo.png" alt="" />
+            <Image src="/gv-system-logo.png" alt="Auto Decoracion G&V" width={64} height={64} />
           </span>
           <span>
             <strong>Auto Decoracion</strong>
