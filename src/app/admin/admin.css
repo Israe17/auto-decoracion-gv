@@ -79,3 +79,118 @@
   border-color: var(--red);
   color: var(--red);
 }
+
+/* Subida de imagenes (categorias, promociones, productos) */
+.image-upload {
+  align-items: flex-start;
+  background: var(--soft);
+  border: 1.5px dashed var(--line);
+  border-radius: 16px;
+  display: flex;
+  gap: 14px;
+  margin-top: 8px;
+  padding: 14px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease;
+}
+
+.image-upload--dragging {
+  background: rgba(230, 33, 53, 0.05);
+  border-color: var(--red);
+}
+
+.image-upload--list {
+  flex-direction: column;
+}
+
+.image-upload__preview {
+  border-radius: 10px;
+  height: 64px;
+  object-fit: cover;
+  width: 64px;
+}
+
+.image-upload__placeholder {
+  align-items: center;
+  background: #fff;
+  border-radius: 10px;
+  color: var(--muted);
+  display: flex;
+  height: 64px;
+  justify-content: center;
+  width: 64px;
+}
+
+.image-upload__body {
+  display: grid;
+  flex: 1;
+  gap: 8px;
+  min-width: 0;
+}
+
+.image-upload__button {
+  cursor: pointer;
+  font-size: 13px;
+  justify-self: start;
+  padding: 8px 16px;
+}
+
+.image-upload__spinner {
+  animation: image-upload-spin 800ms linear infinite;
+}
+
+@keyframes image-upload-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-upload__spinner {
+    animation: none;
+  }
+}
+
+.image-upload__error {
+  color: var(--red-dark);
+  display: block;
+  font-size: 13px;
+  margin-top: 6px;
+}
+
+.image-upload__thumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.image-upload__thumb {
+  border-radius: 10px;
+  height: 64px;
+  overflow: hidden;
+  position: relative;
+  width: 64px;
+}
+
+.image-upload__thumb img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.image-upload__thumb button {
+  align-items: center;
+  background: rgba(17, 21, 28, 0.72);
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  height: 20px;
+  justify-content: center;
+  position: absolute;
+  right: 3px;
+  top: 3px;
+  width: 20px;
+}

@@ -18,6 +18,8 @@ import {
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
 import { firebaseEnabled } from "@/lib/firebase";
+import { ImageListField } from "@/components/admin/ImageListField";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import {
   fetchAdminData,
   importSeedCatalog,
@@ -585,10 +587,13 @@ export default function AdminPage() {
                   defaultValue={editingPromo?.subtitle}
                 />
               </label>
-              <label>
-                Imagen (URL del banner)
-                <input name="promoImage" required defaultValue={editingPromo?.image} />
-              </label>
+              <ImageUploadField
+                name="promoImage"
+                label="Imagen (banner)"
+                defaultValue={editingPromo?.image}
+                required
+                folder="promos"
+              />
               <div className="form-grid form-grid--two">
                 <label>
                   Enlace del boton
@@ -727,10 +732,12 @@ export default function AdminPage() {
                   defaultValue={editingCategory?.description}
                 />
               </label>
-              <label>
-                Imagen
-                <input name="categoryImage" defaultValue={editingCategory?.image} />
-              </label>
+              <ImageUploadField
+                name="categoryImage"
+                label="Imagen"
+                defaultValue={editingCategory?.image}
+                folder="categories"
+              />
               <label>
                 Categoría madre
                 <select
@@ -1046,10 +1053,12 @@ function ProductDialog({
           </label>
         </div>
 
-        <label>
-          Imagenes, una URL por linea
-          <textarea name="images" rows={3} defaultValue={product.images.join("\n")} />
-        </label>
+        <ImageListField
+          name="images"
+          label="Imagenes del producto"
+          defaultValue={product.images}
+          folder="products"
+        />
 
         <label>
           Descripcion
