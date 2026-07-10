@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -12,8 +13,15 @@ import {
 import { products as seedProducts, formatCRC } from "@/lib/catalog";
 import { fetchPublicCatalog } from "@/lib/store";
 import { productWhatsAppUrl } from "@/lib/whatsapp";
+import { siteUrl } from "@/lib/seo";
 import { ProductActions } from "@/components/ProductActions";
 import { ProductCard } from "@/components/ProductCard";
+
+const availabilityMap = {
+  available: "https://schema.org/InStock",
+  on_request: "https://schema.org/BackOrder",
+  sold_out: "https://schema.org/OutOfStock"
+} as const;
 
 export const revalidate = 60;
 
@@ -34,9 +42,23 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     };
   }
 
+  const title = `${product.name} | Auto Decoracion G&V`;
+
   return {
-    title: `${product.name} | Auto Decoracion G&V`,
-    description: product.description
+    title,
+    description: product.description,
+    openGraph: {
+      type: "website",
+      title,
+      description: product.description,
+      images: product.images.map((image) => ({ url: image }))
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description: product.description,
+      images: product.images
+    }
   };
 }
 
@@ -67,8 +89,32 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
       ? Math.round((1 - product.price / product.oldPrice) * 100)
       : 0;
 
+  const productJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: product.name,
+    description: product.description,
+    image: product.images,
+    url: `${siteUrl}/productos/${product.slug}`,
+    ...(product.saleMode === "price_quote" && product.price
+      ? {
+          offers: {
+            "@type": "Offer",
+            priceCurrency: "CRC",
+            price: product.price,
+            availability: availabilityMap[product.status],
+            url: `${siteUrl}/productos/${product.slug}`
+          }
+        }
+      : {})
+  };
+
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       <section className="product-detail-hero">
         <Link href="/catalogo" className="text-link product-detail__back">
           <ArrowLeft size={18} /> Volver al catalogo
@@ -78,13 +124,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="product-gallery">
             <div className="product-gallery__main">
               {discount > 0 && <span className="badge badge--discount">−{discount}%</span>}
-              <img src={product.images[0]} alt={product.name} />
+              <Image
+                src={product.images[0]}
+                alt={product.name}
+                fill
+                sizes="(max-width: 980px) 100vw, 55vw"
+                priority
+              />
             </div>
             {product.images.length > 1 && (
               <div className="product-gallery__thumbs" aria-label="Imagenes del producto">
                 {product.images.map((image, index) => (
                   <span key={`${image}-${index}`}>
-                    <img src={image} alt={`${product.name} ${index + 1}`} />
+                    <Image src={image} alt={`${product.name} ${index + 1}`} fill sizes="110px" />
                   </span>
                 ))}
               </div>

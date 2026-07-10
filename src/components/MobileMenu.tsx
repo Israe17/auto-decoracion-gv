@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
@@ -108,7 +109,7 @@ export function MobileMenu() {
           <div className="menu-overlay" ref={overlayRef} role="dialog" aria-modal="true">
             <div className="menu-overlay__header">
               <span className="menu-overlay__brand">
-                <img src="/gv-system-logo.png" alt="" />
+                <Image src="/gv-system-logo.png" alt="" width={34} height={34} />
                 Auto Decoración G&V
               </span>
               <button type="button" aria-label="Cerrar menú" onClick={close}>

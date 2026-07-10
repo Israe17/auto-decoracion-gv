@@ -865,6 +865,7 @@ img {
   display: block;
   height: 86px;
   overflow: hidden;
+  position: relative;
   width: 110px;
 }
 

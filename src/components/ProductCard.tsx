@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { PackageCheck } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
@@ -9,7 +10,12 @@ export function ProductCard({ product }: { product: Product }) {
     <article className="product-card">
       <Link href={`/productos/${product.slug}`} className="product-card__image">
         {product.oldPrice && <span className="badge">Oferta</span>}
-        <img src={product.images[0]} alt={product.name} />
+        <Image
+          src={product.images[0]}
+          alt={product.name}
+          fill
+          sizes="(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 300px"
+        />
       </Link>
       <div className="product-card__body">
         <span className="product-card__category">{product.categoryName}</span>

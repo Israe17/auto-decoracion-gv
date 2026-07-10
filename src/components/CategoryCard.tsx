@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types";
@@ -17,7 +18,12 @@ export function CategoryCard({
 
   return (
     <Link className="category-card" href={target}>
-      <img src={category.image} alt={category.name} />
+      <Image
+        src={category.image}
+        alt={category.name}
+        fill
+        sizes="(max-width: 900px) 50vw, 33vw"
+      />
       <span className="category-card__overlay" />
       <div>
         <h3>{category.name}</h3>
