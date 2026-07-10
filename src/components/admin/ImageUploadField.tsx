@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useId, useState } from "react";
-import { ImageUp, Loader2 } from "lucide-react";
+import { ImageUp, Loader2, Trash2 } from "lucide-react";
 import { uploadAdminImage } from "@/lib/storage";
 
 export function ImageUploadField({
@@ -42,10 +42,13 @@ export function ImageUploadField({
   }
 
   return (
-    <label>
-      {label}
+    <div className="image-field">
+      <span className="image-field__label">{label}</span>
+
       <div
-        className={`image-upload${dragging ? " image-upload--dragging" : ""}`}
+        className={`image-upload${dragging ? " image-upload--dragging" : ""}${
+          uploading ? " image-upload--busy" : ""
+        }`}
         onDragOver={(event: DragEvent) => {
           event.preventDefault();
           setDragging(true);
@@ -58,37 +61,59 @@ export function ImageUploadField({
         }}
       >
         {value ? (
-          <img src={value} alt="" className="image-upload__preview" />
+          <div className="image-upload__preview-card">
+            <img key={value} src={value} alt="" className="image-upload__preview" />
+            <div className="image-upload__overlay">
+              <label htmlFor={inputId} className="image-upload__overlay-btn">
+                <ImageUp size={16} /> Cambiar
+              </label>
+              <button
+                type="button"
+                className="image-upload__overlay-btn image-upload__overlay-btn--danger"
+                onClick={() => setValue("")}
+              >
+                <Trash2 size={16} /> Quitar
+              </button>
+            </div>
+          </div>
         ) : (
-          <span className="image-upload__placeholder">
-            <ImageUp size={22} />
-          </span>
-        )}
-        <div className="image-upload__body">
-          <input
-            name={name}
-            value={value}
-            required={required}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder="https://... o arrastre una imagen aqui"
-          />
-          <label htmlFor={inputId} className="button button--secondary image-upload__button">
-            {uploading ? <Loader2 size={16} className="image-upload__spinner" /> : <ImageUp size={16} />}
-            {uploading ? "Subiendo..." : "Subir imagen"}
+          <label htmlFor={inputId} className="image-upload__dropzone">
+            <span className="image-upload__icon">
+              <ImageUp size={24} />
+            </span>
+            <strong>Arrastre una imagen aquí</strong>
+            <span className="image-upload__hint">o haga clic para elegir un archivo</span>
           </label>
-          <input
-            id={inputId}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(event: ChangeEvent<HTMLInputElement>) => {
-              handleFile(event.target.files?.[0]);
-              event.target.value = "";
-            }}
-          />
-        </div>
+        )}
+
+        {uploading && (
+          <div className="image-upload__loading">
+            <Loader2 size={20} className="image-upload__spinner" />
+            Subiendo...
+          </div>
+        )}
+
+        <input
+          id={inputId}
+          type="file"
+          accept="image/*"
+          hidden
+          onChange={(event: ChangeEvent<HTMLInputElement>) => {
+            handleFile(event.target.files?.[0]);
+            event.target.value = "";
+          }}
+        />
       </div>
+
+      <input
+        className="image-field__url"
+        name={name}
+        value={value}
+        required={required}
+        onChange={(event) => setValue(event.target.value)}
+        placeholder="o pegue una URL de imagen"
+      />
       {error && <span className="image-upload__error">{error}</span>}
-    </label>
+    </div>
   );
 }
