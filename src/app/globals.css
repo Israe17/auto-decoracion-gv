@@ -3761,6 +3761,14 @@ body {
   z-index: 80;
 }
 
+.admin-dialog__dismiss {
+  background: transparent;
+  border: 0;
+  cursor: default;
+  inset: 0;
+  position: absolute;
+}
+
 .admin-dialog {
   animation: fadeUp 180ms ease both;
   background: #ffffff;
@@ -3772,6 +3780,7 @@ body {
   max-width: 760px;
   overflow: hidden;
   width: min(100%, 760px);
+  position: relative;
 }
 
 .admin-dialog__header {
@@ -3780,6 +3789,8 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 18px 20px;
+  position: relative;
+  z-index: 1;
 }
 
 .admin-dialog__header strong {
@@ -4001,12 +4012,59 @@ body {
   }
 
   .admin-dialog {
-    border-radius: 20px;
-    max-height: 92vh;
+    animation: admin-sheet-in 220ms cubic-bezier(0.2, 0.7, 0.3, 1) both;
+    border-radius: 24px 24px 0 0;
+    max-height: min(90vh, 90dvh);
+    width: 100%;
+  }
+
+  .admin-dialog-backdrop {
+    align-items: flex-end;
+    padding: 0;
+  }
+
+  .admin-dialog__header {
+    background: #ffffff;
+    padding: 18px 20px 14px;
+    position: sticky;
+    top: 0;
+  }
+
+  .admin-dialog__header::before {
+    background: #cfd7e2;
+    border-radius: 999px;
+    content: "";
+    height: 4px;
+    left: 50%;
+    position: absolute;
+    top: 7px;
+    transform: translateX(-50%);
+    width: 42px;
+  }
+
+  .admin-dialog-form {
+    max-height: calc(min(90vh, 90dvh) - 74px);
+    padding: 16px 18px max(18px, env(safe-area-inset-bottom));
+  }
+
+  .admin-dialog-actions {
+    background: #ffffff;
+    bottom: 0;
+    margin: 10px -18px -18px;
+    padding: 14px 18px max(18px, env(safe-area-inset-bottom));
+    position: sticky;
+    z-index: 1;
   }
 
   .admin-dialog-actions {
     display: grid;
+  }
+}
+
+@keyframes admin-sheet-in {
+  from {
+    opacity: 0;
+    transform: translateY(100%);
   }
 }
 

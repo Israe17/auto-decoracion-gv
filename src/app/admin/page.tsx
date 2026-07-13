@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, ReactNode, useEffect, useMemo, useState } from "react";
+import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Car,
@@ -1476,14 +1476,32 @@ function AdminDialog({
   children: ReactNode;
   onClose: () => void;
 }) {
-  // Portal al <body>: si el modal queda dentro de una seccion con transform
-  // (animaciones fadeUp), el backdrop fixed no cubriria el viewport completo.
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const previousOverflow = document.body.style.overflow;
+    const focusTimer = window.setTimeout(() => closeRef.current?.focus(), 40);
+    document.body.style.overflow = "hidden";
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") onClose();
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      window.clearTimeout(focusTimer);
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [onClose]);
+
   return createPortal(
     <div className="admin-dialog-backdrop" role="presentation">
-      <div className="admin-dialog" role="dialog" aria-modal="true" aria-label={title}>
+      <button type="button" className="admin-dialog__dismiss" aria-label="Cerrar" onClick={onClose} />
+      <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-dialog-title">
         <div className="admin-dialog__header">
-          <strong>{title}</strong>
-          <button type="button" aria-label="Cerrar" onClick={onClose}>
+          <strong id="admin-dialog-title">{title}</strong>
+          <button ref={closeRef} type="button" aria-label="Cerrar" onClick={onClose}>
             <X size={18} />
           </button>
         </div>
