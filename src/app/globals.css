@@ -3170,6 +3170,126 @@ body {
   color: #121821;
 }
 
+/* En celular las pestañas largas se sustituyen por un selector flotante.
+   El control queda sobre WhatsApp para que los dos sigan siendo alcanzables. */
+.admin-speed-dial {
+  display: none;
+}
+
+.admin-speed-dial__control {
+  position: relative;
+}
+
+.admin-speed-dial__scrim {
+  background: transparent;
+  border: 0;
+  inset: 0;
+  position: fixed;
+  z-index: 0;
+}
+
+.admin-speed-dial__actions {
+  align-items: flex-end;
+  bottom: calc(100% + 12px);
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 10px;
+  pointer-events: none;
+  position: absolute;
+  right: 0;
+  visibility: hidden;
+  z-index: 1;
+}
+
+.admin-speed-dial__action {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 10px;
+  opacity: 0;
+  padding: 0;
+  transform: translateY(12px) scale(0.92);
+  transform-origin: right center;
+  transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.admin-speed-dial__label {
+  background: #121821;
+  border-radius: 999px;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.22);
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  padding: 8px 12px;
+  white-space: nowrap;
+}
+
+.admin-speed-dial__icon,
+.admin-speed-dial__trigger {
+  align-items: center;
+  border-radius: 50%;
+  display: inline-flex;
+  justify-content: center;
+}
+
+.admin-speed-dial__icon {
+  background: #ffffff;
+  border: 1px solid #dfe6ef;
+  box-shadow: 0 12px 26px rgba(17, 24, 39, 0.18);
+  color: #283446;
+  height: 50px;
+  width: 50px;
+}
+
+.admin-speed-dial__action--active .admin-speed-dial__icon {
+  background: var(--red);
+  border-color: var(--red);
+  color: #ffffff;
+}
+
+.admin-speed-dial__action--active .admin-speed-dial__label {
+  background: var(--red-dark);
+}
+
+.admin-speed-dial__trigger {
+  background: var(--red);
+  border: 0;
+  box-shadow: 0 14px 32px rgba(230, 33, 53, 0.42);
+  color: #ffffff;
+  cursor: pointer;
+  height: 60px;
+  position: relative;
+  width: 60px;
+  z-index: 2;
+}
+
+.admin-speed-dial__plus {
+  transition: transform 220ms ease;
+}
+
+.admin-speed-dial__control.is-open .admin-speed-dial__actions {
+  pointer-events: auto;
+  visibility: visible;
+}
+
+.admin-speed-dial__control.is-open .admin-speed-dial__action {
+  opacity: 1;
+  transform: none;
+  transition-delay: calc(var(--action-index) * 35ms);
+}
+
+.admin-speed-dial__control.is-open .admin-speed-dial__plus {
+  transform: rotate(135deg);
+}
+
+.admin-speed-dial__action:focus-visible .admin-speed-dial__icon,
+.admin-speed-dial__trigger:focus-visible {
+  outline: 3px solid #ffffff;
+  outline-offset: 3px;
+}
+
 .admin-workspace {
   align-items: start;
   display: grid;
@@ -3803,6 +3923,7 @@ body {
 
 @media (max-width: 720px) {
   .admin-dashboard {
+    padding-bottom: 112px;
     padding-top: 34px;
   }
 
@@ -3810,13 +3931,20 @@ body {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
-  .admin-tabs {
-    border-radius: 18px;
-    width: 100%;
+  .admin-stats > div:last-child {
+    grid-column: 1 / -1;
   }
 
-  .admin-tabs button {
-    flex: 1 0 auto;
+  .admin-tabs {
+    display: none;
+  }
+
+  .admin-speed-dial {
+    bottom: calc(88px + env(safe-area-inset-bottom));
+    display: block;
+    position: fixed;
+    right: 16px;
+    z-index: 70;
   }
 
   .admin-list-header,
@@ -3866,6 +3994,13 @@ body {
 
   .admin-dialog-actions {
     display: grid;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-speed-dial__action,
+  .admin-speed-dial__plus {
+    transition: none;
   }
 }
 

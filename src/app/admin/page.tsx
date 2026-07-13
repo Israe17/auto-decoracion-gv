@@ -20,6 +20,7 @@ import { formatCRC } from "@/lib/catalog";
 import { firebaseEnabled } from "@/lib/firebase";
 import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
+import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import {
   fetchAdminData,
   importSeedCatalog,
@@ -441,6 +442,29 @@ export default function AdminPage() {
     });
   }
 
+  const tabs: [AdminTab, string][] = [
+    ["products", "Productos"],
+    ["offers", "Ofertas"],
+    ["promos", "Promociones"],
+    ["vehicles", "Modelos de autos"],
+    ["categories", "Categorias"]
+  ];
+
+  const sectionIcons: Record<AdminTab, ReactNode> = {
+    products: <Tags size={20} />,
+    offers: <Star size={20} />,
+    promos: <Megaphone size={20} />,
+    vehicles: <Car size={20} />,
+    categories: <FolderTree size={20} />
+  };
+
+  const speedDialActions: SpeedDialAction[] = tabs.map(([id, label]) => ({
+    icon: sectionIcons[id],
+    label,
+    active: activeTab === id,
+    onClick: () => setActiveTab(id)
+  }));
+
   return (
     <section className="section admin-page admin-dashboard">
       <div className="admin-heading">
@@ -512,22 +536,21 @@ export default function AdminPage() {
       </div>
 
       <div className="admin-tabs" role="tablist" aria-label="Administracion">
-        {[
-          ["products", "Productos"],
-          ["offers", "Ofertas"],
-          ["promos", "Promociones"],
-          ["vehicles", "Modelos de autos"],
-          ["categories", "Categorias"]
-        ].map(([id, label]) => (
+        {tabs.map(([id, label]) => (
           <button
             key={id}
             type="button"
+            role="tab"
             aria-selected={activeTab === id}
-            onClick={() => setActiveTab(id as AdminTab)}
+            onClick={() => setActiveTab(id)}
           >
             {label}
           </button>
         ))}
+      </div>
+
+      <div className="admin-speed-dial">
+        <ExpandableSpeedDial actions={speedDialActions} />
       </div>
 
       {message && <p className="form-status">{message}</p>}
