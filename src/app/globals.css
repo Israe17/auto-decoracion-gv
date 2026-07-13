@@ -3957,16 +3957,28 @@ body {
     display: grid;
   }
 
-  .admin-header-actions {
-    justify-content: stretch;
+  .admin-list-header--actions {
+    gap: 16px;
   }
 
-  .admin-header-actions .button {
+  .admin-list-header--actions > .admin-header-actions {
+    display: grid;
+    gap: 10px;
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
   }
 
-  .admin-search {
+  .admin-list-header--actions .admin-vehicle-filter,
+  .admin-list-header--actions .admin-search,
+  .admin-list-header--actions .button {
+    box-sizing: border-box;
+    max-width: none;
     width: 100%;
+  }
+
+  .admin-list-header--actions .button {
+    justify-content: center;
+    min-height: 52px;
   }
 
   .admin-row-actions {
