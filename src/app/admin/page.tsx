@@ -21,6 +21,7 @@ import { firebaseEnabled } from "@/lib/firebase";
 import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
+import { AdminStepper } from "@/components/admin/AdminStepper";
 import {
   fetchAdminData,
   importSeedCatalog,
@@ -97,9 +98,12 @@ export default function AdminPage() {
   const [productDialog, setProductDialog] = useState<Product | null>(null);
   const [offerDialog, setOfferDialog] = useState<Product | null | undefined>(undefined);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
+  const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<VehicleModel | null>(null);
+  const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false);
   const [promos, setPromos] = useState<Promo[]>([]);
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
+  const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [query, setQuery] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("all");
@@ -314,6 +318,7 @@ export default function AdminPage() {
       );
       setMessage("Categorias actualizadas.");
       setEditingCategory(null);
+      setCategoryDialogOpen(false);
       formElement.reset();
     } catch (error) {
       reportError(error);
@@ -346,6 +351,7 @@ export default function AdminPage() {
       );
       setMessage("Promociones actualizadas.");
       setEditingPromo(null);
+      setPromoDialogOpen(false);
       formElement.reset();
     } catch (error) {
       reportError(error);
@@ -415,6 +421,7 @@ export default function AdminPage() {
       );
       setMessage("Modelos actualizados.");
       setEditingVehicle(null);
+      setVehicleDialogOpen(false);
       formElement.reset();
     } catch (error) {
       reportError(error);
@@ -658,6 +665,11 @@ export default function AdminPage() {
           <AdminSimpleList
             title="Promociones del inicio"
             empty="No hay promociones; el carrusel muestra las categorias."
+            createLabel="Nueva promocion"
+            onCreate={() => {
+              setEditingPromo(null);
+              setPromoDialogOpen(true);
+            }}
             items={promos.map((promo) => ({
               id: promo.id,
               title: promo.title,
@@ -665,7 +677,10 @@ export default function AdminPage() {
                 promo.order ?? "—"
               }${promo.link ? ` · ${promo.link}` : ""}`,
               image: promo.image,
-              onEdit: () => setEditingPromo(promo),
+              onEdit: () => {
+                setEditingPromo(promo);
+                setPromoDialogOpen(true);
+              },
               onDelete: () => confirmDeletePromo(promo)
             }))}
           />
@@ -713,6 +728,11 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Modelos registrados"
+            createLabel="Nuevo modelo"
+            onCreate={() => {
+              setEditingVehicle(null);
+              setVehicleDialogOpen(true);
+            }}
             items={vehicles.map((vehicle) => ({
               id: vehicle.id,
               title: `${vehicle.make} ${vehicle.model}`,
@@ -721,7 +741,10 @@ export default function AdminPage() {
                   ? `${vehicle.fromYear}-${vehicle.toYear}`
                   : "Sin rango definido"
               } · ${productCountByVehicle[vehicle.id] || 0} producto(s)`,
-              onEdit: () => setEditingVehicle(vehicle),
+              onEdit: () => {
+                setEditingVehicle(vehicle);
+                setVehicleDialogOpen(true);
+              },
               onDelete: () => confirmDeleteVehicle(vehicle)
             }))}
           />
@@ -787,6 +810,11 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Categorias registradas"
+            createLabel="Nueva categoria"
+            onCreate={() => {
+              setEditingCategory(null);
+              setCategoryDialogOpen(true);
+            }}
             items={[...categories]
               .sort((a, b) => {
                 const pa = a.parent || a.slug;
@@ -804,7 +832,10 @@ export default function AdminPage() {
                     ? `Subcategoría de ${madre.name}`
                     : category.description,
                   image: category.image,
-                  onEdit: () => setEditingCategory(category),
+                  onEdit: () => {
+                    setEditingCategory(category);
+                    setCategoryDialogOpen(true);
+                  },
                   onDelete: () => confirmDeleteCategory(category)
                 };
               })}
@@ -828,6 +859,40 @@ export default function AdminPage() {
           initialProduct={offerDialog}
           onClose={() => setOfferDialog(undefined)}
           onSave={saveOffer}
+        />
+      )}
+
+      {promoDialogOpen && (
+        <PromoDialog
+          promo={editingPromo}
+          onClose={() => {
+            setPromoDialogOpen(false);
+            setEditingPromo(null);
+          }}
+          onSubmit={handlePromoSubmit}
+        />
+      )}
+
+      {vehicleDialogOpen && (
+        <VehicleDialog
+          vehicle={editingVehicle}
+          onClose={() => {
+            setVehicleDialogOpen(false);
+            setEditingVehicle(null);
+          }}
+          onSubmit={handleVehicleSubmit}
+        />
+      )}
+
+      {categoryDialogOpen && (
+        <CategoryDialog
+          category={editingCategory}
+          categories={categories}
+          onClose={() => {
+            setCategoryDialogOpen(false);
+            setEditingCategory(null);
+          }}
+          onSubmit={handleCategorySubmit}
         />
       )}
 
@@ -1016,7 +1081,12 @@ function ProductDialog({
 
   return (
     <AdminDialog title={product.name ? "Editar producto" : "Nuevo producto"} onClose={onClose}>
-      <form className="admin-form admin-dialog-form" onSubmit={handleSubmit}>
+      <form className="admin-form admin-dialog-form" noValidate onSubmit={handleSubmit}>
+        <AdminStepper
+          steps={["Datos del producto", "Venta e imágenes", "Compatibilidad"]}
+          submitLabel="Guardar producto"
+        >
+        <div>
         <label>
           Nombre del producto
           <input name="name" required defaultValue={product.name} placeholder="Estribos laterales negros" />
@@ -1062,6 +1132,8 @@ function ProductDialog({
           </label>
         </div>
 
+        </div>
+        <div>
         <div className="form-grid">
           <label>
             Modo de venta
@@ -1083,6 +1155,8 @@ function ProductDialog({
           folder="products"
         />
 
+        </div>
+        <div>
         <label>
           Descripcion
           <textarea name="description" rows={4} required defaultValue={product.description} />
@@ -1211,14 +1285,8 @@ function ProductDialog({
           </div>
         )}
 
-        <div className="admin-dialog-actions">
-          <button className="button button--secondary" type="button" onClick={onClose}>
-            Cancelar
-          </button>
-          <button className="button button--primary" type="submit">
-            <Save size={18} /> Guardar producto
-          </button>
         </div>
+        </AdminStepper>
       </form>
     </AdminDialog>
   );
@@ -1251,7 +1319,9 @@ function OfferDialog({
 
   return (
     <AdminDialog title={initialProduct ? "Editar promocion" : "Crear oferta"} onClose={onClose}>
-      <form key={selectedId} className="admin-form admin-dialog-form" onSubmit={handleSubmit}>
+      <form key={selectedId} className="admin-form admin-dialog-form" noValidate onSubmit={handleSubmit}>
+        <AdminStepper steps={["Producto", "Precio y visibilidad"]} submitLabel="Guardar promocion">
+        <div>
         <label>
           Producto
           <select
@@ -1287,6 +1357,8 @@ function OfferDialog({
           </div>
         )}
 
+        </div>
+        <div>
         <div className="form-grid">
           <label>
             Precio anterior
@@ -1308,14 +1380,155 @@ function OfferDialog({
           </label>
         </div>
 
-        <div className="admin-dialog-actions">
-          <button className="button button--secondary" type="button" onClick={onClose}>
-            Cancelar
-          </button>
-          <button className="button button--primary" type="submit">
-            <Save size={18} /> Guardar promocion
-          </button>
         </div>
+        </AdminStepper>
+      </form>
+    </AdminDialog>
+  );
+}
+
+function PromoDialog({
+  promo,
+  onClose,
+  onSubmit
+}: {
+  promo: Promo | null;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <AdminDialog title={promo ? "Editar promocion" : "Nueva promocion"} onClose={onClose}>
+      <form key={promo?.id || "new-promo"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
+        <AdminStepper steps={["Contenido", "Imagen y publicacion"]} submitLabel="Guardar promocion">
+          <div>
+            <label>
+              Titulo de la lamina
+              <input name="promoTitle" required defaultValue={promo?.title} />
+            </label>
+            <label>
+              Subtitulo (opcional)
+              <textarea name="promoSubtitle" rows={3} defaultValue={promo?.subtitle} />
+            </label>
+          </div>
+          <div>
+            <ImageUploadField
+              name="promoImage"
+              label="Imagen (banner)"
+              defaultValue={promo?.image}
+              required
+              folder="promos"
+            />
+            <label>
+              Enlace del boton
+              <input name="promoLink" placeholder="/catalogo?categoria=alfombras" defaultValue={promo?.link} />
+            </label>
+            <div className="form-grid">
+              <label>
+                Texto del boton
+                <input name="promoCta" placeholder="Ver promocion" defaultValue={promo?.ctaLabel} />
+              </label>
+              <label>
+                Orden
+                <input name="promoOrder" type="number" defaultValue={promo?.order} />
+              </label>
+            </div>
+            <label className="checkbox-row">
+              <input name="promoActive" type="checkbox" defaultChecked={promo ? promo.active !== false : true} />
+              <span>Visible en el inicio</span>
+            </label>
+          </div>
+        </AdminStepper>
+      </form>
+    </AdminDialog>
+  );
+}
+
+function VehicleDialog({
+  vehicle,
+  onClose,
+  onSubmit
+}: {
+  vehicle: VehicleModel | null;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <AdminDialog title={vehicle ? "Editar modelo" : "Nuevo modelo"} onClose={onClose}>
+      <form key={vehicle?.id || "new-vehicle"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
+        <AdminStepper steps={["Modelo", "Rango de anos"]} submitLabel="Guardar modelo">
+          <div className="form-grid">
+            <label>
+              Marca
+              <input name="make" required defaultValue={vehicle?.make} />
+            </label>
+            <label>
+              Modelo
+              <input name="model" required defaultValue={vehicle?.model} />
+            </label>
+          </div>
+          <div className="form-grid">
+            <label>
+              Desde
+              <input name="fromYear" type="number" defaultValue={vehicle?.fromYear} />
+            </label>
+            <label>
+              Hasta
+              <input name="toYear" type="number" defaultValue={vehicle?.toYear} />
+            </label>
+          </div>
+        </AdminStepper>
+      </form>
+    </AdminDialog>
+  );
+}
+
+function CategoryDialog({
+  category,
+  categories,
+  onClose,
+  onSubmit
+}: {
+  category: Category | null;
+  categories: Category[];
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <AdminDialog title={category ? "Editar categoria" : "Nueva categoria"} onClose={onClose}>
+      <form key={category?.id || "new-category"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
+        <AdminStepper steps={["Informacion", "Imagen y organizacion"]} submitLabel="Guardar categoria">
+          <div>
+            <label>
+              Nombre
+              <input name="categoryName" required defaultValue={category?.name} />
+            </label>
+            <label>
+              Descripcion
+              <textarea name="categoryDescription" rows={4} defaultValue={category?.description} />
+            </label>
+          </div>
+          <div>
+            <ImageUploadField
+              name="categoryImage"
+              label="Imagen"
+              defaultValue={category?.image}
+              folder="categories"
+            />
+            <label>
+              Categoria madre
+              <select name="categoryParent" defaultValue={category?.parent || ""}>
+                <option value="">Ninguna (categoria principal)</option>
+                {categories
+                  .filter((item) => !item.parent && item.id !== category?.id)
+                  .map((item) => (
+                    <option key={item.id} value={item.slug}>
+                      {item.name}
+                    </option>
+                  ))}
+              </select>
+            </label>
+          </div>
+        </AdminStepper>
       </form>
     </AdminDialog>
   );
@@ -1415,10 +1628,14 @@ function AdminOfferList({
 function AdminSimpleList({
   title,
   empty = "No hay elementos.",
-  items
+  items,
+  createLabel,
+  onCreate
 }: {
   title: string;
   empty?: string;
+  createLabel?: string;
+  onCreate?: () => void;
   items: Array<{
     id: string;
     title: string;
@@ -1435,6 +1652,11 @@ function AdminSimpleList({
           <strong>{title}</strong>
           <span>{items.length} elemento(s)</span>
         </div>
+        {onCreate && createLabel && (
+          <button className="button button--primary" type="button" onClick={onCreate}>
+            <Plus size={18} /> {createLabel}
+          </button>
+        )}
       </div>
       <div className="admin-product-list">
         {items.length ? (

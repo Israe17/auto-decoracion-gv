@@ -3855,6 +3855,67 @@ body {
   min-height: 46px;
 }
 
+/* Formularios administrativos guiados por pasos. */
+.admin-stepper {
+  display: grid;
+  gap: 14px;
+}
+
+.admin-stepper__progress {
+  display: flex;
+  gap: 6px;
+}
+
+.admin-stepper__progress span {
+  background: #e4eaf1;
+  border-radius: 999px;
+  flex: 1;
+  height: 5px;
+}
+
+.admin-stepper__progress span.is-active {
+  background: var(--red);
+}
+
+.admin-stepper__count {
+  color: #687386;
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.admin-stepper__title {
+  color: #121821;
+  font-size: 20px;
+  margin: -6px 0 0;
+}
+
+.admin-stepper__panel {
+  display: grid;
+  gap: 16px;
+}
+
+.admin-stepper__nav {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.admin-stepper__nav .button:first-child:not(:only-child) {
+  margin-right: auto;
+}
+
+.admin-workspace--simple > .admin-form--panel {
+  display: none;
+}
+
+.admin-workspace--simple > .admin-list-panel {
+  grid-column: 1 / -1;
+}
+
 .button--danger,
 .button--danger:hover {
   background: linear-gradient(135deg, #ef3348, #991b1b);
@@ -4058,6 +4119,23 @@ body {
 
   .admin-dialog-actions {
     display: grid;
+  }
+
+  .admin-stepper__nav {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    position: sticky;
+    bottom: 0;
+    background: #ffffff;
+    padding-top: 10px;
+  }
+
+  .admin-stepper__nav .button:first-child:not(:only-child) {
+    margin-right: 0;
+  }
+
+  .admin-stepper__nav .button:only-child {
+    grid-column: 1 / -1;
   }
 }
 
