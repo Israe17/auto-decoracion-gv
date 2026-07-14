@@ -1669,13 +1669,13 @@ function AdminOfferList({
                   </div>
 
                   <div className="admin-offer-card__actions">
-                    <button type="button" onClick={() => onView(product)}>
+                    <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={() => onView(product)}>
                       <Eye size={16} /> Ver detalle
                     </button>
-                    <button type="button" onClick={() => onEdit(product)}>
+                    <button type="button" aria-label="Editar promocion" title="Editar promocion" onClick={() => onEdit(product)}>
                       <Edit3 size={16} /> Editar promocion
                     </button>
-                    <button type="button" onClick={() => onRemove(product)}>
+                    <button type="button" aria-label="Quitar oferta" title="Quitar oferta" onClick={() => onRemove(product)}>
                       <Trash2 size={16} /> Quitar
                     </button>
                   </div>
