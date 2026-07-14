@@ -1,9 +1,16 @@
+"use client";
+
 import { MessageCircle } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
+import { usePathname } from "next/navigation";
 import { business } from "@/lib/business";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export function WhatsAppFloat() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/admin")) return null;
+
   return (
     <>
       <a
