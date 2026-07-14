@@ -7,6 +7,8 @@ import { VehicleModel } from "@/types";
 
 export type VehicleQuery = { make: string; model: string; year: string };
 
+const fallbackLatestYear = 2030;
+
 export function VehicleFinder({
   vehicles,
   compact = false,
@@ -36,7 +38,7 @@ export function VehicleFinder({
   const years = useMemo(() => {
     const selected = vehicles.find((v) => v.make === make && v.model === model);
     const from = selected?.fromYear ?? 2000;
-    const to = selected?.toYear ?? new Date().getFullYear() + 1;
+    const to = selected?.toYear ?? fallbackLatestYear;
     const list: number[] = [];
     for (let y = to; y >= from; y--) list.push(y);
     return list;
