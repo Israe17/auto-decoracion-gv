@@ -3901,6 +3901,10 @@ body {
   gap: 16px;
 }
 
+.admin-stepper__panel[hidden] {
+  display: none;
+}
+
 .admin-stepper__nav {
   align-items: center;
   display: flex;
