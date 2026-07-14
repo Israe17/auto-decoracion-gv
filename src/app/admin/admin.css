@@ -49,35 +49,95 @@
 
 .admin-session-bar {
   align-items: center;
-  color: var(--muted);
+  background: rgba(255, 255, 255, 0.96);
+  border-bottom: 1px solid #e5ebf2;
+  color: #64748b;
   display: flex;
-  font-size: 0.92rem;
-  gap: 12px;
-  justify-content: flex-end;
-  margin: 18px auto 0;
-  max-width: var(--max);
-  padding: 0 20px;
+  gap: 16px;
+  justify-content: space-between;
+  margin: 0;
+  max-width: none;
+  min-height: 62px;
+  padding: 10px max(20px, calc((100vw - var(--max)) / 2 + 24px));
+}
+
+.admin-session-bar__identity {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-session-bar__identity > span:last-child {
+  display: grid;
+  gap: 1px;
+  min-width: 0;
+}
+
+.admin-session-bar__identity small {
+  color: #718096;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .admin-session-bar strong {
-  color: var(--ink);
+  color: #1c2634;
+  font-size: 14px;
+  font-weight: 650;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-session-bar__status {
+  background: #10b981;
+  border: 4px solid #dff8ed;
+  border-radius: 999px;
+  box-sizing: content-box;
+  height: 7px;
+  width: 7px;
 }
 
 .admin-session-bar button {
   align-items: center;
-  background: none;
-  border: 1px solid var(--line);
+  background: #f8fafc;
+  border: 1px solid #dfe7f0;
   border-radius: 999px;
-  color: inherit;
+  color: #44546a;
   cursor: pointer;
   display: inline-flex;
+  flex: none;
+  font-size: 13px;
+  font-weight: 650;
   gap: 6px;
-  padding: 7px 14px;
+  min-height: 40px;
+  padding: 0 14px;
+  transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+  white-space: nowrap;
 }
 
 .admin-session-bar button:hover {
   border-color: var(--red);
   color: var(--red);
+}
+
+@media (max-width: 720px) {
+  .admin-session-bar {
+    gap: 10px;
+    min-height: 58px;
+    padding: 9px 18px;
+  }
+
+  .admin-session-bar__identity {
+    flex: 1;
+  }
+
+  .admin-session-bar button {
+    min-height: 38px;
+    padding: 0 12px;
+  }
 }
 
 /* Subida de imagenes (categorias, promociones, productos) */

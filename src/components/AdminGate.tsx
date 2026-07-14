@@ -95,11 +95,16 @@ export function AdminGate({ children }: { children: ReactNode }) {
   return (
     <>
       <div className="admin-session-bar">
-        <span>
-          Sesion: <strong>{user.email}</strong>
-        </span>
+        <div className="admin-session-bar__identity">
+          <span className="admin-session-bar__status" aria-hidden="true" />
+          <span>
+            <small>Sesion activa</small>
+            <strong title={user.email || undefined}>{user.email}</strong>
+          </span>
+        </div>
         <button
           type="button"
+          aria-label="Cerrar sesion"
           onClick={() => {
             const services = getFirebaseServices();
             if (services) signOut(services.auth);
