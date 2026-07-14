@@ -533,7 +533,8 @@ export default function AdminPage() {
       id: editingBrand?.id || `brand-${makeSlug(name)}`,
       slug: editingBrand?.slug || makeSlug(name),
       name,
-      description: String(form.get("brandDescription") || "").trim() || undefined
+      description: String(form.get("brandDescription") || "").trim() || undefined,
+      logo: String(form.get("brandLogo") || "").trim() || undefined
     };
     const exists = brands.some((item) => item.id === brand.id);
     const renamedProducts = editingBrand && editingBrand.name !== brand.name
@@ -1056,6 +1057,12 @@ export default function AdminPage() {
                   Descripcion (opcional)
                   <textarea name="brandDescription" rows={3} defaultValue={editingBrand?.description} />
                 </label>
+                <ImageUploadField
+                  name="brandLogo"
+                  label="Logo de la marca (opcional)"
+                  defaultValue={editingBrand?.logo}
+                  folder="brands"
+                />
                 <button className="button button--primary" type="submit">
                   <Save size={18} /> Guardar marca
                 </button>
@@ -1074,6 +1081,7 @@ export default function AdminPage() {
                 id: brand.id,
                 title: brand.name,
                 meta: `${brand.description || "Sin descripcion"} · ${productCountByBrand[brand.id] || 0} producto(s)`,
+                image: brand.logo,
                 onView: () => setDetail({ kind: "brand", item: brand }),
                 onEdit: () => {
                   setEditingBrand(brand);
@@ -1991,7 +1999,7 @@ function BrandDialog({
   return (
     <AdminDialog title={brand ? "Editar marca" : "Nueva marca"} onClose={onClose}>
       <form key={brand?.id || "new-brand"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
-        <AdminStepper steps={["Informacion de marca"]} submitLabel="Guardar marca">
+        <AdminStepper steps={["Informacion de marca", "Logo"]} submitLabel="Guardar marca">
           <div>
             <label>
               Nombre
@@ -2001,6 +2009,14 @@ function BrandDialog({
               Descripcion (opcional)
               <textarea name="brandDescription" rows={4} defaultValue={brand?.description} />
             </label>
+          </div>
+          <div>
+            <ImageUploadField
+              name="brandLogo"
+              label="Logo de la marca (opcional)"
+              defaultValue={brand?.logo}
+              folder="brands"
+            />
           </div>
         </AdminStepper>
       </form>
@@ -2639,7 +2655,11 @@ function AdminDetailDialog({
       return (
         <>
           <div className="admin-detail-hero admin-detail-hero--icon">
-            <span className="admin-detail-vehicle-icon"><BadgeCheck size={36} /></span>
+            {brand.logo ? (
+              <img src={brand.logo} alt={brand.name} />
+            ) : (
+              <span className="admin-detail-vehicle-icon"><BadgeCheck size={36} /></span>
+            )}
             <div>
               <span className="admin-detail-kicker">Marca comercial</span>
               <h2>{brand.name}</h2>

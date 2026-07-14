@@ -27,6 +27,7 @@ export type Brand = {
   slug: string;
   name: string;
   description?: string;
+  logo?: string;
 };
 
 export type Product = {

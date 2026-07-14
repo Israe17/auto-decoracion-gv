@@ -3906,6 +3906,18 @@ body {
   grid-template-columns: 118px minmax(0, 1fr);
 }
 
+.admin-detail-hero--icon > img {
+  align-self: center;
+  background: #ffffff;
+  border-radius: 12px;
+  height: 86px;
+  margin: 16px;
+  min-height: 0;
+  object-fit: contain;
+  padding: 10px;
+  width: 86px;
+}
+
 .admin-detail-vehicle-icon {
   align-items: center;
   background: #1d2530;
@@ -4453,6 +4465,13 @@ body {
 
   .admin-detail-hero--icon > div {
     padding: 16px;
+  }
+
+  .admin-detail-hero--icon > img {
+    height: 64px;
+    margin: 12px;
+    padding: 7px;
+    width: 64px;
   }
 
   .admin-detail-facts {
