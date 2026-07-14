@@ -24,6 +24,11 @@ import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
 import {
+  AdminCollectionSkeleton,
+  AdminPanelReveal,
+  AdminStatsSkeleton
+} from "@/components/admin/AdminLoadingSkeleton";
+import {
   fetchAdminData,
   importSeedCatalog,
   removeCategory,
@@ -529,26 +534,32 @@ export default function AdminPage() {
       )}
 
       <div className="admin-stats">
-        <div>
-          <span>Productos</span>
-          <strong>{stats.products}</strong>
-        </div>
-        <div>
-          <span>Ofertas</span>
-          <strong>{stats.offers}</strong>
-        </div>
-        <div>
-          <span>Destacados</span>
-          <strong>{stats.featured}</strong>
-        </div>
-        <div>
-          <span>Categorias</span>
-          <strong>{stats.categories}</strong>
-        </div>
-        <div>
-          <span>Modelos</span>
-          <strong>{stats.vehicles}</strong>
-        </div>
+        {loading ? (
+          <AdminStatsSkeleton />
+        ) : (
+          <>
+            <div>
+              <span>Productos</span>
+              <strong>{stats.products}</strong>
+            </div>
+            <div>
+              <span>Ofertas</span>
+              <strong>{stats.offers}</strong>
+            </div>
+            <div>
+              <span>Destacados</span>
+              <strong>{stats.featured}</strong>
+            </div>
+            <div>
+              <span>Categorias</span>
+              <strong>{stats.categories}</strong>
+            </div>
+            <div>
+              <span>Modelos</span>
+              <strong>{stats.vehicles}</strong>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="admin-tabs" role="tablist" aria-label="Administracion">
@@ -571,38 +582,43 @@ export default function AdminPage() {
 
       {message && <p className="form-status">{message}</p>}
 
-      {loading && <p className="admin-empty">Cargando datos...</p>}
+      {loading && <AdminCollectionSkeleton tab={activeTab} />}
 
       {!loading && activeTab === "products" && (
-        <ProductAdminPanel
-          products={filteredProducts}
-          query={query}
-          onQueryChange={setQuery}
-          vehicles={vehicles}
-          vehicleFilter={vehicleFilter}
-          onVehicleFilterChange={setVehicleFilter}
-          onCreate={() => setProductDialog(emptyProduct(categories))}
-          onView={(product) => setDetail({ kind: "product", item: product })}
-          onEdit={setProductDialog}
-          onOffer={setOfferDialog}
-          onDelete={confirmDeleteProduct}
-        />
+        <AdminPanelReveal tab="products">
+          <ProductAdminPanel
+            products={filteredProducts}
+            query={query}
+            onQueryChange={setQuery}
+            vehicles={vehicles}
+            vehicleFilter={vehicleFilter}
+            onVehicleFilterChange={setVehicleFilter}
+            onCreate={() => setProductDialog(emptyProduct(categories))}
+            onView={(product) => setDetail({ kind: "product", item: product })}
+            onEdit={setProductDialog}
+            onOffer={setOfferDialog}
+            onDelete={confirmDeleteProduct}
+          />
+        </AdminPanelReveal>
       )}
 
       {!loading && activeTab === "offers" && (
-        <AdminOfferList
-          products={offerProducts}
-          allProducts={products}
-          empty="No hay productos marcados como oferta o destacados."
-          onCreate={() => setOfferDialog(null)}
-          onView={(product) => setDetail({ kind: "offer", item: product })}
-          onEdit={setOfferDialog}
-          onRemove={confirmRemoveOffer}
-        />
+        <AdminPanelReveal tab="offers">
+          <AdminOfferList
+            products={offerProducts}
+            allProducts={products}
+            empty="No hay productos marcados como oferta o destacados."
+            onCreate={() => setOfferDialog(null)}
+            onView={(product) => setDetail({ kind: "offer", item: product })}
+            onEdit={setOfferDialog}
+            onRemove={confirmRemoveOffer}
+          />
+        </AdminPanelReveal>
       )}
 
       {!loading && activeTab === "promos" && (
-        <div className="admin-workspace admin-workspace--simple">
+        <AdminPanelReveal tab="promos">
+          <div className="admin-workspace admin-workspace--simple">
           <form
             key={editingPromo?.id || "new-promo"}
             className="admin-form admin-form--panel"
@@ -696,11 +712,13 @@ export default function AdminPage() {
               onDelete: () => confirmDeletePromo(promo)
             }))}
           />
-        </div>
+          </div>
+        </AdminPanelReveal>
       )}
 
       {!loading && activeTab === "vehicles" && (
-        <div className="admin-workspace admin-workspace--simple">
+        <AdminPanelReveal tab="vehicles">
+          <div className="admin-workspace admin-workspace--simple">
           <form
             key={editingVehicle?.id || "new-vehicle"}
             className="admin-form admin-form--panel"
@@ -761,11 +779,13 @@ export default function AdminPage() {
               onDelete: () => confirmDeleteVehicle(vehicle)
             }))}
           />
-        </div>
+          </div>
+        </AdminPanelReveal>
       )}
 
       {!loading && activeTab === "categories" && (
-        <div className="admin-workspace admin-workspace--simple">
+        <AdminPanelReveal tab="categories">
+          <div className="admin-workspace admin-workspace--simple">
           <form
             key={editingCategory?.id || "new-category"}
             className="admin-form admin-form--panel"
@@ -854,7 +874,8 @@ export default function AdminPage() {
                 };
               })}
           />
-        </div>
+          </div>
+        </AdminPanelReveal>
       )}
 
       {productDialog && (
