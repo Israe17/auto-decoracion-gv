@@ -20,6 +20,7 @@ type Filters = {
   soloCotizar: boolean;
   disponible: boolean;
   bajoPedido: boolean;
+  lineaPropia: boolean;
 };
 
 function vehicleMatches(product: Product, filters: Filters) {
@@ -64,7 +65,8 @@ export function CatalogExplorer({
     precioVisible: true,
     soloCotizar: true,
     disponible: true,
-    bajoPedido: true
+    bajoPedido: true,
+    lineaPropia: searchParams.get("linea") === "propia"
   }));
 
   // Si la URL cambia desde afuera (busqueda del header, link de categoria),
@@ -76,7 +78,8 @@ export function CatalogExplorer({
       categoria: searchParams.get("categoria") || "",
       marca: searchParams.get("marca") || "",
       modelo: searchParams.get("modelo") || "",
-      ano: searchParams.get("ano") || ""
+      ano: searchParams.get("ano") || "",
+      lineaPropia: searchParams.get("linea") === "propia"
     }));
   }, [searchParams]);
 
@@ -90,6 +93,7 @@ export function CatalogExplorer({
     if (merged.marca) params.set("marca", merged.marca);
     if (merged.modelo) params.set("modelo", merged.modelo);
     if (merged.ano) params.set("ano", merged.ano);
+    if (merged.lineaPropia) params.set("linea", "propia");
     const qs = params.toString();
     router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
   }
@@ -100,7 +104,13 @@ export function CatalogExplorer({
     return products.filter((product) => {
       if (term) {
         const haystack = normalize(
-          [product.name, product.categoryName, product.description, product.tags.join(" ")].join(" ")
+          [
+            product.name,
+            product.categoryName,
+            product.brandName,
+            product.description,
+            product.tags.join(" ")
+          ].join(" ")
         );
         if (!haystack.includes(term)) return false;
       }
@@ -111,6 +121,7 @@ export function CatalogExplorer({
         return false;
       }
       if (!vehicleMatches(product, filters)) return false;
+      if (filters.lineaPropia && !product.isOwnBrand) return false;
       if (!filters.precioVisible && product.saleMode === "price_quote") return false;
       if (!filters.soloCotizar && product.saleMode === "quote_only") return false;
       if (!filters.disponible && product.status === "available") return false;
@@ -121,14 +132,14 @@ export function CatalogExplorer({
 
   const hasVehicleFilter = Boolean(filters.marca || filters.modelo || filters.ano);
   const hasAnyFilter =
-    Boolean(filters.q || filters.categoria) || hasVehicleFilter;
+    Boolean(filters.q || filters.categoria || filters.lineaPropia) || hasVehicleFilter;
 
   const vehicleLabel = [filters.marca, filters.modelo, filters.ano]
     .filter(Boolean)
     .join(" ");
 
   function clearAll() {
-    apply({ q: "", categoria: "", marca: "", modelo: "", ano: "" });
+    apply({ q: "", categoria: "", marca: "", modelo: "", ano: "", lineaPropia: false });
   }
 
   return (
@@ -196,6 +207,17 @@ export function CatalogExplorer({
               onChange={(event) => apply({ soloCotizar: event.target.checked })}
             />{" "}
             Solo cotizar
+          </label>
+        </div>
+        <div className="filter-block">
+          <strong>Linea</strong>
+          <label>
+            <input
+              type="checkbox"
+              checked={filters.lineaPropia}
+              onChange={(event) => apply({ lineaPropia: event.target.checked })}
+            />{" "}
+            Solo G&amp;V System
           </label>
         </div>
         <div className="filter-block">

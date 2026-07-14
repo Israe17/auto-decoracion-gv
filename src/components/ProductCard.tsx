@@ -22,6 +22,7 @@ export function ProductCard({ product }: { product: Product }) {
       </Link>
       <div className="product-card__body">
         <span className="product-card__category">{product.categoryName}</span>
+        {product.isOwnBrand && <span className="product-card__brand">G&amp;V System</span>}
         <Link href={`/productos/${product.slug}`}>
           <h3>{product.name}</h3>
         </Link>

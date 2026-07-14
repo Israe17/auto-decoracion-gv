@@ -37,6 +37,9 @@ export type Product = {
   images: string[];
   description: string;
   tags: string[];
+  // Marca comercial del producto. La linea propia usa G&V System.
+  brandName?: string;
+  isOwnBrand?: boolean;
   featured?: boolean;
   // Fechas YYYY-MM-DD en horario de Costa Rica. Sin fecha = visible de inmediato o sin vencimiento.
   featuredFrom?: string;

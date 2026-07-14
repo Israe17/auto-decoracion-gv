@@ -98,6 +98,8 @@ function emptyProduct(categories: Category[]): Product {
     images: [],
     description: "",
     tags: [],
+    brandName: "",
+    isOwnBrand: false,
     featured: false
   };
 }
@@ -1145,7 +1147,14 @@ function ProductAdminPanel({
             <img src={product.images[0]} alt={product.name} />
             <div>
               <strong>{product.name}</strong>
-              <span>{product.categoryName}</span>
+              <span>
+                {product.categoryName}
+                {product.isOwnBrand
+                  ? " - Linea propia G&V System"
+                  : product.brandName
+                    ? ` - ${product.brandName}`
+                    : ""}
+              </span>
               <small>
                 {product.oldPrice ? "Oferta" : "Sin oferta"} -{" "}
                 {product.featured ? featuredStatusLabel(product) : "Normal"} -{" "}
@@ -1187,6 +1196,8 @@ function ProductDialog({
   onSave: (product: Product) => void;
 }) {
   const [compatibilityMode, setCompatibilityMode] = useState(product.compatibilityMode);
+  const [isOwnBrand, setIsOwnBrand] = useState(Boolean(product.isOwnBrand));
+  const [brandName, setBrandName] = useState(product.brandName || "");
   const [vehicleRows, setVehicleRows] = useState<VehicleCompatibility[]>(
     product.vehicles.length ? product.vehicles : []
   );
@@ -1252,6 +1263,8 @@ function ProductDialog({
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean),
+      brandName: isOwnBrand ? "G&V System" : brandName.trim() || undefined,
+      isOwnBrand,
       featured: product.featured
     });
   }
@@ -1306,6 +1319,31 @@ function ProductDialog({
               <option value="on_request">Bajo pedido</option>
               <option value="sold_out">Agotado</option>
             </select>
+          </label>
+        </div>
+
+        <div className="form-grid">
+          <label>
+            Marca del producto
+            <input
+              name="brandName"
+              value={isOwnBrand ? "G&V System" : brandName}
+              onChange={(event) => setBrandName(event.target.value)}
+              placeholder="Ej: Hella, Osram"
+              disabled={isOwnBrand}
+            />
+          </label>
+          <label className="checkbox-row checkbox-row--switch admin-dialog-switch">
+            <input
+              name="isOwnBrand"
+              type="checkbox"
+              checked={isOwnBrand}
+              onChange={(event) => setIsOwnBrand(event.target.checked)}
+            />
+            <span className="switch-ui" aria-hidden="true">
+              <Star size={14} />
+            </span>
+            <span>Linea propia G&amp;V System</span>
           </label>
         </div>
 
@@ -2090,6 +2128,7 @@ function AdminDetailDialog({
 
           <div className="admin-detail-facts">
             <div><span>Categoria</span><strong>{product.categoryName}</strong></div>
+            <div><span>Marca</span><strong>{product.isOwnBrand ? "G&V System (linea propia)" : product.brandName || "Sin marca"}</strong></div>
             <div><span>Compatibilidad</span><strong>{product.compatibilityMode === "universal" ? "Universal" : "Especifica"}</strong></div>
             <div><span>Etiquetas</span><strong>{product.tags.length ? product.tags.join(", ") : "Sin etiquetas"}</strong></div>
           </div>

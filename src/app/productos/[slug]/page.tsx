@@ -97,6 +97,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     description: product.description,
     image: product.images,
     url: `${siteUrl}/productos/${product.slug}`,
+    ...(product.brandName
+      ? {
+          brand: {
+            "@type": "Brand",
+            name: product.brandName
+          }
+        }
+      : {}),
     ...(product.saleMode === "price_quote" && product.price
       ? {
           offers: {
@@ -147,6 +155,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="product-info">
             <div className="product-info__topline">
               <span className="eyebrow">{product.categoryName}</span>
+              {product.isOwnBrand && <span className="product-status product-status--own-brand">G&amp;V System</span>}
               <span className="product-status">{statusLabel}</span>
             </div>
 

@@ -27,6 +27,9 @@ export default async function Home() {
   const showcaseProducts = featured.length
     ? featured
     : products.filter((product) => product.status !== "sold_out").slice(0, 4);
+  const ownBrandProducts = products
+    .filter((product) => product.isOwnBrand && product.status !== "sold_out")
+    .slice(0, 4);
   const mainCategories = topCategories(categories);
 
   return (
@@ -84,6 +87,25 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      {ownBrandProducts.length > 0 && (
+        <section className="section section--own-brand">
+          <div className="section__header">
+            <div>
+              <span className="eyebrow">Linea propia</span>
+              <h2>Productos G&amp;V System</h2>
+            </div>
+            <Link href="/catalogo?linea=propia" className="text-link">
+              Ver linea completa <ArrowRight size={18} />
+            </Link>
+          </div>
+          <div className="product-grid">
+            {ownBrandProducts.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
 
       <section className="section section--tight">
         <CompatHero>

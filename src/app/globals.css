@@ -906,6 +906,17 @@ img {
   padding: 8px 11px;
 }
 
+.product-status--own-brand,
+.product-card__brand {
+  background: rgba(230, 33, 53, 0.08);
+  border: 1px solid rgba(230, 33, 53, 0.16);
+  border-radius: 999px;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 800;
+  padding: 7px 10px;
+}
+
 .product-info h1 {
   font-size: clamp(29px, 2.5vw, 37px);
   font-weight: 650;
@@ -3870,6 +3881,11 @@ body {
   font-weight: var(--font-semibold);
   letter-spacing: 0.04em;
   text-transform: uppercase;
+}
+
+.product-card__brand {
+  align-self: start;
+  width: fit-content;
 }
 
 .admin-detail-hero h2 {
