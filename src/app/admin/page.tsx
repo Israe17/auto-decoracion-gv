@@ -19,7 +19,11 @@ import {
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
 import { firebaseEnabled } from "@/lib/firebase";
-import { getFeaturedStatus, isProductFeaturedActive } from "@/lib/featured";
+import {
+  getFeaturedStatus,
+  isProductFeaturedActive,
+  selectActiveFeaturedProducts
+} from "@/lib/featured";
 import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
@@ -205,6 +209,14 @@ export default function AdminPage() {
   }, [products, vehicles]);
 
   const offerProducts = products.filter((product) => product.oldPrice || product.featured);
+  const activeFeaturedProducts = useMemo(
+    () => selectActiveFeaturedProducts(products, 4),
+    [products]
+  );
+  const scheduledFeaturedCount = useMemo(
+    () => products.filter((product) => getFeaturedStatus(product) === "scheduled").length,
+    [products]
+  );
 
   const stats = {
     products: products.length,
@@ -614,19 +626,27 @@ export default function AdminPage() {
 
       {!loading && activeTab === "products" && (
         <AdminPanelReveal tab="products">
-          <ProductAdminPanel
-            products={filteredProducts}
-            query={query}
-            onQueryChange={setQuery}
-            vehicles={vehicles}
-            vehicleFilter={vehicleFilter}
-            onVehicleFilterChange={setVehicleFilter}
-            onCreate={() => setProductDialog(emptyProduct(categories))}
-            onView={(product) => setDetail({ kind: "product", item: product })}
-            onEdit={setProductDialog}
-            onOffer={setOfferDialog}
-            onDelete={confirmDeleteProduct}
-          />
+          <div className="admin-products-stack">
+            <FeaturedOverview
+              products={activeFeaturedProducts}
+              scheduledCount={scheduledFeaturedCount}
+              onManage={() => setActiveTab("offers")}
+              onEdit={setOfferDialog}
+            />
+            <ProductAdminPanel
+              products={filteredProducts}
+              query={query}
+              onQueryChange={setQuery}
+              vehicles={vehicles}
+              vehicleFilter={vehicleFilter}
+              onVehicleFilterChange={setVehicleFilter}
+              onCreate={() => setProductDialog(emptyProduct(categories))}
+              onView={(product) => setDetail({ kind: "product", item: product })}
+              onEdit={setProductDialog}
+              onOffer={setOfferDialog}
+              onDelete={confirmDeleteProduct}
+            />
+          </div>
         </AdminPanelReveal>
       )}
 
@@ -1003,6 +1023,60 @@ export default function AdminPage() {
             setConfirmState(null);
           }}
         />
+      )}
+    </section>
+  );
+}
+
+function FeaturedOverview({
+  products,
+  scheduledCount,
+  onManage,
+  onEdit
+}: {
+  products: Product[];
+  scheduledCount: number;
+  onManage: () => void;
+  onEdit: (product: Product) => void;
+}) {
+  return (
+    <section className="admin-featured-overview" aria-labelledby="featured-overview-title">
+      <div className="admin-featured-overview__header">
+        <div>
+          <span className="eyebrow">Inicio</span>
+          <h2 id="featured-overview-title">Destacados de la semana</h2>
+          <p>
+            {products.length} activo(s)
+            {scheduledCount ? ` y ${scheduledCount} programado(s)` : ""} en la vitrina principal.
+          </p>
+        </div>
+        <button className="button button--secondary" type="button" onClick={onManage}>
+          <Star size={18} /> Gestionar destacados
+        </button>
+      </div>
+
+      {products.length ? (
+        <div className="admin-featured-overview__grid">
+          {products.map((product, index) => (
+            <button
+              className="admin-featured-overview__item"
+              key={product.id}
+              type="button"
+              onClick={() => onEdit(product)}
+            >
+              <img src={product.images[0]} alt="" />
+              <span>
+                <small>#{product.featuredOrder ?? index + 1}</small>
+                <strong>{product.name}</strong>
+                <em>{product.featuredUntil ? `Hasta ${product.featuredUntil}` : "Sin vencimiento"}</em>
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="admin-featured-overview__empty">
+          No hay destacados activos. Agregue uno para que aparezca en la portada.
+        </p>
       )}
     </section>
   );
