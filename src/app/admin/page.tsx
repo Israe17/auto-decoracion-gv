@@ -2227,7 +2227,7 @@ function AdminDetailDialog({
 
   return (
     <AdminDialog title={detailTitle} onClose={onClose}>
-      <div className="admin-detail">{detailBody}</div>
+      <div className="admin-detail" data-lenis-prevent>{detailBody}</div>
     </AdminDialog>
   );
 }

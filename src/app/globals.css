@@ -3825,14 +3825,17 @@ body {
 }
 
 .admin-detail {
+  -webkit-overflow-scrolling: touch;
   display: grid;
   gap: 18px;
   max-height: calc(86vh - 78px);
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   overscroll-behavior: contain;
   padding: 22px;
   scroll-padding: 20px 0 96px;
+  touch-action: pan-y;
 }
 
 .admin-detail-hero {

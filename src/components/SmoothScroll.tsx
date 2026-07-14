@@ -19,7 +19,8 @@ export function SmoothScroll() {
       smoothWheel: true,
       syncTouch: true, // scroll suave también en celular (elegido por el dueño)
       syncTouchLerp: 0.08,
-      anchors: true // enlaces #ancla siguen funcionando, con desplazamiento suave
+      anchors: true,
+      prevent: (node) => Boolean(node.closest("[data-lenis-prevent]"))
     });
 
     // Lenis maneja el scroll; avisamos a ScrollTrigger en cada frame.
