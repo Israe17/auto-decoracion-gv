@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
+import gsap from "gsap";
 import { VehicleModel } from "@/types";
 
 export type VehicleQuery = { make: string; model: string; year: string };
@@ -21,6 +22,7 @@ export function VehicleFinder({
   onSearch?: (query: VehicleQuery) => void;
 }) {
   const router = useRouter();
+  const formRef = useRef<HTMLFormElement>(null);
   const [make, setMake] = useState(initial?.make || "");
   const [model, setModel] = useState(initial?.model || "");
   const [year, setYear] = useState(initial?.year || "");
@@ -44,6 +46,34 @@ export function VehicleFinder({
     return list;
   }, [vehicles, make, model]);
 
+  useEffect(() => {
+    const form = formRef.current;
+    if (!form || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const bounds = form.getBoundingClientRect();
+    const isAlreadyVisible = bounds.top < window.innerHeight * 0.9 && bounds.bottom > 0;
+    if (isAlreadyVisible) return;
+
+    let observer!: IntersectionObserver;
+    const ctx = gsap.context(() => {
+      gsap.set(form, { autoAlpha: 0, y: 28 });
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          observer.disconnect();
+          gsap.to(form, { autoAlpha: 1, y: 0, duration: 0.65, ease: "power2.out" });
+        },
+        { rootMargin: "0px 0px -12% 0px" }
+      );
+      observer.observe(form);
+    }, form);
+
+    return () => {
+      observer.disconnect();
+      ctx.revert();
+    };
+  }, []);
+
   function handleSearch() {
     const query = { make, model, year };
     if (onSearch) {
@@ -59,6 +89,7 @@ export function VehicleFinder({
 
   return (
     <form
+      ref={formRef}
       className={compact ? "vehicle-finder vehicle-finder--compact" : "vehicle-finder"}
       onSubmit={(event) => {
         event.preventDefault();

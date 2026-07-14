@@ -11,7 +11,6 @@ const revealSelectors = [
   ".section__header",
   ".split__copy",
   ".compat-hero",
-  ".vehicle-finder",
   ".cta-band",
   ".product-gallery",
   ".product-info",
@@ -25,7 +24,6 @@ const revealSelectors = [
 const staggerGroups: Array<[parent: string, children: string]> = [
   [".benefits", ":scope > div"],
   [".service-grid", ".service-card"],
-  [".product-grid", ".product-card"],
   [".category-grid", ".category-card"],
   [".faq", "details"]
 ];

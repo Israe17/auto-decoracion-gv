@@ -1,13 +1,47 @@
+"use client";
+
+import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { PackageCheck } from "lucide-react";
+import gsap from "gsap";
 import { formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
 import { ProductActions } from "./ProductActions";
 
 export function ProductCard({ product }: { product: Product }) {
+  const cardRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const card = cardRef.current;
+    if (!card || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const bounds = card.getBoundingClientRect();
+    const isAlreadyVisible = bounds.top < window.innerHeight * 0.9 && bounds.bottom > 0;
+    if (isAlreadyVisible) return;
+
+    let observer!: IntersectionObserver;
+    const ctx = gsap.context(() => {
+      gsap.set(card, { autoAlpha: 0, y: 24 });
+      observer = new IntersectionObserver(
+        ([entry]) => {
+          if (!entry.isIntersecting) return;
+          observer.disconnect();
+          gsap.to(card, { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" });
+        },
+        { rootMargin: "0px 0px -12% 0px" }
+      );
+      observer.observe(card);
+    }, card);
+
+    return () => {
+      observer.disconnect();
+      ctx.revert();
+    };
+  }, []);
+
   return (
-    <article className="product-card">
+    <article ref={cardRef} className="product-card">
       <Link href={`/productos/${product.slug}`} className="product-card__image">
         {(product.oldPrice || product.featured) && (
           <span className="badge">{product.oldPrice ? "Oferta" : "Destacado"}</span>
