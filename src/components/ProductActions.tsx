@@ -52,7 +52,9 @@ export function ProductActions({
         aria-label={`Cotizar ${product.name} por WhatsApp`}
         title="Cotizar por WhatsApp"
       >
-        <MessageCircle size={18} /> Cotizar por WhatsApp
+        <MessageCircle size={18} />
+        <span className="product-action__label product-action__label--mobile">Cotizar</span>
+        <span className="product-action__label product-action__label--desktop">Cotizar por WhatsApp</span>
       </a>
       <button
         className="button button--secondary"
@@ -60,7 +62,10 @@ export function ProductActions({
         aria-label={`Agregar ${product.name} a la cotizacion`}
         title="Agregar a la cotizacion"
       >
-        <Plus size={18} /> {compact ? "Agregar" : "Agregar a cotizacion"}
+        <Plus size={18} />
+        <span className="product-action__label product-action__label--desktop">
+          {compact ? "Agregar" : "Agregar a cotizacion"}
+        </span>
       </button>
     </div>
   );
