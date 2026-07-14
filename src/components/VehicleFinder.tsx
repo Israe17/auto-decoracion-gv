@@ -106,6 +106,7 @@ export function VehicleFinder({
         Marca
         <CustomSelect
           ariaLabel="Marca"
+          className={compact ? "" : "custom-select--dark"}
           options={[
             { label: "Todas", value: "" },
             ...makes.map((item) => ({ label: item, value: item }))
@@ -122,6 +123,7 @@ export function VehicleFinder({
         Modelo
         <CustomSelect
           ariaLabel="Modelo"
+          className={compact ? "" : "custom-select--dark"}
           options={[
             { label: "Todos", value: "" },
             ...models.map((item) => ({ label: item.model, value: item.model }))
@@ -137,6 +139,7 @@ export function VehicleFinder({
         Año
         <CustomSelect
           ariaLabel="Año"
+          className={compact ? "" : "custom-select--dark"}
           options={[
             { label: "Todos", value: "" },
             ...years.map((item) => ({ label: String(item), value: String(item) }))

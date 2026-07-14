@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { PackageSearch, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
+import { CustomSelect } from "@/components/CustomSelect";
 import { VehicleFinder, VehicleQuery } from "@/components/VehicleFinder";
 import { categoryScope, childCategories, topCategories } from "@/lib/catalog";
 import { normalize } from "@/lib/text";
@@ -162,32 +163,22 @@ export function CatalogExplorer({
 
         <div className="filter-block">
           <strong>Categoría</strong>
-          <select
+          <CustomSelect
+            ariaLabel="Categoría"
+            className="filter-block__select"
+            options={[
+              { label: "Todas las categorías", value: "" },
+              ...topCategories(categories).flatMap((category) => {
+                const children = childCategories(categories, category.slug);
+                return [
+                  { label: children.length ? `${category.name} (toda la categoría)` : category.name, value: category.slug },
+                  ...children.map((child) => ({ label: `↳ ${child.name}`, value: child.slug }))
+                ];
+              })
+            ]}
             value={filters.categoria}
-            onChange={(event) => apply({ categoria: event.target.value })}
-          >
-            <option value="">Todas las categorías</option>
-            {topCategories(categories).map((category) => {
-              const children = childCategories(categories, category.slug);
-              if (!children.length) {
-                return (
-                  <option key={category.id} value={category.slug}>
-                    {category.name}
-                  </option>
-                );
-              }
-              return (
-                <optgroup key={category.id} label={category.name}>
-                  <option value={category.slug}>Toda la categoría</option>
-                  {children.map((child) => (
-                    <option key={child.id} value={child.slug}>
-                      {child.name}
-                    </option>
-                  ))}
-                </optgroup>
-              );
-            })}
-          </select>
+            onChange={(categoria) => apply({ categoria })}
+          />
         </div>
 
         <div className="filter-block">

@@ -29,6 +29,7 @@ import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
+import { CustomSelect } from "@/components/CustomSelect";
 import {
   AdminCollectionSkeleton,
   AdminPanelReveal,
@@ -974,21 +975,19 @@ export default function AdminPage() {
               />
               <label>
                 Categoría madre
-                <select
+                <CustomSelect
+                  ariaLabel="Categoría madre"
                   name="categoryParent"
                   defaultValue={editingCategory?.parent || ""}
-                >
-                  <option value="">Ninguna (categoría principal)</option>
-                  {categories
+                  options={[
+                    { label: "Ninguna (categoría principal)", value: "" },
+                    ...categories
                     .filter(
                       (item) => !item.parent && item.id !== editingCategory?.id
                     )
-                    .map((item) => (
-                      <option key={item.id} value={item.slug}>
-                        {item.name}
-                      </option>
-                    ))}
-                </select>
+                    .map((item) => ({ label: item.name, value: item.slug }))
+                  ]}
+                />
               </label>
               <button className="button button--primary" type="submit">
                 <Save size={18} /> Guardar categoria
@@ -1301,20 +1300,17 @@ function ProductAdminPanel({
           <span>{products.length} resultado(s)</span>
         </div>
         <div className="admin-header-actions">
-          <select
+          <CustomSelect
+            ariaLabel="Filtrar por vehículo"
             className="admin-vehicle-filter"
-            aria-label="Filtrar por vehiculo"
             value={vehicleFilter}
-            onChange={(event) => onVehicleFilterChange(event.target.value)}
-          >
-            <option value="all">Todos los vehículos</option>
-            <option value="universal">Universales</option>
-            {vehicles.map((vehicle) => (
-              <option key={vehicle.id} value={vehicle.id}>
-                {vehicle.make} {vehicle.model}
-              </option>
-            ))}
-          </select>
+            onChange={onVehicleFilterChange}
+            options={[
+              { label: "Todos los vehículos", value: "all" },
+              { label: "Universales", value: "universal" },
+              ...vehicles.map((vehicle) => ({ label: `${vehicle.make} ${vehicle.model}`, value: vehicle.id }))
+            ]}
+          />
           <label className="admin-search">
             <Search size={17} />
             <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Buscar..." />
@@ -1480,61 +1476,57 @@ function ProductDialog({
         <div className="form-grid">
           <label>
             Categoria
-            <select name="categorySlug" required defaultValue={product.categorySlug}>
-              {categories
+            <CustomSelect
+              ariaLabel="Categoría"
+              name="categorySlug"
+              defaultValue={product.categorySlug}
+              options={categories
                 .filter((category) => !category.parent)
-                .map((category) => {
+                .flatMap((category) => {
                   const children = categories.filter(
                     (item) => item.parent === category.slug
                   );
                   if (!children.length) {
-                    return (
-                      <option key={category.id} value={category.slug}>
-                        {category.name}
-                      </option>
-                    );
+                    return [{ label: category.name, value: category.slug }];
                   }
-                  return (
-                    <optgroup key={category.id} label={category.name}>
-                      <option value={category.slug}>{category.name} (general)</option>
-                      {children.map((child) => (
-                        <option key={child.id} value={child.slug}>
-                          {child.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  );
+                  return [
+                    { label: `${category.name} (general)`, value: category.slug },
+                    ...children.map((child) => ({ label: `↳ ${child.name}`, value: child.slug }))
+                  ];
                 })}
-            </select>
+            />
           </label>
           <label>
             Estado
-            <select name="status" defaultValue={product.status}>
-              <option value="available">Disponible</option>
-              <option value="on_request">Bajo pedido</option>
-              <option value="sold_out">Agotado</option>
-            </select>
+            <CustomSelect
+              ariaLabel="Estado"
+              name="status"
+              defaultValue={product.status}
+              options={[
+                { label: "Disponible", value: "available" },
+                { label: "Bajo pedido", value: "on_request" },
+                { label: "Agotado", value: "sold_out" }
+              ]}
+            />
           </label>
         </div>
 
         <div className="form-grid">
           <label>
             Marca comercial
-            <select
+            <CustomSelect
+              ariaLabel="Marca comercial"
               value={isOwnBrand ? "" : brandId}
-              onChange={(event) => {
-                setBrandId(event.target.value);
+              onChange={(nextBrandId) => {
+                setBrandId(nextBrandId);
                 setKeepLegacyBrand(false);
               }}
               disabled={isOwnBrand}
-            >
-              <option value="">Sin marca externa</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
+              options={[
+                { label: "Sin marca externa", value: "" },
+                ...brands.map((brand) => ({ label: brand.name, value: brand.id }))
+              ]}
+            />
             {!isOwnBrand && !brands.length && (
               <small className="admin-form-hint">Cree una marca en la pestaña Marcas para asignarla.</small>
             )}
@@ -1563,10 +1555,15 @@ function ProductDialog({
         <div className="form-grid">
           <label>
             Modo de venta
-            <select name="saleMode" defaultValue={product.saleMode}>
-              <option value="price_quote">Mostrar precio + cotizar</option>
-              <option value="quote_only">Solo cotizar</option>
-            </select>
+            <CustomSelect
+              ariaLabel="Modo de venta"
+              name="saleMode"
+              defaultValue={product.saleMode}
+              options={[
+                { label: "Mostrar precio + cotizar", value: "price_quote" },
+                { label: "Solo cotizar", value: "quote_only" }
+              ]}
+            />
           </label>
           <label>
             Precio normal
@@ -1599,16 +1596,16 @@ function ProductDialog({
         <div>
         <label>
           Compatibilidad
-          <select
+          <CustomSelect
+            ariaLabel="Compatibilidad"
             name="compatibilityMode"
             value={compatibilityMode}
-            onChange={(event) =>
-              setCompatibilityMode(event.target.value as Product["compatibilityMode"])
-            }
-          >
-            <option value="universal">Universal / varios vehiculos</option>
-            <option value="specific">Vehiculo especifico</option>
-          </select>
+            onChange={(value) => setCompatibilityMode(value as Product["compatibilityMode"])}
+            options={[
+              { label: "Universal / varios vehículos", value: "universal" },
+              { label: "Vehículo específico", value: "specific" }
+            ]}
+          />
         </label>
 
         {compatibilityMode === "specific" && (
@@ -1631,11 +1628,10 @@ function ProductDialog({
               const managed = isManagedRow(row);
               return (
                 <div className="vehicle-row" key={index}>
-                  <select
-                    aria-label="Modelo administrado"
+                  <CustomSelect
+                    ariaLabel="Modelo administrado"
                     value={managed ? optionKey(row.make, row.model) : "custom"}
-                    onChange={(event) => {
-                      const value = event.target.value;
+                    onChange={(value) => {
                       if (value === "custom") {
                         updateRow(index, { make: "", model: "" });
                         return;
@@ -1652,14 +1648,14 @@ function ProductDialog({
                         });
                       }
                     }}
-                  >
-                    {vehicleOptions.map((option) => (
-                      <option key={option.id} value={optionKey(option.make, option.model)}>
-                        {option.make} {option.model}
-                      </option>
-                    ))}
-                    <option value="custom">Otro vehículo…</option>
-                  </select>
+                    options={[
+                      ...vehicleOptions.map((option) => ({
+                        label: `${option.make} ${option.model}`,
+                        value: optionKey(option.make, option.model)
+                      })),
+                      { label: "Otro vehículo…", value: "custom" }
+                    ]}
+                  />
 
                   {!managed && (
                     <>
@@ -1785,17 +1781,13 @@ function OfferDialog({
           <div>
             <label>
               Producto
-              <select
+              <CustomSelect
+                ariaLabel="Producto"
                 name="productId"
                 value={selectedId}
-                onChange={(event) => setSelectedId(event.target.value)}
-              >
-                {products.map((product) => (
-                  <option key={product.id} value={product.id}>
-                    {product.name}
-                  </option>
-                ))}
-              </select>
+                onChange={setSelectedId}
+                options={products.map((product) => ({ label: product.name, value: product.id }))}
+              />
             </label>
 
             {selectedProduct && (
@@ -2060,16 +2052,17 @@ function CategoryDialog({
           <div>
             <label>
               Categoria madre
-              <select name="categoryParent" defaultValue={category?.parent || ""}>
-                <option value="">Ninguna (categoria principal)</option>
-                {categories
+              <CustomSelect
+                ariaLabel="Categoría madre"
+                name="categoryParent"
+                defaultValue={category?.parent || ""}
+                options={[
+                  { label: "Ninguna (categoría principal)", value: "" },
+                  ...categories
                   .filter((item) => !item.parent && item.id !== category?.id)
-                  .map((item) => (
-                    <option key={item.id} value={item.slug}>
-                      {item.name}
-                    </option>
-                  ))}
-              </select>
+                  .map((item) => ({ label: item.name, value: item.slug }))
+                ]}
+              />
             </label>
           </div>
         </AdminStepper>

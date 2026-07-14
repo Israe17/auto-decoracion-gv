@@ -6031,6 +6031,19 @@ textarea {
   z-index: 30;
 }
 
+.custom-select__menu--portal {
+  position: fixed;
+  right: auto;
+  top: auto;
+  z-index: 1200;
+}
+
+@media (max-width: 720px) {
+  .custom-select__menu--portal {
+    max-height: min(250px, calc(100dvh - 16px));
+  }
+}
+
 .custom-select__option {
   align-items: center;
   background: transparent;
@@ -6092,7 +6105,17 @@ textarea {
   box-shadow: 0 20px 34px rgba(0, 0, 0, 0.34);
 }
 
+.custom-select__menu--dark {
+  background: #171b21;
+  border-color: rgba(255, 255, 255, 0.14);
+  box-shadow: 0 20px 34px rgba(0, 0, 0, 0.34);
+}
+
 .compat-hero .custom-select__option {
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.custom-select__menu--dark .custom-select__option {
   color: rgba(255, 255, 255, 0.92);
 }
 
@@ -6103,7 +6126,18 @@ textarea {
   color: white;
 }
 
+.custom-select__menu--dark .custom-select__option:hover,
+.custom-select__menu--dark .custom-select__option:focus-visible,
+.custom-select__menu--dark .custom-select__option[aria-selected="true"] {
+  background: rgba(255, 199, 44, 0.13);
+  color: white;
+}
+
 .compat-hero .custom-select__option svg {
+  color: var(--yellow);
+}
+
+.custom-select__menu--dark .custom-select__option svg {
   color: var(--yellow);
 }
 
