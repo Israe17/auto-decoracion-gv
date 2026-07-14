@@ -3,6 +3,7 @@
 import { Children, FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  BadgeCheck,
   Car,
   Edit3,
   Eye,
@@ -36,16 +37,19 @@ import {
 import {
   fetchAdminData,
   importSeedCatalog,
+  removeBrand,
   removeCategory,
   removeProduct,
   removePromo,
   removeVehicle,
   upsertCategory,
+  upsertBrand,
   upsertProduct,
   upsertPromo,
   upsertVehicle
 } from "@/lib/store";
 import {
+  Brand,
   Category,
   Product,
   Promo,
@@ -54,7 +58,7 @@ import {
   VehicleModel
 } from "@/types";
 
-type AdminTab = "products" | "offers" | "promos" | "vehicles" | "categories";
+type AdminTab = "products" | "offers" | "promos" | "vehicles" | "categories" | "brands";
 
 type ConfirmState = {
   title: string;
@@ -69,7 +73,8 @@ type AdminDetail =
   | { kind: "offer"; item: Product }
   | { kind: "promo"; item: Promo }
   | { kind: "vehicle"; item: VehicleModel }
-  | { kind: "category"; item: Category };
+  | { kind: "category"; item: Category }
+  | { kind: "brand"; item: Brand };
 
 function makeSlug(value: string) {
   return value
@@ -124,11 +129,14 @@ export default function AdminPage() {
   const [importing, setImporting] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [brands, setBrands] = useState<Brand[]>([]);
   const [vehicles, setVehicles] = useState<VehicleModel[]>([]);
   const [productDialog, setProductDialog] = useState<Product | null>(null);
   const [offerDialog, setOfferDialog] = useState<Product | null | undefined>(undefined);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
+  const [editingBrand, setEditingBrand] = useState<Brand | null>(null);
+  const [brandDialogOpen, setBrandDialogOpen] = useState(false);
   const [editingVehicle, setEditingVehicle] = useState<VehicleModel | null>(null);
   const [vehicleDialogOpen, setVehicleDialogOpen] = useState(false);
   const [promos, setPromos] = useState<Promo[]>([]);
@@ -148,6 +156,7 @@ export default function AdminPage() {
         if (!active) return;
         setProducts(data.products);
         setCategories(data.categories);
+        setBrands(data.brands);
         setVehicles(data.vehicles);
         setPromos(data.promos);
       })
@@ -225,8 +234,17 @@ export default function AdminPage() {
     offers: products.filter((product) => product.oldPrice).length,
     featured: products.filter((product) => isProductFeaturedActive(product)).length,
     categories: categories.length,
-    vehicles: vehicles.length
+    vehicles: vehicles.length,
+    brands: brands.length
   };
+
+  const productCountByBrand = useMemo(() => {
+    const counts: Record<string, number> = {};
+    brands.forEach((brand) => {
+      counts[brand.id] = products.filter((product) => product.brandId === brand.id).length;
+    });
+    return counts;
+  }, [brands, products]);
 
   function reportError(error: unknown) {
     console.error(error);
@@ -249,6 +267,7 @@ export default function AdminPage() {
       const data = await fetchAdminData();
       setProducts(data.products);
       setCategories(data.categories);
+      setBrands(data.brands);
       setVehicles(data.vehicles);
       setPromos(data.promos);
       setMessage("Catalogo de ejemplo importado.");
@@ -505,12 +524,92 @@ export default function AdminPage() {
     });
   }
 
+  async function handleBrandSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const name = String(form.get("brandName") || "").trim();
+    const brand: Brand = {
+      id: editingBrand?.id || `brand-${makeSlug(name)}`,
+      slug: editingBrand?.slug || makeSlug(name),
+      name,
+      description: String(form.get("brandDescription") || "").trim() || undefined
+    };
+    const exists = brands.some((item) => item.id === brand.id);
+    const renamedProducts = editingBrand && editingBrand.name !== brand.name
+      ? products
+          .filter((product) => !product.isOwnBrand && product.brandId === brand.id)
+          .map((product) => ({ ...product, brandName: brand.name }))
+      : [];
+
+    try {
+      await upsertBrand(brand);
+      await Promise.all(renamedProducts.map((product) => upsertProduct(product)));
+      setBrands((current) =>
+        (exists
+          ? current.map((item) => (item.id === brand.id ? brand : item))
+          : [...current, brand]
+        ).sort((a, b) => a.name.localeCompare(b.name))
+      );
+      if (renamedProducts.length) {
+        setProducts((current) =>
+          current.map((product) =>
+            product.brandId === brand.id && !product.isOwnBrand
+              ? { ...product, brandName: brand.name }
+              : product
+          )
+        );
+      }
+      setMessage(exists ? "Marca actualizada." : "Marca creada.");
+      setEditingBrand(null);
+      setBrandDialogOpen(false);
+      formElement.reset();
+    } catch (error) {
+      reportError(error);
+    }
+  }
+
+  function confirmDeleteBrand(brand: Brand) {
+    const linked = productCountByBrand[brand.id] || 0;
+    setConfirmState({
+      title: "Eliminar marca",
+      body: linked
+        ? `"${brand.name}" esta asignada a ${linked} producto(s). Al eliminarla, esos productos quedaran sin marca externa.`
+        : `Se eliminara "${brand.name}" de la administracion.`,
+      actionLabel: "Eliminar marca",
+      tone: "danger",
+      onConfirm: async () => {
+        const detachedProducts = products
+          .filter((product) => product.brandId === brand.id)
+          .map((product) => ({ ...product, brandId: undefined, brandName: undefined }));
+        try {
+          await Promise.all(detachedProducts.map((product) => upsertProduct(product)));
+          await removeBrand(brand.id);
+          setBrands((current) => current.filter((item) => item.id !== brand.id));
+          if (detachedProducts.length) {
+            setProducts((current) =>
+              current.map((product) =>
+                product.brandId === brand.id
+                  ? { ...product, brandId: undefined, brandName: undefined }
+                  : product
+              )
+            );
+          }
+          setMessage("Marca eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    });
+  }
+
   const tabs: [AdminTab, string][] = [
     ["products", "Productos"],
     ["offers", "Ofertas"],
     ["promos", "Promociones"],
     ["vehicles", "Modelos de autos"],
-    ["categories", "Categorias"]
+    ["categories", "Categorias"],
+    ["brands", "Marcas"]
   ];
 
   const sectionIcons: Record<AdminTab, ReactNode> = {
@@ -518,7 +617,8 @@ export default function AdminPage() {
     offers: <Star size={20} />,
     promos: <Megaphone size={20} />,
     vehicles: <Car size={20} />,
-    categories: <FolderTree size={20} />
+    categories: <FolderTree size={20} />,
+    brands: <BadgeCheck size={20} />
   };
 
   const speedDialActions: SpeedDialAction[] = tabs.map(([id, label]) => ({
@@ -599,6 +699,10 @@ export default function AdminPage() {
             <div>
               <span>Modelos</span>
               <strong>{stats.vehicles}</strong>
+            </div>
+            <div>
+              <span>Marcas</span>
+              <strong>{stats.brands}</strong>
             </div>
           </>
         )}
@@ -928,10 +1032,65 @@ export default function AdminPage() {
         </AdminPanelReveal>
       )}
 
+      {!loading && activeTab === "brands" && (
+        <AdminPanelReveal tab="brands">
+          <div className="admin-workspace admin-workspace--simple">
+            <form
+              key={editingBrand?.id || "new-brand"}
+              className="admin-form admin-form--panel"
+              onSubmit={handleBrandSubmit}
+            >
+              <div className="form-section">
+                <div className="form-section__header">
+                  <BadgeCheck size={20} />
+                  <div>
+                    <strong>{editingBrand ? "Editar marca" : "Nueva marca"}</strong>
+                    <span>Marcas comerciales que puede asignar a los productos.</span>
+                  </div>
+                </div>
+                <label>
+                  Nombre
+                  <input name="brandName" required defaultValue={editingBrand?.name} placeholder="Ej: Hella" />
+                </label>
+                <label>
+                  Descripcion (opcional)
+                  <textarea name="brandDescription" rows={3} defaultValue={editingBrand?.description} />
+                </label>
+                <button className="button button--primary" type="submit">
+                  <Save size={18} /> Guardar marca
+                </button>
+              </div>
+            </form>
+
+            <AdminSimpleList
+              title="Marcas registradas"
+              empty="Todavia no hay marcas. Cree una para poder asignarla a sus productos."
+              createLabel="Nueva marca"
+              onCreate={() => {
+                setEditingBrand(null);
+                setBrandDialogOpen(true);
+              }}
+              items={brands.map((brand) => ({
+                id: brand.id,
+                title: brand.name,
+                meta: `${brand.description || "Sin descripcion"} · ${productCountByBrand[brand.id] || 0} producto(s)`,
+                onView: () => setDetail({ kind: "brand", item: brand }),
+                onEdit: () => {
+                  setEditingBrand(brand);
+                  setBrandDialogOpen(true);
+                },
+                onDelete: () => confirmDeleteBrand(brand)
+              }))}
+            />
+          </div>
+        </AdminPanelReveal>
+      )}
+
       {productDialog && (
         <ProductDialog
           product={productDialog}
           categories={categories}
+          brands={brands}
           vehicleOptions={vehicles}
           onClose={() => setProductDialog(null)}
           onSave={saveProduct}
@@ -981,6 +1140,17 @@ export default function AdminPage() {
         />
       )}
 
+      {brandDialogOpen && (
+        <BrandDialog
+          brand={editingBrand}
+          onClose={() => {
+            setBrandDialogOpen(false);
+            setEditingBrand(null);
+          }}
+          onSubmit={handleBrandSubmit}
+        />
+      )}
+
       {detail && (
         <AdminDetailDialog
           detail={detail}
@@ -988,6 +1158,7 @@ export default function AdminPage() {
           categories={categories}
           vehicles={vehicles}
           promos={promos}
+          brands={brands}
           onClose={() => setDetail(null)}
           onSelect={setDetail}
           onEditProduct={(product) => {
@@ -1012,6 +1183,11 @@ export default function AdminPage() {
             setDetail(null);
             setEditingCategory(category);
             setCategoryDialogOpen(true);
+          }}
+          onEditBrand={(brand) => {
+            setDetail(null);
+            setEditingBrand(brand);
+            setBrandDialogOpen(true);
           }}
         />
       )}
@@ -1185,19 +1361,24 @@ function ProductAdminPanel({
 function ProductDialog({
   product,
   categories,
+  brands,
   vehicleOptions,
   onClose,
   onSave
 }: {
   product: Product;
   categories: Category[];
+  brands: Brand[];
   vehicleOptions: VehicleModel[];
   onClose: () => void;
   onSave: (product: Product) => void;
 }) {
   const [compatibilityMode, setCompatibilityMode] = useState(product.compatibilityMode);
   const [isOwnBrand, setIsOwnBrand] = useState(Boolean(product.isOwnBrand));
-  const [brandName, setBrandName] = useState(product.brandName || "");
+  const [brandId, setBrandId] = useState(product.brandId || "");
+  const [keepLegacyBrand, setKeepLegacyBrand] = useState(
+    Boolean(!product.isOwnBrand && !product.brandId && product.brandName)
+  );
   const [vehicleRows, setVehicleRows] = useState<VehicleCompatibility[]>(
     product.vehicles.length ? product.vehicles : []
   );
@@ -1239,6 +1420,8 @@ function ProductDialog({
       .map((line) => line.trim())
       .filter(Boolean);
     const canShowPrice = saleMode === "price_quote" && price > 0;
+    const selectedBrand = brands.find((brand) => brand.id === brandId);
+    const legacyBrandName = !product.isOwnBrand && !product.brandId ? product.brandName : undefined;
 
     onSave({
       ...product,
@@ -1263,7 +1446,11 @@ function ProductDialog({
         .split(",")
         .map((tag) => tag.trim())
         .filter(Boolean),
-      brandName: isOwnBrand ? "G&V System" : brandName.trim() || undefined,
+      brandId: isOwnBrand ? undefined : selectedBrand?.id,
+      brandName:
+        isOwnBrand
+          ? "G&V System"
+          : selectedBrand?.name || (keepLegacyBrand ? legacyBrandName : undefined),
       isOwnBrand,
       featured: product.featured
     });
@@ -1324,14 +1511,30 @@ function ProductDialog({
 
         <div className="form-grid">
           <label>
-            Marca del producto
-            <input
-              name="brandName"
-              value={isOwnBrand ? "G&V System" : brandName}
-              onChange={(event) => setBrandName(event.target.value)}
-              placeholder="Ej: Hella, Osram"
+            Marca comercial
+            <select
+              value={isOwnBrand ? "" : brandId}
+              onChange={(event) => {
+                setBrandId(event.target.value);
+                setKeepLegacyBrand(false);
+              }}
               disabled={isOwnBrand}
-            />
+            >
+              <option value="">Sin marca externa</option>
+              {brands.map((brand) => (
+                <option key={brand.id} value={brand.id}>
+                  {brand.name}
+                </option>
+              ))}
+            </select>
+            {!isOwnBrand && !brands.length && (
+              <small className="admin-form-hint">Cree una marca en la pestaña Marcas para asignarla.</small>
+            )}
+            {!isOwnBrand && keepLegacyBrand && product.brandName && (
+              <small className="admin-form-hint">
+                Marca actual sin registrar: {product.brandName}. Seleccione una marca o deje &quot;Sin marca externa&quot; para quitarla.
+              </small>
+            )}
           </label>
           <label className="checkbox-row checkbox-row--switch admin-dialog-switch">
             <input
@@ -1776,6 +1979,35 @@ function VehicleDialog({
   );
 }
 
+function BrandDialog({
+  brand,
+  onClose,
+  onSubmit
+}: {
+  brand: Brand | null;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  return (
+    <AdminDialog title={brand ? "Editar marca" : "Nueva marca"} onClose={onClose}>
+      <form key={brand?.id || "new-brand"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
+        <AdminStepper steps={["Informacion de marca"]} submitLabel="Guardar marca">
+          <div>
+            <label>
+              Nombre
+              <input name="brandName" required defaultValue={brand?.name} placeholder="Ej: Hella" />
+            </label>
+            <label>
+              Descripcion (opcional)
+              <textarea name="brandDescription" rows={4} defaultValue={brand?.description} />
+            </label>
+          </div>
+        </AdminStepper>
+      </form>
+    </AdminDialog>
+  );
+}
+
 function CategoryDialog({
   category,
   categories,
@@ -2066,19 +2298,22 @@ function AdminDetailDialog({
   categories,
   vehicles,
   promos,
+  brands,
   onClose,
   onSelect,
   onEditProduct,
   onEditOffer,
   onEditPromo,
   onEditVehicle,
-  onEditCategory
+  onEditCategory,
+  onEditBrand
 }: {
   detail: AdminDetail;
   products: Product[];
   categories: Category[];
   vehicles: VehicleModel[];
   promos: Promo[];
+  brands: Brand[];
   onClose: () => void;
   onSelect: (detail: AdminDetail) => void;
   onEditProduct: (product: Product) => void;
@@ -2086,6 +2321,7 @@ function AdminDetailDialog({
   onEditPromo: (promo: Promo) => void;
   onEditVehicle: (vehicle: VehicleModel) => void;
   onEditCategory: (category: Category) => void;
+  onEditBrand: (brand: Brand) => void;
 }) {
   const detailTitle =
     detail.kind === "product"
@@ -2096,12 +2332,15 @@ function AdminDetailDialog({
           ? "Detalle de la promocion"
           : detail.kind === "vehicle"
             ? "Detalle del modelo"
-            : "Detalle de la categoria";
+            : detail.kind === "brand"
+              ? "Detalle de la marca"
+              : "Detalle de la categoria";
 
   const detailBody = (() => {
     if (detail.kind === "product") {
       const product = detail.item;
       const category = categories.find((item) => item.slug === product.categorySlug);
+      const brand = brands.find((item) => item.id === product.brandId);
       const relatedProducts = products
         .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
         .slice(0, 4);
@@ -2140,6 +2379,16 @@ function AdminDetailDialog({
                 meta={category.description || "Sin descripcion"}
                 image={category.image}
                 onClick={() => onSelect({ kind: "category", item: category })}
+              />
+            )}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Marca relacionada" empty="Este producto no tiene una marca registrada.">
+            {brand && (
+              <AdminDetailRelation
+                title={brand.name}
+                meta={brand.description || "Sin descripcion"}
+                onClick={() => onSelect({ kind: "brand", item: brand })}
               />
             )}
           </AdminDetailSection>
@@ -2374,6 +2623,63 @@ function AdminDetailDialog({
             <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
             <button className="button button--primary" type="button" onClick={() => onEditVehicle(vehicle)}>
               <Edit3 size={18} /> Editar modelo
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    if (detail.kind === "brand") {
+      const brand = detail.item;
+      const linkedProducts = products.filter((item) => item.brandId === brand.id);
+      const relatedCategories = categories.filter((category) =>
+        linkedProducts.some((product) => product.categorySlug === category.slug)
+      );
+
+      return (
+        <>
+          <div className="admin-detail-hero admin-detail-hero--icon">
+            <span className="admin-detail-vehicle-icon"><BadgeCheck size={36} /></span>
+            <div>
+              <span className="admin-detail-kicker">Marca comercial</span>
+              <h2>{brand.name}</h2>
+              <p>{brand.description || "Sin descripcion registrada."}</p>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Productos asignados</span><strong>{linkedProducts.length}</strong></div>
+            <div><span>Categorias relacionadas</span><strong>{relatedCategories.length}</strong></div>
+          </div>
+
+          <AdminDetailSection title="Productos de la marca" empty="Todavia no hay productos asignados a esta marca.">
+            {linkedProducts.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.categoryName}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Categorias relacionadas" empty="No hay categorias vinculadas todavia.">
+            {relatedCategories.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.description || "Sin descripcion"}
+                image={item.image}
+                onClick={() => onSelect({ kind: "category", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <div className="admin-detail-actions">
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+            <button className="button button--primary" type="button" onClick={() => onEditBrand(brand)}>
+              <Edit3 size={18} /> Editar marca
             </button>
           </div>
         </>

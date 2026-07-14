@@ -6,7 +6,7 @@ import {
   setDoc,
   writeBatch
 } from "firebase/firestore";
-import { Category, Product, Promo, VehicleModel } from "@/types";
+import { Brand, Category, Product, Promo, VehicleModel } from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
 import { firebaseEnabled, getFirebaseServices } from "./firebase";
 import { getFeaturedStatus } from "./featured";
@@ -15,13 +15,17 @@ const PRODUCTS = "products";
 const CATEGORIES = "categories";
 const VEHICLES = "vehicles";
 const PROMOS = "promos";
+const BRANDS = "brands";
 
 const localKeys = {
   products: "gv-admin-products",
   categories: "gv-admin-categories",
   vehicles: "gv-admin-vehicles",
-  promos: "gv-admin-promos"
+  promos: "gv-admin-promos",
+  brands: "gv-admin-brands"
 };
+
+export const seedBrands: Brand[] = [];
 
 export const seedPromos: Promo[] = [
   {
@@ -188,28 +192,32 @@ export async function fetchAdminData(): Promise<{
   categories: Category[];
   vehicles: VehicleModel[];
   promos: Promo[];
+  brands: Brand[];
 }> {
   if (!firebaseEnabled) {
     return {
       products: readLocal(localKeys.products, seedProducts),
       categories: readLocal(localKeys.categories, seedCategories),
       vehicles: readLocal(localKeys.vehicles, seedVehicles),
-      promos: sortPromos(readLocal(localKeys.promos, seedPromos))
+      promos: sortPromos(readLocal(localKeys.promos, seedPromos)),
+      brands: readLocal(localKeys.brands, seedBrands)
     };
   }
 
-  const [products, categories, vehicles, promos] = await Promise.all([
+  const [products, categories, vehicles, promos, brands] = await Promise.all([
     listCollection<Product>(PRODUCTS),
     listCollection<Category>(CATEGORIES),
     listCollection<VehicleModel>(VEHICLES),
-    listCollection<Promo>(PROMOS)
+    listCollection<Promo>(PROMOS),
+    listCollection<Brand>(BRANDS)
   ]);
 
   return {
     products: sortProducts(products),
     categories,
     vehicles,
-    promos: sortPromos(promos)
+    promos: sortPromos(promos),
+    brands: [...brands].sort((a, b) => a.name.localeCompare(b.name))
   };
 }
 
@@ -275,6 +283,22 @@ export async function removePromo(id: string) {
     return;
   }
   await deleteDoc(doc(requireDb(), PROMOS, id));
+}
+
+export async function upsertBrand(brand: Brand) {
+  if (!firebaseEnabled) {
+    localUpsert(localKeys.brands, seedBrands, brand);
+    return;
+  }
+  await setDoc(doc(requireDb(), BRANDS, brand.id), clean(brand));
+}
+
+export async function removeBrand(id: string) {
+  if (!firebaseEnabled) {
+    localRemove(localKeys.brands, seedBrands, id);
+    return;
+  }
+  await deleteDoc(doc(requireDb(), BRANDS, id));
 }
 
 export async function importSeedCatalog() {

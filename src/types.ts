@@ -22,6 +22,13 @@ export type Category = {
   parent?: string;
 };
 
+export type Brand = {
+  id: string;
+  slug: string;
+  name: string;
+  description?: string;
+};
+
 export type Product = {
   id: string;
   slug: string;
@@ -38,6 +45,7 @@ export type Product = {
   description: string;
   tags: string[];
   // Marca comercial del producto. La linea propia usa G&V System.
+  brandId?: string;
   brandName?: string;
   isOwnBrand?: boolean;
   featured?: boolean;

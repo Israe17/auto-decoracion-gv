@@ -155,7 +155,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           <div className="product-info">
             <div className="product-info__topline">
               <span className="eyebrow">{product.categoryName}</span>
-              {product.isOwnBrand && <span className="product-status product-status--own-brand">G&amp;V System</span>}
+              {product.brandName && (
+                <span className="product-status product-status--own-brand">
+                  {product.isOwnBrand ? "G&V System" : product.brandName}
+                </span>
+              )}
               <span className="product-status">{statusLabel}</span>
             </div>
 
