@@ -63,6 +63,7 @@ export function ProductActions({
         title="Agregar a la cotizacion"
       >
         <Plus size={18} />
+        <span className="product-action__label product-action__label--mobile">Agregar</span>
         <span className="product-action__label product-action__label--desktop">
           {compact ? "Agregar" : "Agregar a cotizacion"}
         </span>

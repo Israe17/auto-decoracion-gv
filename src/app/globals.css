@@ -4254,6 +4254,15 @@ body {
     display: inline;
   }
 
+  .product-card .product-actions .button--secondary {
+    font-size: 13px;
+    gap: 6px;
+  }
+
+  .product-card .product-actions .button--secondary .product-action__label--mobile {
+    display: inline;
+  }
+
   .product-card .product-actions .product-action__label--desktop {
     display: none;
   }
