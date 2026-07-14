@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import gsap from "gsap";
+import { CustomSelect } from "@/components/CustomSelect";
 import { VehicleModel } from "@/types";
 
 export type VehicleQuery = { make: string; model: string; year: string };
@@ -103,49 +104,46 @@ export function VehicleFinder({
       )}
       <label>
         Marca
-        <select
+        <CustomSelect
+          ariaLabel="Marca"
+          options={[
+            { label: "Todas", value: "" },
+            ...makes.map((item) => ({ label: item, value: item }))
+          ]}
           value={make}
-          onChange={(event) => {
-            setMake(event.target.value);
+          onChange={(value) => {
+            setMake(value);
             setModel("");
             setYear("");
           }}
-        >
-          <option value="">Todas</option>
-          {makes.map((item) => (
-            <option key={item} value={item}>
-              {item}
-            </option>
-          ))}
-        </select>
+        />
       </label>
       <label>
         Modelo
-        <select
+        <CustomSelect
+          ariaLabel="Modelo"
+          options={[
+            { label: "Todos", value: "" },
+            ...models.map((item) => ({ label: item.model, value: item.model }))
+          ]}
           value={model}
-          onChange={(event) => {
-            setModel(event.target.value);
+          onChange={(value) => {
+            setModel(value);
             setYear("");
           }}
-        >
-          <option value="">Todos</option>
-          {models.map((item) => (
-            <option key={item.id} value={item.model}>
-              {item.model}
-            </option>
-          ))}
-        </select>
+        />
       </label>
       <label>
         Año
-        <select value={year} onChange={(event) => setYear(event.target.value)}>
-          <option value="">Todos</option>
-          {years.map((item) => (
-            <option key={item} value={String(item)}>
-              {item}
-            </option>
-          ))}
-        </select>
+        <CustomSelect
+          ariaLabel="Año"
+          options={[
+            { label: "Todos", value: "" },
+            ...years.map((item) => ({ label: String(item), value: String(item) }))
+          ]}
+          value={year}
+          onChange={setYear}
+        />
       </label>
       <button type="submit" className="button button--primary">
         <Search size={17} /> Buscar
