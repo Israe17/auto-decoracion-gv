@@ -4166,6 +4166,82 @@ body {
   }
 }
 
+/* En móvil el catálogo se consulta mejor comparando dos productos a la vez. */
+@media (max-width: 720px) {
+  .product-grid,
+  .product-grid--catalog {
+    gap: 12px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .product-card {
+    border-radius: 14px;
+  }
+
+  .product-card__body {
+    gap: 8px;
+    padding: 11px;
+  }
+
+  .product-card__category {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+
+  .product-card h3 {
+    display: -webkit-box;
+    font-size: 14px;
+    line-height: 1.28;
+    min-height: 36px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .price-row {
+    flex-wrap: wrap;
+    gap: 2px 6px;
+  }
+
+  .price-row strong {
+    font-size: 18px;
+  }
+
+  .price-row del {
+    font-size: 11px;
+  }
+
+  .stock-row {
+    font-size: 11px;
+    gap: 5px;
+    padding: 6px 8px;
+    white-space: nowrap;
+  }
+
+  .stock-row svg {
+    flex: none;
+    height: 14px;
+    width: 14px;
+  }
+
+  .product-card .product-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .product-card .product-actions .button {
+    font-size: 0;
+    justify-content: center;
+    min-height: 36px;
+    padding: 0;
+  }
+
+  .product-card .product-actions .button svg {
+    height: 17px;
+    width: 17px;
+  }
+}
+
 /* Boton flotante de WhatsApp */
 .wa-float {
   align-items: center;

@@ -45,10 +45,21 @@ export function ProductActions({
 
   return (
     <div className="product-actions">
-      <a className="button button--primary" href={productWhatsAppUrl(product, origin)} target="_blank">
+      <a
+        className="button button--primary"
+        href={productWhatsAppUrl(product, origin)}
+        target="_blank"
+        aria-label={`Cotizar ${product.name} por WhatsApp`}
+        title="Cotizar por WhatsApp"
+      >
         <MessageCircle size={18} /> Cotizar por WhatsApp
       </a>
-      <button className="button button--secondary" onClick={() => addToQuote(product)}>
+      <button
+        className="button button--secondary"
+        onClick={() => addToQuote(product)}
+        aria-label={`Agregar ${product.name} a la cotizacion`}
+        title="Agregar a la cotizacion"
+      >
         <Plus size={18} /> {compact ? "Agregar" : "Agregar a cotizacion"}
       </button>
     </div>
