@@ -5448,14 +5448,17 @@ textarea {
 
 /* Filtro por vehiculo en el admin */
 .admin-vehicle-filter {
+  max-width: 210px;
+  width: 100%;
+}
+
+.admin-vehicle-filter .custom-select__trigger {
   background: #f7f9fc;
-  border: 1px solid #dfe6ef;
+  border-color: #dfe6ef;
   border-radius: 999px;
   color: #384252;
   font-weight: 600;
-  height: 44px;
-  max-width: 210px;
-  padding: 0 12px;
+  min-height: 46px;
 }
 
 /* Editor de filas de vehiculos compatibles */
@@ -6165,59 +6168,6 @@ textarea {
   height: auto;
   position: relative;
   width: min(400px, 66vw);
-}
-
-/* ===== Selectores unificados en todo el sitio ===== */
-.vehicle-finder select,
-.filter-block select,
-.admin-form select,
-.admin-vehicle-filter,
-.vehicle-row select {
-  appearance: none;
-  -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23697383' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-position: right 13px center;
-  background-repeat: no-repeat;
-  background-size: 15px;
-  cursor: pointer;
-  padding-right: 40px;
-  transition: border-color 160ms ease, box-shadow 160ms ease;
-}
-
-.vehicle-finder select:hover,
-.filter-block select:hover,
-.admin-form select:hover,
-.admin-vehicle-filter:hover,
-.vehicle-row select:hover {
-  border-color: #aeb8c6;
-}
-
-.vehicle-finder select:focus,
-.filter-block select:focus,
-.admin-form select:focus,
-.admin-vehicle-filter:focus,
-.vehicle-row select:focus {
-  border-color: var(--red);
-  box-shadow: 0 0 0 3px rgba(230, 33, 53, 0.15);
-  outline: none;
-}
-
-/* Selects oscuros del hero: flecha clara y menu desplegable oscuro
-   (evita opciones blancas sobre fondo blanco en Windows) */
-.compat-hero .vehicle-finder select {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23ffc72c' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
-  background-position: right 13px center;
-  background-repeat: no-repeat;
-  background-size: 15px;
-}
-
-.compat-hero .vehicle-finder select:hover {
-  border-color: rgba(255, 255, 255, 0.35);
-}
-
-.compat-hero .vehicle-finder select option {
-  background-color: #15181d;
-  color: white;
 }
 
 /* ===== Imagenes de producto sin recorte =====
