@@ -1,16 +1,31 @@
 import { MessageCircle } from "lucide-react";
+import { FaInstagram } from "react-icons/fa";
+import { business } from "@/lib/business";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export function WhatsAppFloat() {
   return (
-    <a
-      className="wa-float"
-      href={generalWhatsAppUrl()}
-      target="_blank"
-      rel="noopener"
-      aria-label="Escribir por WhatsApp"
-    >
-      <MessageCircle size={26} />
-    </a>
+    <>
+      <a
+        className="instagram-float"
+        href={business.instagramUrl}
+        target="_blank"
+        rel="noopener"
+        aria-label="Abrir Instagram de Auto Decoracion G&V"
+        title="Instagram"
+      >
+        <FaInstagram aria-hidden="true" size={25} />
+      </a>
+      <a
+        className="wa-float"
+        href={generalWhatsAppUrl()}
+        target="_blank"
+        rel="noopener"
+        aria-label="Escribir por WhatsApp"
+        title="WhatsApp"
+      >
+        <MessageCircle size={26} />
+      </a>
+    </>
   );
 }

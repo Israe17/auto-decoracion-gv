@@ -4647,6 +4647,28 @@ body {
   transform: translateY(-3px) scale(1.05);
 }
 
+.instagram-float {
+  align-items: center;
+  background: #d62976;
+  border-radius: 50%;
+  bottom: 20px;
+  box-shadow: 0 12px 30px rgba(214, 41, 118, 0.35);
+  color: white;
+  display: flex;
+  height: 56px;
+  justify-content: center;
+  position: fixed;
+  right: 88px;
+  transition: transform 180ms ease, box-shadow 180ms ease;
+  width: 56px;
+  z-index: 40;
+}
+
+.instagram-float:hover {
+  box-shadow: 0 16px 36px rgba(214, 41, 118, 0.5);
+  transform: translateY(-3px) scale(1.05);
+}
+
 .quote-tray {
   bottom: 92px;
 }
@@ -5080,6 +5102,11 @@ textarea {
 .wa-float {
   bottom: calc(20px + env(safe-area-inset-bottom));
   right: calc(20px + env(safe-area-inset-right));
+}
+
+.instagram-float {
+  bottom: calc(20px + env(safe-area-inset-bottom));
+  right: calc(88px + env(safe-area-inset-right));
 }
 
 .quote-tray {
@@ -6336,11 +6363,19 @@ html.lenis body {
     width: 52px;
   }
 
+  .instagram-float {
+    bottom: calc(16px + env(safe-area-inset-bottom));
+    height: 52px;
+    right: calc(78px + env(safe-area-inset-right));
+    width: 52px;
+  }
+
   .quote-tray {
     bottom: calc(12px + env(safe-area-inset-bottom));
   }
 
-  .quote-tray ~ .wa-float {
+  .quote-tray ~ .wa-float,
+  .quote-tray ~ .instagram-float {
     bottom: calc(100px + env(safe-area-inset-bottom));
   }
 }

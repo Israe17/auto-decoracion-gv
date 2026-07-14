@@ -11,6 +11,7 @@ export const business = {
   ],
   mapsUrl:
     "https://www.google.com/maps/search/?api=1&query=Auto+Decoracion+G%26V+Liberia+Guanacaste",
+  instagramUrl: "https://www.instagram.com/autodecor_gvsystem/",
   mapsEmbedUrl:
     "https://www.google.com/maps?q=Auto+Decoracion+G%26V,+Liberia,+Guanacaste&output=embed"
 };
