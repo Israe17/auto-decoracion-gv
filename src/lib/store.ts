@@ -24,6 +24,7 @@ const localKeys = {
   promos: "gv-admin-promos",
   brands: "gv-admin-brands"
 };
+const LOCAL_MIGRATION_DONE = "gv-admin-firebase-migrated";
 
 export const seedBrands: Brand[] = [];
 
@@ -185,6 +186,41 @@ function localUpsert<T extends { id: string }>(key: string, fallback: T[], item:
 function localRemove<T extends { id: string }>(key: string, fallback: T[], id: string) {
   const current = readLocal(key, fallback);
   localStorage.setItem(key, JSON.stringify(current.filter((entry) => entry.id !== id)));
+}
+
+export function hasLocalAdminData() {
+  if (typeof window === "undefined") return false;
+  if (localStorage.getItem(LOCAL_MIGRATION_DONE) === "1") return false;
+  return Object.values(localKeys).some((key) => localStorage.getItem(key) !== null);
+}
+
+export async function migrateLocalAdminDataToFirebase() {
+  if (!firebaseEnabled) throw new Error("Firebase no esta configurado.");
+
+  const products = readLocal(localKeys.products, seedProducts);
+  const categories = readLocal(localKeys.categories, seedCategories);
+  const vehicles = readLocal(localKeys.vehicles, seedVehicles);
+  const promos = readLocal(localKeys.promos, seedPromos);
+  const brands = readLocal(localKeys.brands, seedBrands);
+  const db = requireDb();
+  const batch = writeBatch(db);
+
+  products.forEach((product) => batch.set(doc(db, PRODUCTS, product.id), clean(product)));
+  categories.forEach((category) => batch.set(doc(db, CATEGORIES, category.id), clean(category)));
+  vehicles.forEach((vehicle) => batch.set(doc(db, VEHICLES, vehicle.id), clean(vehicle)));
+  promos.forEach((promo) => batch.set(doc(db, PROMOS, promo.id), clean(promo)));
+  brands.forEach((brand) => batch.set(doc(db, BRANDS, brand.id), clean(brand)));
+
+  await batch.commit();
+  localStorage.setItem(LOCAL_MIGRATION_DONE, "1");
+
+  return {
+    products: products.length,
+    categories: categories.length,
+    vehicles: vehicles.length,
+    promos: promos.length,
+    brands: brands.length
+  };
 }
 
 export async function fetchAdminData(): Promise<{

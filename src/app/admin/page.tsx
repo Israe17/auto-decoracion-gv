@@ -37,7 +37,9 @@ import {
 } from "@/components/admin/AdminLoadingSkeleton";
 import {
   fetchAdminData,
+  hasLocalAdminData,
   importSeedCatalog,
+  migrateLocalAdminDataToFirebase,
   removeBrand,
   removeCategory,
   removeProduct,
@@ -128,6 +130,8 @@ export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("products");
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
+  const [migratingLocal, setMigratingLocal] = useState(false);
+  const [localMigrationAvailable, setLocalMigrationAvailable] = useState(false);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -151,6 +155,8 @@ export default function AdminPage() {
 
   useEffect(() => {
     let active = true;
+
+    setLocalMigrationAvailable(firebaseEnabled && hasLocalAdminData());
 
     fetchAdminData()
       .then((data) => {
@@ -259,6 +265,36 @@ export default function AdminPage() {
       actionLabel: "Sincronizar",
       onConfirm: handleImportSeed
     });
+  }
+
+  function confirmLocalMigration() {
+    setConfirmState({
+      title: "Migrar datos locales a Firebase",
+      body: "Se copiaran a Firebase los productos, categorias, modelos, promociones y marcas guardados en este navegador. Los datos locales se conservaran como respaldo.",
+      actionLabel: "Migrar a Firebase",
+      onConfirm: handleLocalMigration
+    });
+  }
+
+  async function handleLocalMigration() {
+    setMigratingLocal(true);
+    try {
+      const migrated = await migrateLocalAdminDataToFirebase();
+      const data = await fetchAdminData();
+      setProducts(data.products);
+      setCategories(data.categories);
+      setBrands(data.brands);
+      setVehicles(data.vehicles);
+      setPromos(data.promos);
+      setLocalMigrationAvailable(false);
+      setMessage(
+        `Migracion completa: ${migrated.products} productos, ${migrated.categories} categorias y ${migrated.vehicles} modelos.`
+      );
+    } catch (error) {
+      reportError(error);
+    } finally {
+      setMigratingLocal(false);
+    }
   }
 
   async function handleImportSeed() {
@@ -659,6 +695,21 @@ export default function AdminPage() {
           <ShieldAlert size={20} />
           Los cambios se guardan en este navegador. Luego conectamos Firebase para publicarlos en
           todos los dispositivos.
+        </div>
+      )}
+
+      {firebaseEnabled && localMigrationAvailable && (
+        <div className="notice">
+          <ShieldAlert size={20} />
+          <span>Hay datos del modo Local demo guardados en este navegador.</span>
+          <button
+            className="button button--secondary"
+            type="button"
+            disabled={migratingLocal}
+            onClick={confirmLocalMigration}
+          >
+            {migratingLocal ? "Migrando..." : "Migrar datos locales a Firebase"}
+          </button>
         </div>
       )}
 
