@@ -3816,8 +3816,12 @@ body {
   border: 0;
   box-shadow: none;
   max-height: calc(86vh - 78px);
+  overscroll-behavior: contain;
   overflow: auto;
   padding: 20px;
+  scroll-behavior: smooth;
+  scroll-padding: 20px 0 116px;
+  scrollbar-gutter: stable;
 }
 
 .admin-dialog-form input,
@@ -3826,6 +3830,7 @@ body {
   border-radius: 14px;
   font-size: 15px;
   min-height: 50px;
+  scroll-margin-block: 20px 130px;
 }
 
 .admin-dialog-form label,
@@ -4122,12 +4127,16 @@ body {
   }
 
   .admin-stepper__nav {
+    border-top: 1px solid #e8edf3;
+    box-shadow: 0 -10px 18px rgba(18, 24, 33, 0.05);
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     position: sticky;
     bottom: 0;
     background: #ffffff;
-    padding-top: 10px;
+    margin: 12px -18px -18px;
+    padding: 14px 18px max(18px, env(safe-area-inset-bottom));
+    z-index: 2;
   }
 
   .admin-stepper__nav .button:first-child:not(:only-child) {

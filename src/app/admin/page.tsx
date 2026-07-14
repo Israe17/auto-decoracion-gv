@@ -1083,7 +1083,7 @@ function ProductDialog({
     <AdminDialog title={product.name ? "Editar producto" : "Nuevo producto"} onClose={onClose}>
       <form className="admin-form admin-dialog-form" noValidate onSubmit={handleSubmit}>
         <AdminStepper
-          steps={["Datos del producto", "Venta e imágenes", "Compatibilidad"]}
+          steps={["Datos del producto", "Venta", "Imágenes", "Descripción", "Compatibilidad"]}
           submitLabel="Guardar producto"
         >
         <div>
@@ -1148,6 +1148,8 @@ function ProductDialog({
           </label>
         </div>
 
+        </div>
+        <div>
         <ImageListField
           name="images"
           label="Imagenes del producto"
@@ -1162,25 +1164,26 @@ function ProductDialog({
           <textarea name="description" rows={4} required defaultValue={product.description} />
         </label>
 
-        <div className="form-grid">
-          <label>
-            Compatibilidad
-            <select
-              name="compatibilityMode"
-              value={compatibilityMode}
-              onChange={(event) =>
-                setCompatibilityMode(event.target.value as Product["compatibilityMode"])
-              }
-            >
-              <option value="universal">Universal / varios vehiculos</option>
-              <option value="specific">Vehiculo especifico</option>
-            </select>
-          </label>
-          <label>
-            Etiquetas
-            <input name="tags" defaultValue={product.tags.join(", ")} />
-          </label>
+        <label>
+          Etiquetas
+          <input name="tags" defaultValue={product.tags.join(", ")} />
+        </label>
+
         </div>
+        <div>
+        <label>
+          Compatibilidad
+          <select
+            name="compatibilityMode"
+            value={compatibilityMode}
+            onChange={(event) =>
+              setCompatibilityMode(event.target.value as Product["compatibilityMode"])
+            }
+          >
+            <option value="universal">Universal / varios vehiculos</option>
+            <option value="specific">Vehiculo especifico</option>
+          </select>
+        </label>
 
         {compatibilityMode === "specific" && (
           <div className="vehicle-rows">
@@ -1399,7 +1402,7 @@ function PromoDialog({
   return (
     <AdminDialog title={promo ? "Editar promocion" : "Nueva promocion"} onClose={onClose}>
       <form key={promo?.id || "new-promo"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
-        <AdminStepper steps={["Contenido", "Imagen y publicacion"]} submitLabel="Guardar promocion">
+        <AdminStepper steps={["Contenido", "Imagen", "Publicacion"]} submitLabel="Guardar promocion">
           <div>
             <label>
               Titulo de la lamina
@@ -1418,6 +1421,8 @@ function PromoDialog({
               required
               folder="promos"
             />
+          </div>
+          <div>
             <label>
               Enlace del boton
               <input name="promoLink" placeholder="/catalogo?categoria=alfombras" defaultValue={promo?.link} />
@@ -1496,7 +1501,7 @@ function CategoryDialog({
   return (
     <AdminDialog title={category ? "Editar categoria" : "Nueva categoria"} onClose={onClose}>
       <form key={category?.id || "new-category"} className="admin-form admin-dialog-form" noValidate onSubmit={onSubmit}>
-        <AdminStepper steps={["Informacion", "Imagen y organizacion"]} submitLabel="Guardar categoria">
+        <AdminStepper steps={["Informacion", "Imagen", "Organizacion"]} submitLabel="Guardar categoria">
           <div>
             <label>
               Nombre
@@ -1514,6 +1519,8 @@ function CategoryDialog({
               defaultValue={category?.image}
               folder="categories"
             />
+          </div>
+          <div>
             <label>
               Categoria madre
               <select name="categoryParent" defaultValue={category?.parent || ""}>

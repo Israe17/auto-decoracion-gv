@@ -1,6 +1,6 @@
 "use client";
 
-import { Children, ReactNode, useRef, useState } from "react";
+import { Children, ReactNode, useEffect, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, Save } from "lucide-react";
 
 type Field = HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement;
@@ -17,6 +17,12 @@ export function AdminStepper({
   const [step, setStep] = useState(0);
   const panelsRef = useRef<HTMLDivElement>(null);
   const panels = Children.toArray(children);
+
+  useEffect(() => {
+    const form = panelsRef.current?.closest("form");
+    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    form?.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
+  }, [step]);
 
   function validateCurrent() {
     const panel = panelsRef.current?.children[step];
@@ -37,8 +43,23 @@ export function AdminStepper({
     if (validateCurrent()) panelsRef.current?.closest("form")?.requestSubmit();
   }
 
+  function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {
+    const target = event.target as HTMLElement;
+    if (
+      event.key !== "Enter" ||
+      event.nativeEvent.isComposing ||
+      target.tagName === "TEXTAREA" ||
+      target.tagName === "BUTTON"
+    ) {
+      return;
+    }
+    event.preventDefault();
+    if (step < steps.length - 1) advance();
+    else submit();
+  }
+
   return (
-    <div className="admin-stepper">
+    <div className="admin-stepper" onKeyDown={handleKeyDown}>
       <div className="admin-stepper__progress" aria-label={`Paso ${step + 1} de ${steps.length}`}>
         {steps.map((label, index) => (
           <span key={label} className={index <= step ? "is-active" : ""} />
