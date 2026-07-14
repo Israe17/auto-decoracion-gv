@@ -6335,4 +6335,12 @@ html.lenis body {
     right: calc(14px + env(safe-area-inset-right));
     width: 52px;
   }
+
+  .quote-tray {
+    bottom: calc(12px + env(safe-area-inset-bottom));
+  }
+
+  .quote-tray ~ .wa-float {
+    bottom: calc(100px + env(safe-area-inset-bottom));
+  }
 }
