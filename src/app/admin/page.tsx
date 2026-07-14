@@ -1,10 +1,11 @@
 "use client";
 
-import { FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { Children, FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   Car,
   Edit3,
+  Eye,
   FolderTree,
   Megaphone,
   Plus,
@@ -52,6 +53,13 @@ type ConfirmState = {
   tone?: "danger" | "default";
   onConfirm: () => void;
 };
+
+type AdminDetail =
+  | { kind: "product"; item: Product }
+  | { kind: "offer"; item: Product }
+  | { kind: "promo"; item: Promo }
+  | { kind: "vehicle"; item: VehicleModel }
+  | { kind: "category"; item: Category };
 
 function makeSlug(value: string) {
   return value
@@ -104,6 +112,7 @@ export default function AdminPage() {
   const [promos, setPromos] = useState<Promo[]>([]);
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
+  const [detail, setDetail] = useState<AdminDetail | null>(null);
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [query, setQuery] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("all");
@@ -573,6 +582,7 @@ export default function AdminPage() {
           vehicleFilter={vehicleFilter}
           onVehicleFilterChange={setVehicleFilter}
           onCreate={() => setProductDialog(emptyProduct(categories))}
+          onView={(product) => setDetail({ kind: "product", item: product })}
           onEdit={setProductDialog}
           onOffer={setOfferDialog}
           onDelete={confirmDeleteProduct}
@@ -585,6 +595,7 @@ export default function AdminPage() {
           allProducts={products}
           empty="No hay productos marcados como oferta o destacados."
           onCreate={() => setOfferDialog(null)}
+          onView={(product) => setDetail({ kind: "offer", item: product })}
           onEdit={setOfferDialog}
           onRemove={confirmRemoveOffer}
         />
@@ -677,6 +688,7 @@ export default function AdminPage() {
                 promo.order ?? "—"
               }${promo.link ? ` · ${promo.link}` : ""}`,
               image: promo.image,
+              onView: () => setDetail({ kind: "promo", item: promo }),
               onEdit: () => {
                 setEditingPromo(promo);
                 setPromoDialogOpen(true);
@@ -741,6 +753,7 @@ export default function AdminPage() {
                   ? `${vehicle.fromYear}-${vehicle.toYear}`
                   : "Sin rango definido"
               } · ${productCountByVehicle[vehicle.id] || 0} producto(s)`,
+              onView: () => setDetail({ kind: "vehicle", item: vehicle }),
               onEdit: () => {
                 setEditingVehicle(vehicle);
                 setVehicleDialogOpen(true);
@@ -832,6 +845,7 @@ export default function AdminPage() {
                     ? `Subcategoría de ${madre.name}`
                     : category.description,
                   image: category.image,
+                  onView: () => setDetail({ kind: "category", item: category }),
                   onEdit: () => {
                     setEditingCategory(category);
                     setCategoryDialogOpen(true);
@@ -896,6 +910,41 @@ export default function AdminPage() {
         />
       )}
 
+      {detail && (
+        <AdminDetailDialog
+          detail={detail}
+          products={products}
+          categories={categories}
+          vehicles={vehicles}
+          promos={promos}
+          onClose={() => setDetail(null)}
+          onSelect={setDetail}
+          onEditProduct={(product) => {
+            setDetail(null);
+            setProductDialog(product);
+          }}
+          onEditOffer={(product) => {
+            setDetail(null);
+            setOfferDialog(product);
+          }}
+          onEditPromo={(promo) => {
+            setDetail(null);
+            setEditingPromo(promo);
+            setPromoDialogOpen(true);
+          }}
+          onEditVehicle={(vehicle) => {
+            setDetail(null);
+            setEditingVehicle(vehicle);
+            setVehicleDialogOpen(true);
+          }}
+          onEditCategory={(category) => {
+            setDetail(null);
+            setEditingCategory(category);
+            setCategoryDialogOpen(true);
+          }}
+        />
+      )}
+
       {confirmState && (
         <ConfirmDialog
           state={confirmState}
@@ -918,6 +967,7 @@ function ProductAdminPanel({
   vehicleFilter,
   onVehicleFilterChange,
   onCreate,
+  onView,
   onEdit,
   onOffer,
   onDelete
@@ -929,6 +979,7 @@ function ProductAdminPanel({
   vehicleFilter: string;
   onVehicleFilterChange: (value: string) => void;
   onCreate: () => void;
+  onView: (product: Product) => void;
   onEdit: (product: Product) => void;
   onOffer: (product: Product) => void;
   onDelete: (product: Product) => void;
@@ -979,6 +1030,9 @@ function ProductAdminPanel({
               </small>
             </div>
             <div className="admin-row-actions">
+              <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={() => onView(product)}>
+                <Eye size={16} />
+              </button>
               <button type="button" aria-label="Administrar oferta" onClick={() => onOffer(product)}>
                 <Tags size={16} />
               </button>
@@ -1546,6 +1600,7 @@ function AdminOfferList({
   allProducts,
   empty,
   onCreate,
+  onView,
   onEdit,
   onRemove
 }: {
@@ -1553,6 +1608,7 @@ function AdminOfferList({
   allProducts: Product[];
   empty: string;
   onCreate: () => void;
+  onView: (product: Product) => void;
   onEdit: (product: Product) => void;
   onRemove: (product: Product) => void;
 }) {
@@ -1613,6 +1669,9 @@ function AdminOfferList({
                   </div>
 
                   <div className="admin-offer-card__actions">
+                    <button type="button" onClick={() => onView(product)}>
+                      <Eye size={16} /> Ver detalle
+                    </button>
                     <button type="button" onClick={() => onEdit(product)}>
                       <Edit3 size={16} /> Editar promocion
                     </button>
@@ -1648,6 +1707,7 @@ function AdminSimpleList({
     title: string;
     meta: string;
     image?: string;
+    onView: () => void;
     onEdit: () => void;
     onDelete: () => void;
   }>;
@@ -1679,6 +1739,9 @@ function AdminSimpleList({
                 <span>{item.meta}</span>
               </div>
               <div className="admin-row-actions">
+                <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={item.onView}>
+                  <Eye size={16} />
+                </button>
                 <button type="button" aria-label="Editar" onClick={item.onEdit}>
                   <Edit3 size={16} />
                 </button>
@@ -1693,6 +1756,479 @@ function AdminSimpleList({
         )}
       </div>
     </div>
+  );
+}
+
+function vehicleRange(vehicle: { fromYear?: number; toYear?: number }) {
+  if (vehicle.fromYear && vehicle.toYear) return `${vehicle.fromYear}-${vehicle.toYear}`;
+  if (vehicle.fromYear) return `Desde ${vehicle.fromYear}`;
+  if (vehicle.toYear) return `Hasta ${vehicle.toYear}`;
+  return "Sin rango de anos";
+}
+
+function matchesVehicle(product: Product, vehicle: VehicleModel) {
+  return product.vehicles.some(
+    (item) =>
+      item.make.toLowerCase() === vehicle.make.toLowerCase() &&
+      item.model.toLowerCase() === vehicle.model.toLowerCase()
+  );
+}
+
+function productStatusLabel(product: Product) {
+  if (product.status === "available") return "Disponible";
+  if (product.status === "on_request") return "Bajo pedido";
+  return "Agotado";
+}
+
+function AdminDetailRelation({
+  title,
+  meta,
+  image,
+  onClick
+}: {
+  title: string;
+  meta: string;
+  image?: string;
+  onClick: () => void;
+}) {
+  return (
+    <button className="admin-detail-relation" type="button" onClick={onClick}>
+      {image ? <img src={image} alt="" /> : <span className="admin-row-icon" aria-hidden="true" />}
+      <span>
+        <strong>{title}</strong>
+        <small>{meta}</small>
+      </span>
+      <Eye size={16} />
+    </button>
+  );
+}
+
+function AdminDetailSection({
+  title,
+  empty,
+  children
+}: {
+  title: string;
+  empty: string;
+  children: ReactNode;
+}) {
+  const relations = Children.toArray(children);
+
+  return (
+    <section className="admin-detail-section">
+      <h3>{title}</h3>
+      {relations.length ? <div className="admin-detail-relations">{relations}</div> : <p>{empty}</p>}
+    </section>
+  );
+}
+
+function AdminDetailDialog({
+  detail,
+  products,
+  categories,
+  vehicles,
+  promos,
+  onClose,
+  onSelect,
+  onEditProduct,
+  onEditOffer,
+  onEditPromo,
+  onEditVehicle,
+  onEditCategory
+}: {
+  detail: AdminDetail;
+  products: Product[];
+  categories: Category[];
+  vehicles: VehicleModel[];
+  promos: Promo[];
+  onClose: () => void;
+  onSelect: (detail: AdminDetail) => void;
+  onEditProduct: (product: Product) => void;
+  onEditOffer: (product: Product) => void;
+  onEditPromo: (promo: Promo) => void;
+  onEditVehicle: (vehicle: VehicleModel) => void;
+  onEditCategory: (category: Category) => void;
+}) {
+  const detailTitle =
+    detail.kind === "product"
+      ? "Detalle del producto"
+      : detail.kind === "offer"
+        ? "Detalle de la oferta"
+        : detail.kind === "promo"
+          ? "Detalle de la promocion"
+          : detail.kind === "vehicle"
+            ? "Detalle del modelo"
+            : "Detalle de la categoria";
+
+  const detailBody = (() => {
+    if (detail.kind === "product") {
+      const product = detail.item;
+      const category = categories.find((item) => item.slug === product.categorySlug);
+      const relatedProducts = products
+        .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
+        .slice(0, 4);
+      const relatedVehicles = product.vehicles
+        .map((row) => vehicles.find((item) => matchesVehicle({ ...product, vehicles: [row] }, item)))
+        .filter((item): item is VehicleModel => Boolean(item));
+
+      return (
+        <>
+          <div className="admin-detail-hero">
+            <img src={product.images[0]} alt={product.name} />
+            <div>
+              <span className="admin-detail-kicker">Producto</span>
+              <h2>{product.name}</h2>
+              <p>{product.description || "Sin descripcion registrada."}</p>
+              <div className="admin-detail-chips">
+                <span>{productStatusLabel(product)}</span>
+                <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
+                {product.oldPrice && <span>Oferta activa</span>}
+                {product.featured && <span>Destacado</span>}
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Categoria</span><strong>{product.categoryName}</strong></div>
+            <div><span>Compatibilidad</span><strong>{product.compatibilityMode === "universal" ? "Universal" : "Especifica"}</strong></div>
+            <div><span>Etiquetas</span><strong>{product.tags.length ? product.tags.join(", ") : "Sin etiquetas"}</strong></div>
+          </div>
+
+          <AdminDetailSection title="Categoria relacionada" empty="La categoria no esta registrada.">
+            {category && (
+              <AdminDetailRelation
+                title={category.name}
+                meta={category.description || "Sin descripcion"}
+                image={category.image}
+                onClick={() => onSelect({ kind: "category", item: category })}
+              />
+            )}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Modelos compatibles" empty="Este producto es universal o no tiene modelos vinculados.">
+            {relatedVehicles.map((vehicle) => (
+              <AdminDetailRelation
+                key={vehicle.id}
+                title={`${vehicle.make} ${vehicle.model}`}
+                meta={vehicleRange(vehicle)}
+                onClick={() => onSelect({ kind: "vehicle", item: vehicle })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Productos relacionados" empty="No hay otros productos en esta categoria.">
+            {relatedProducts.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <div className="admin-detail-actions">
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+            <button className="button button--primary" type="button" onClick={() => onEditProduct(product)}>
+              <Edit3 size={18} /> Editar producto
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    if (detail.kind === "offer") {
+      const product = detail.item;
+      const relatedOffers = products
+        .filter((item) => item.id !== product.id && (item.oldPrice || item.featured))
+        .slice(0, 4);
+      const saving = product.oldPrice && product.price ? product.oldPrice - product.price : 0;
+
+      return (
+        <>
+          <div className="admin-detail-hero">
+            <img src={product.images[0]} alt={product.name} />
+            <div>
+              <span className="admin-detail-kicker">Oferta o destacado</span>
+              <h2>{product.name}</h2>
+              <p>{product.categoryName}</p>
+              <div className="admin-detail-chips">
+                {product.oldPrice && <span>Antes: {formatCRC(product.oldPrice)}</span>}
+                <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
+                {product.featured && <span>Destacado</span>}
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Descuento</span><strong>{saving > 0 ? formatCRC(saving) : "Sin descuento"}</strong></div>
+            <div><span>Estado</span><strong>{productStatusLabel(product)}</strong></div>
+            <div><span>Visibilidad</span><strong>{product.featured ? "Destacado en inicio" : "Solo oferta"}</strong></div>
+          </div>
+
+          <AdminDetailSection title="Otras ofertas relacionadas" empty="No hay otras ofertas o destacados.">
+            {relatedOffers.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.oldPrice ? `Oferta: ${formatCRC(item.price)}` : "Destacado"}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "offer", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <div className="admin-detail-actions">
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+            <button className="button button--primary" type="button" onClick={() => onEditOffer(product)}>
+              <Tags size={18} /> Editar oferta
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    if (detail.kind === "promo") {
+      const promo = detail.item;
+      const match = promo.link?.match(/[?&]categoria=([^&]+)/);
+      let categorySlug = "";
+      try {
+        categorySlug = match ? decodeURIComponent(match[1]) : "";
+      } catch {
+        categorySlug = "";
+      }
+      const linkedCategory = categories.find((item) => item.slug === categorySlug);
+      const relatedProducts = (linkedCategory
+        ? products.filter((item) => item.categorySlug === linkedCategory.slug)
+        : products.filter((item) => item.featured || item.oldPrice)
+      ).slice(0, 4);
+      const relatedPromos = promos.filter((item) => item.id !== promo.id).slice(0, 4);
+
+      return (
+        <>
+          <div className="admin-detail-hero admin-detail-hero--promo">
+            <img src={promo.image} alt={promo.title} />
+            <div>
+              <span className="admin-detail-kicker">Promocion del inicio</span>
+              <h2>{promo.title}</h2>
+              <p>{promo.subtitle || "Sin subtitulo registrado."}</p>
+              <div className="admin-detail-chips">
+                <span>{promo.active === false ? "Oculta" : "Visible"}</span>
+                <span>Orden {promo.order ?? "sin definir"}</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Boton</span><strong>{promo.ctaLabel || "Sin texto"}</strong></div>
+            <div><span>Destino</span><strong>{promo.link || "Sin enlace"}</strong></div>
+          </div>
+
+          <AdminDetailSection title="Categoria enlazada" empty="Esta promocion no esta vinculada a una categoria.">
+            {linkedCategory && (
+              <AdminDetailRelation
+                title={linkedCategory.name}
+                meta={linkedCategory.description || "Sin descripcion"}
+                image={linkedCategory.image}
+                onClick={() => onSelect({ kind: "category", item: linkedCategory })}
+              />
+            )}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Productos relacionados" empty="No hay productos vinculados a esta promocion.">
+            {relatedProducts.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.categoryName}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Otras promociones" empty="No hay otras promociones registradas.">
+            {relatedPromos.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.title}
+                meta={item.active === false ? "Oculta" : "Visible"}
+                image={item.image}
+                onClick={() => onSelect({ kind: "promo", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <div className="admin-detail-actions">
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+            <button className="button button--primary" type="button" onClick={() => onEditPromo(promo)}>
+              <Edit3 size={18} /> Editar promocion
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    if (detail.kind === "vehicle") {
+      const vehicle = detail.item;
+      const compatibleProducts = products.filter((item) => matchesVehicle(item, vehicle));
+      const universalProducts = products.filter((item) => item.compatibilityMode === "universal").slice(0, 3);
+      const relatedVehicles = vehicles
+        .filter((item) => item.id !== vehicle.id && item.make.toLowerCase() === vehicle.make.toLowerCase())
+        .slice(0, 4);
+
+      return (
+        <>
+          <div className="admin-detail-hero admin-detail-hero--icon">
+            <span className="admin-detail-vehicle-icon"><Car size={36} /></span>
+            <div>
+              <span className="admin-detail-kicker">Modelo de vehiculo</span>
+              <h2>{vehicle.make} {vehicle.model}</h2>
+              <p>Rango registrado: {vehicleRange(vehicle)}.</p>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Productos especificos</span><strong>{compatibleProducts.length}</strong></div>
+            <div><span>Productos universales</span><strong>{universalProducts.length}</strong></div>
+            <div><span>Marca</span><strong>{vehicle.make}</strong></div>
+          </div>
+
+          <AdminDetailSection title="Productos compatibles" empty="No hay productos especificos para este modelo.">
+            {compatibleProducts.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.categoryName}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Productos universales" empty="No hay productos universales registrados.">
+            {universalProducts.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={item.categoryName}
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <AdminDetailSection title="Otros modelos de la marca" empty="No hay otros modelos de esta marca.">
+            {relatedVehicles.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={`${item.make} ${item.model}`}
+                meta={vehicleRange(item)}
+                onClick={() => onSelect({ kind: "vehicle", item })}
+              />
+            ))}
+          </AdminDetailSection>
+
+          <div className="admin-detail-actions">
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+            <button className="button button--primary" type="button" onClick={() => onEditVehicle(vehicle)}>
+              <Edit3 size={18} /> Editar modelo
+            </button>
+          </div>
+        </>
+      );
+    }
+
+    const category = detail.item;
+    const parent = categories.find((item) => item.slug === category.parent);
+    const childCategories = categories.filter((item) => item.parent === category.slug);
+    const siblingCategories = categories
+      .filter((item) => item.id !== category.id && item.parent === category.parent)
+      .slice(0, 4);
+    const categoryProducts = products.filter((item) => item.categorySlug === category.slug).slice(0, 5);
+
+    return (
+      <>
+        <div className="admin-detail-hero">
+          <img src={category.image} alt={category.name} />
+          <div>
+            <span className="admin-detail-kicker">Categoria</span>
+            <h2>{category.name}</h2>
+            <p>{category.description || "Sin descripcion registrada."}</p>
+            <div className="admin-detail-chips">
+              <span>{parent ? `Subcategoria de ${parent.name}` : "Categoria principal"}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-detail-facts">
+          <div><span>Productos directos</span><strong>{categoryProducts.length}</strong></div>
+          <div><span>Subcategorias</span><strong>{childCategories.length}</strong></div>
+          <div><span>Categoria madre</span><strong>{parent?.name || "Ninguna"}</strong></div>
+        </div>
+
+        <AdminDetailSection title="Categoria madre" empty="Esta es una categoria principal.">
+          {parent && (
+            <AdminDetailRelation
+              title={parent.name}
+              meta={parent.description || "Sin descripcion"}
+              image={parent.image}
+              onClick={() => onSelect({ kind: "category", item: parent })}
+            />
+          )}
+        </AdminDetailSection>
+
+        <AdminDetailSection title="Subcategorias" empty="No hay subcategorias registradas.">
+          {childCategories.map((item) => (
+            <AdminDetailRelation
+              key={item.id}
+              title={item.name}
+              meta={item.description || "Sin descripcion"}
+              image={item.image}
+              onClick={() => onSelect({ kind: "category", item })}
+            />
+          ))}
+        </AdminDetailSection>
+
+        <AdminDetailSection title="Productos relacionados" empty="No hay productos directos en esta categoria.">
+          {categoryProducts.map((item) => (
+            <AdminDetailRelation
+              key={item.id}
+              title={item.name}
+              meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"}
+              image={item.images[0]}
+              onClick={() => onSelect({ kind: "product", item })}
+            />
+          ))}
+        </AdminDetailSection>
+
+        <AdminDetailSection title="Categorias relacionadas" empty="No hay otras categorias en este nivel.">
+          {siblingCategories.map((item) => (
+            <AdminDetailRelation
+              key={item.id}
+              title={item.name}
+              meta={item.description || "Sin descripcion"}
+              image={item.image}
+              onClick={() => onSelect({ kind: "category", item })}
+            />
+          ))}
+        </AdminDetailSection>
+
+        <div className="admin-detail-actions">
+          <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+          <button className="button button--primary" type="button" onClick={() => onEditCategory(category)}>
+            <Edit3 size={18} /> Editar categoria
+          </button>
+        </div>
+      </>
+    );
+  })();
+
+  return (
+    <AdminDialog title={detailTitle} onClose={onClose}>
+      <div className="admin-detail">{detailBody}</div>
+    </AdminDialog>
   );
 }
 
