@@ -4657,8 +4657,8 @@ body {
   display: flex;
   height: 56px;
   justify-content: center;
+  left: 20px;
   position: fixed;
-  right: 88px;
   transition: transform 180ms ease, box-shadow 180ms ease;
   width: 56px;
   z-index: 40;
@@ -5106,7 +5106,7 @@ textarea {
 
 .instagram-float {
   bottom: calc(20px + env(safe-area-inset-bottom));
-  right: calc(88px + env(safe-area-inset-right));
+  left: calc(20px + env(safe-area-inset-left));
 }
 
 .quote-tray {
@@ -6366,7 +6366,7 @@ html.lenis body {
   .instagram-float {
     bottom: calc(16px + env(safe-area-inset-bottom));
     height: 52px;
-    right: calc(78px + env(safe-area-inset-right));
+    left: calc(14px + env(safe-area-inset-left));
     width: 52px;
   }
 
