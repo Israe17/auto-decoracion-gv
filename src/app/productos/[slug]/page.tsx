@@ -11,6 +11,7 @@ import {
   Wrench
 } from "lucide-react";
 import { products as seedProducts, formatCRC } from "@/lib/catalog";
+import { isProductFeaturedActive } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
 import { productWhatsAppUrl } from "@/lib/whatsapp";
 import { siteUrl } from "@/lib/seo";
@@ -73,7 +74,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .filter(
       (item) => item.id !== product.id && item.categorySlug === product.categorySlug
     )
-    .concat(products.filter((item) => item.id !== product.id && item.featured))
+    .concat(products.filter((item) => item.id !== product.id && isProductFeaturedActive(item)))
     .filter((item, index, list) => list.findIndex((match) => match.id === item.id) === index)
     .slice(0, 4);
 

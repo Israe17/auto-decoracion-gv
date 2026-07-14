@@ -38,6 +38,11 @@ export type Product = {
   description: string;
   tags: string[];
   featured?: boolean;
+  // Fechas YYYY-MM-DD en horario de Costa Rica. Sin fecha = visible de inmediato o sin vencimiento.
+  featuredFrom?: string;
+  featuredUntil?: string;
+  // Un numero menor se muestra primero en la portada.
+  featuredOrder?: number;
 };
 
 export type VehicleModel = {

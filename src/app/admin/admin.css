@@ -149,6 +149,32 @@
   min-width: 0;
 }
 
+.admin-featured-schedule {
+  border-top: 1px solid #e7edf4;
+  display: grid;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.admin-featured-hint {
+  color: #687386;
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 10px 0 0;
+}
+
+.admin-featured-schedule .admin-featured-hint {
+  margin: 0;
+}
+
+.admin-featured-error {
+  color: #b4232f;
+  font-size: 13px;
+  font-weight: 700;
+  margin: 10px 0 0;
+}
+
 .sr-only {
   border: 0;
   clip: rect(0, 0, 0, 0);

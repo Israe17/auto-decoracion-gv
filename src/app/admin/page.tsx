@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
 import { firebaseEnabled } from "@/lib/firebase";
+import { getFeaturedStatus, isProductFeaturedActive } from "@/lib/featured";
 import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
@@ -99,6 +100,16 @@ function emptyProduct(categories: Category[]): Product {
 
 function productHasPublicPrice(product: Product) {
   return product.saleMode === "price_quote" && typeof product.price === "number";
+}
+
+function featuredStatusLabel(product: Product) {
+  const status = getFeaturedStatus(product);
+  const until = product.featuredUntil ? ` hasta ${product.featuredUntil}` : "";
+
+  if (status === "active") return `Destacado activo${until}`;
+  if (status === "scheduled") return `Programado desde ${product.featuredFrom}`;
+  if (status === "expired") return `Destacado vencido ${product.featuredUntil}`;
+  return "Sin destacado";
 }
 
 export default function AdminPage() {
@@ -198,7 +209,7 @@ export default function AdminPage() {
   const stats = {
     products: products.length,
     offers: products.filter((product) => product.oldPrice).length,
-    featured: products.filter((product) => product.featured).length,
+    featured: products.filter((product) => isProductFeaturedActive(product)).length,
     categories: categories.length,
     vehicles: vehicles.length
   };
@@ -250,20 +261,30 @@ export default function AdminPage() {
     }
   }
 
-  async function saveOffer(productId: string, oldPrice?: number, featured = false) {
+  async function saveOffer(
+    productId: string,
+    oldPrice?: number,
+    featured = false,
+    featuredOrder?: number,
+    featuredFrom?: string,
+    featuredUntil?: string
+  ) {
     const target = products.find((product) => product.id === productId);
     if (!target) return;
 
     const updated: Product = {
       ...target,
       oldPrice: productHasPublicPrice(target) ? oldPrice : undefined,
-      featured
+      featured,
+      featuredFrom: featured ? featuredFrom : undefined,
+      featuredUntil: featured ? featuredUntil : undefined,
+      featuredOrder: featured ? featuredOrder : undefined
     };
 
     try {
       await upsertProduct(updated);
       setProducts(products.map((item) => (item.id === productId ? updated : item)));
-      setMessage("Promocion actualizada.");
+      setMessage("Oferta y destacado actualizados.");
       setOfferDialog(undefined);
     } catch (error) {
       reportError(error);
@@ -295,7 +316,14 @@ export default function AdminPage() {
       body: `Se quitara la promocion de "${product.name}". El producto seguira en el catalogo.`,
       actionLabel: label,
       onConfirm: async () => {
-        const updated: Product = { ...product, oldPrice: undefined, featured: false };
+        const updated: Product = {
+          ...product,
+          oldPrice: undefined,
+          featured: false,
+          featuredFrom: undefined,
+          featuredUntil: undefined,
+          featuredOrder: undefined
+        };
         try {
           await upsertProduct(updated);
           setProducts((prev) => prev.map((item) => (item.id === product.id ? updated : item)));
@@ -547,7 +575,7 @@ export default function AdminPage() {
               <strong>{stats.offers}</strong>
             </div>
             <div>
-              <span>Destacados</span>
+              <span>Destacados activos</span>
               <strong>{stats.featured}</strong>
             </div>
             <div>
@@ -1046,7 +1074,7 @@ function ProductAdminPanel({
               <span>{product.categoryName}</span>
               <small>
                 {product.oldPrice ? "Oferta" : "Sin oferta"} -{" "}
-                {product.featured ? "Destacado" : "Normal"} -{" "}
+                {product.featured ? featuredStatusLabel(product) : "Normal"} -{" "}
                 {productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}
               </small>
             </div>
@@ -1379,11 +1407,25 @@ function OfferDialog({
   products: Product[];
   initialProduct: Product | null;
   onClose: () => void;
-  onSave: (productId: string, oldPrice?: number, featured?: boolean) => void;
+  onSave: (
+    productId: string,
+    oldPrice?: number,
+    featured?: boolean,
+    featuredOrder?: number,
+    featuredFrom?: string,
+    featuredUntil?: string
+  ) => void;
 }) {
   const [selectedId, setSelectedId] = useState(initialProduct?.id || products[0]?.id || "");
+  const [isFeatured, setIsFeatured] = useState(Boolean(initialProduct?.featured));
+  const [featuredError, setFeaturedError] = useState("");
   const selectedProduct = products.find((product) => product.id === selectedId);
   const canOffer = Boolean(selectedProduct && productHasPublicPrice(selectedProduct));
+
+  useEffect(() => {
+    setIsFeatured(Boolean(selectedProduct?.featured));
+    setFeaturedError("");
+  }, [selectedProduct?.id]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -1391,74 +1433,134 @@ function OfferDialog({
 
     const form = new FormData(event.currentTarget);
     const oldPrice = Number(form.get("oldPrice"));
-    const featured = form.get("featured") === "on";
-    onSave(selectedProduct.id, canOffer && oldPrice > 0 ? oldPrice : undefined, featured);
+    const featuredFrom = String(form.get("featuredFrom") || "").trim();
+    const featuredUntil = String(form.get("featuredUntil") || "").trim();
+    const featuredOrderValue = Number(form.get("featuredOrder"));
+    const featuredOrder = Number.isInteger(featuredOrderValue) && featuredOrderValue > 0
+      ? featuredOrderValue
+      : undefined;
+
+    if (isFeatured && featuredFrom && featuredUntil && featuredUntil < featuredFrom) {
+      setFeaturedError("La fecha de cierre no puede ser anterior a la fecha de inicio.");
+      return;
+    }
+
+    onSave(
+      selectedProduct.id,
+      canOffer && oldPrice > 0 ? oldPrice : undefined,
+      isFeatured,
+      featuredOrder,
+      featuredFrom || undefined,
+      featuredUntil || undefined
+    );
   }
 
   return (
-    <AdminDialog title={initialProduct ? "Editar promocion" : "Crear oferta"} onClose={onClose}>
+    <AdminDialog title={initialProduct ? "Editar promocion" : "Crear oferta o destacado"} onClose={onClose}>
       <form key={selectedId} className="admin-form admin-dialog-form" noValidate onSubmit={handleSubmit}>
-        <AdminStepper steps={["Producto", "Precio y visibilidad"]} submitLabel="Guardar promocion">
-        <div>
-        <label>
-          Producto
-          <select
-            name="productId"
-            value={selectedId}
-            onChange={(event) => setSelectedId(event.target.value)}
-          >
-            {products.map((product) => (
-              <option key={product.id} value={product.id}>
-                {product.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <AdminStepper steps={["Producto", "Oferta", "Destacado"]} submitLabel="Guardar promocion">
+          <div>
+            <label>
+              Producto
+              <select
+                name="productId"
+                value={selectedId}
+                onChange={(event) => setSelectedId(event.target.value)}
+              >
+                {products.map((product) => (
+                  <option key={product.id} value={product.id}>
+                    {product.name}
+                  </option>
+                ))}
+              </select>
+            </label>
 
-        {selectedProduct && (
-          <div className="admin-offer-summary">
-            <img src={selectedProduct.images[0]} alt={selectedProduct.name} />
-            <div>
-              <strong>{selectedProduct.name}</strong>
-              <span>{selectedProduct.categoryName}</span>
-              <small>
-                Precio actual:{" "}
-                {productHasPublicPrice(selectedProduct) ? formatCRC(selectedProduct.price) : "Solo cotizacion"}
-              </small>
-            </div>
+            {selectedProduct && (
+              <div className="admin-offer-summary">
+                <img src={selectedProduct.images[0]} alt={selectedProduct.name} />
+                <div>
+                  <strong>{selectedProduct.name}</strong>
+                  <span>{selectedProduct.categoryName}</span>
+                  <small>
+                    Precio actual:{" "}
+                    {productHasPublicPrice(selectedProduct) ? formatCRC(selectedProduct.price) : "Solo cotizacion"}
+                  </small>
+                </div>
+              </div>
+            )}
+
+            {!canOffer && (
+              <div className="notice admin-dialog-notice">
+                Este producto no tiene precio publico. Puede marcarlo como destacado, pero para crear una oferta primero debe tener precio normal.
+              </div>
+            )}
           </div>
-        )}
 
-        {!canOffer && (
-          <div className="notice admin-dialog-notice">
-            Este producto no tiene precio publico. Puede marcarlo como destacado, pero para crear una oferta primero debe tener precio normal.
+          <div>
+            <label>
+              Precio anterior
+              <input
+                name="oldPrice"
+                type="number"
+                min="0"
+                disabled={!canOffer}
+                defaultValue={selectedProduct?.oldPrice}
+                placeholder="Ej: 78000"
+              />
+            </label>
+            <p className="admin-featured-hint">
+              Deje este campo vacio si desea destacar el producto sin aplicar descuento.
+            </p>
           </div>
-        )}
 
-        </div>
-        <div>
-        <div className="form-grid">
-          <label>
-            Precio anterior
-            <input
-              name="oldPrice"
-              type="number"
-              min="0"
-              disabled={!canOffer}
-              defaultValue={selectedProduct?.oldPrice}
-              placeholder="Ej: 78000"
-            />
-          </label>
-          <label className="checkbox-row checkbox-row--switch admin-dialog-switch">
-            <input name="featured" type="checkbox" defaultChecked={Boolean(selectedProduct?.featured)} />
-            <span className="switch-ui" aria-hidden="true">
-              <Star size={14} />
-            </span>
-            <span>Destacado</span>
-          </label>
-        </div>
+          <div>
+            <label className="checkbox-row checkbox-row--switch admin-dialog-switch">
+              <input
+                name="featured"
+                type="checkbox"
+                checked={isFeatured}
+                onChange={(event) => setIsFeatured(event.target.checked)}
+              />
+              <span className="switch-ui" aria-hidden="true">
+                <Star size={14} />
+              </span>
+              <span>Mostrar en productos destacados</span>
+            </label>
 
-        </div>
+            {isFeatured ? (
+              <div className="admin-featured-schedule">
+                <p className="admin-featured-hint">
+                  La prioridad menor aparece primero. Sin fechas, queda visible hasta que usted lo retire.
+                </p>
+                <div className="form-grid">
+                  <label>
+                    Prioridad
+                    <input
+                      name="featuredOrder"
+                      type="number"
+                      min="1"
+                      defaultValue={selectedProduct?.featuredOrder}
+                      placeholder="1"
+                    />
+                  </label>
+                  <label>
+                    Visible desde
+                    <input name="featuredFrom" type="date" defaultValue={selectedProduct?.featuredFrom} />
+                  </label>
+                  <label>
+                    Visible hasta
+                    <input name="featuredUntil" type="date" defaultValue={selectedProduct?.featuredUntil} />
+                  </label>
+                </div>
+              </div>
+            ) : (
+              <p className="admin-featured-hint">
+                Este producto puede tener oferta, pero no aparecera en la vitrina de destacados.
+              </p>
+            )}
+
+            {featuredError && <p className="admin-featured-error">{featuredError}</p>}
+          </div>
         </AdminStepper>
       </form>
     </AdminDialog>
@@ -1641,7 +1743,7 @@ function AdminOfferList({
           <span>{products.length} producto(s) con promocion o destacado</span>
         </div>
         <button className="button button--primary" type="button" onClick={onCreate} disabled={!allProducts.length}>
-          <Plus size={18} /> Crear oferta
+          <Plus size={18} /> Crear promocion
         </button>
       </div>
 
@@ -1650,6 +1752,7 @@ function AdminOfferList({
           {products.map((product) => {
             const hasCurrentPrice = productHasPublicPrice(product);
             const hasOffer = hasCurrentPrice && typeof product.oldPrice === "number";
+            const featuredStatus = getFeaturedStatus(product);
 
             return (
               <article className="admin-offer-card" key={product.id}>
@@ -1657,12 +1760,14 @@ function AdminOfferList({
                 <div className="admin-offer-card__body">
                   <div className="admin-offer-card__chips">
                     {hasOffer && <span>Oferta activa</span>}
-                    {product.featured && <span>Destacado</span>}
+                    {featuredStatus === "active" && <span>Destacado activo</span>}
+                    {featuredStatus === "scheduled" && <span>Destacado programado</span>}
+                    {featuredStatus === "expired" && <span>Destacado vencido</span>}
                     {!hasOffer && hasCurrentPrice && <span>Sin descuento</span>}
                     {!hasCurrentPrice && <span>Solo cotizacion</span>}
                   </div>
                   <h3>{product.name}</h3>
-                  <p>{product.categoryName}</p>
+                  <p>{product.featured ? `${product.categoryName} - ${featuredStatusLabel(product)}` : product.categoryName}</p>
 
                   <div className="admin-offer-card__pricing">
                     {hasOffer ? (
@@ -1904,7 +2009,7 @@ function AdminDetailDialog({
                 <span>{productStatusLabel(product)}</span>
                 <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
                 {product.oldPrice && <span>Oferta activa</span>}
-                {product.featured && <span>Destacado</span>}
+                {product.featured && <span>{featuredStatusLabel(product)}</span>}
               </div>
             </div>
           </div>
@@ -1977,7 +2082,7 @@ function AdminDetailDialog({
               <div className="admin-detail-chips">
                 {product.oldPrice && <span>Antes: {formatCRC(product.oldPrice)}</span>}
                 <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
-                {product.featured && <span>Destacado</span>}
+                {product.featured && <span>{featuredStatusLabel(product)}</span>}
               </div>
             </div>
           </div>
@@ -1985,7 +2090,8 @@ function AdminDetailDialog({
           <div className="admin-detail-facts">
             <div><span>Descuento</span><strong>{saving > 0 ? formatCRC(saving) : "Sin descuento"}</strong></div>
             <div><span>Estado</span><strong>{productStatusLabel(product)}</strong></div>
-            <div><span>Visibilidad</span><strong>{product.featured ? "Destacado en inicio" : "Solo oferta"}</strong></div>
+            <div><span>Visibilidad</span><strong>{product.featured ? featuredStatusLabel(product) : "Solo oferta"}</strong></div>
+            {product.featured && <div><span>Prioridad</span><strong>{product.featuredOrder ?? "Automatica"}</strong></div>}
           </div>
 
           <AdminDetailSection title="Otras ofertas relacionadas" empty="No hay otras ofertas o destacados.">
@@ -1993,7 +2099,7 @@ function AdminDetailDialog({
               <AdminDetailRelation
                 key={item.id}
                 title={item.name}
-                meta={item.oldPrice ? `Oferta: ${formatCRC(item.price)}` : "Destacado"}
+                meta={item.oldPrice ? `Oferta: ${formatCRC(item.price)}` : featuredStatusLabel(item)}
                 image={item.images[0]}
                 onClick={() => onSelect({ kind: "offer", item })}
               />
@@ -2022,7 +2128,7 @@ function AdminDetailDialog({
       const linkedCategory = categories.find((item) => item.slug === categorySlug);
       const relatedProducts = (linkedCategory
         ? products.filter((item) => item.categorySlug === linkedCategory.slug)
-        : products.filter((item) => item.featured || item.oldPrice)
+        : products.filter((item) => isProductFeaturedActive(item) || item.oldPrice)
       ).slice(0, 4);
       const relatedPromos = promos.filter((item) => item.id !== promo.id).slice(0, 4);
 

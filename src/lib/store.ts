@@ -9,6 +9,7 @@ import {
 import { Category, Product, Promo, VehicleModel } from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
 import { firebaseEnabled, getFirebaseServices } from "./firebase";
+import { getFeaturedStatus } from "./featured";
 
 const PRODUCTS = "products";
 const CATEGORIES = "categories";
@@ -86,9 +87,17 @@ async function listCollection<T>(name: string): Promise<T[]> {
 
 function sortProducts(products: Product[]) {
   return [...products].sort(
-    (a, b) =>
-      Number(Boolean(b.featured)) - Number(Boolean(a.featured)) ||
-      a.name.localeCompare(b.name)
+    (a, b) => {
+      const stateOrder = { active: 0, scheduled: 1, expired: 2, none: 3 };
+      const stateDifference = stateOrder[getFeaturedStatus(a)] - stateOrder[getFeaturedStatus(b)];
+
+      return (
+        stateDifference ||
+        (a.featuredOrder ?? Number.MAX_SAFE_INTEGER) -
+          (b.featuredOrder ?? Number.MAX_SAFE_INTEGER) ||
+        a.name.localeCompare(b.name)
+      );
+    }
   );
 }
 

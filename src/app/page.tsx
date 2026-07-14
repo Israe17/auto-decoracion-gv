@@ -15,6 +15,7 @@ import { ServicesShowcase } from "@/components/ServicesShowcase";
 import { Spotlight } from "@/components/Spotlight";
 import { VehicleFinder } from "@/components/VehicleFinder";
 import { topCategories } from "@/lib/catalog";
+import { selectActiveFeaturedProducts } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
 import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 
@@ -22,7 +23,10 @@ export const revalidate = 60;
 
 export default async function Home() {
   const { products, categories, vehicles, promos } = await fetchPublicCatalog();
-  const featured = products.filter((product) => product.featured).slice(0, 4);
+  const featured = selectActiveFeaturedProducts(products, 4);
+  const showcaseProducts = featured.length
+    ? featured
+    : products.filter((product) => product.status !== "sold_out").slice(0, 4);
   const mainCategories = topCategories(categories);
 
   return (
@@ -91,14 +95,14 @@ export default async function Home() {
         <div className="section__header">
           <div>
             <span className="eyebrow">Destacados</span>
-            <h2>Productos destacados de la semana</h2>
+            <h2>{featured.length ? "Productos destacados de la semana" : "Productos recomendados"}</h2>
           </div>
           <Link href="/catalogo" className="text-link">
             Ir al catalogo <ArrowRight size={18} />
           </Link>
         </div>
         <div className="product-grid">
-          {featured.map((product) => (
+          {showcaseProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
         </div>

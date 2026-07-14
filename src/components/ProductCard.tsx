@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { PackageCheck } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
+import { isProductFeaturedActive } from "@/lib/featured";
 import { Product } from "@/types";
 import { ProductActions } from "./ProductActions";
 
@@ -9,7 +10,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article className="product-card">
       <Link href={`/productos/${product.slug}`} className="product-card__image">
-        {product.oldPrice && <span className="badge">Oferta</span>}
+        {(product.oldPrice || isProductFeaturedActive(product)) && (
+          <span className="badge">{product.oldPrice ? "Oferta" : "Destacado"}</span>
+        )}
         <Image
           src={product.images[0]}
           alt={product.name}
