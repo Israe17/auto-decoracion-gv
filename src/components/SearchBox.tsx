@@ -12,7 +12,15 @@ import { Product } from "@/types";
 
 const MAX_SUGGESTIONS = 5;
 
-export function SearchBox({ className = "search-box" }: { className?: string }) {
+type SearchBoxProps = {
+  className?: string;
+  onOpenChange?: (open: boolean) => void;
+};
+
+export function SearchBox({
+  className = "search-box",
+  onOpenChange
+}: SearchBoxProps) {
   const router = useRouter();
   const pathname = usePathname();
   const boxRef = useRef<HTMLFormElement>(null);
@@ -72,6 +80,10 @@ export function SearchBox({ className = "search-box" }: { className?: string }) 
     setOpen(false);
     setQuery("");
   }, [pathname]);
+
+  useEffect(() => {
+    onOpenChange?.(open);
+  }, [onOpenChange, open]);
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

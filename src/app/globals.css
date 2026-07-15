@@ -5195,6 +5195,21 @@ textarea {
 
 .menu-overlay__links {
   display: grid;
+  transition:
+    opacity 140ms ease,
+    visibility 140ms ease;
+}
+
+.menu-overlay__search {
+  position: relative;
+  z-index: 2;
+}
+
+.menu-overlay--searching .menu-overlay__links,
+.menu-overlay--searching .menu-overlay__footer {
+  opacity: 0 !important;
+  pointer-events: none;
+  visibility: hidden !important;
 }
 
 .menu-overlay__links a {
@@ -5241,6 +5256,9 @@ textarea {
   display: grid;
   gap: 12px;
   margin-top: 8px;
+  transition:
+    opacity 140ms ease,
+    visibility 140ms ease;
 }
 
 .menu-overlay__footer .button {
@@ -5444,6 +5462,24 @@ textarea {
   height: 46px;
   outline: 0;
   width: 100%;
+}
+
+.search-box--menu .search-suggest {
+  background: #fff;
+  max-height: min(430px, calc(100dvh - 210px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (max-width: 520px) {
+  .search-box--menu .search-suggest__item {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .search-box--menu .search-suggest__item em {
+    grid-column: 2;
+    margin-top: -7px;
+  }
 }
 
 /* Filtro por vehiculo en el admin */

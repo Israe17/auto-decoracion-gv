@@ -24,6 +24,7 @@ const links = [
 // con GSAP; la salida se anima en reversa antes de desmontar.
 export function MobileMenu() {
   const [open, setOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
   const overlayRef = useRef<HTMLDivElement>(null);
   const tlRef = useRef<gsap.core.Timeline | null>(null);
@@ -42,6 +43,7 @@ export function MobileMenu() {
   // Cierra al navegar a otra pagina.
   useEffect(() => {
     setOpen(false);
+    setSearchOpen(false);
   }, [pathname]);
 
   // Bloquea el scroll del fondo y cierra con Escape.
@@ -106,7 +108,12 @@ export function MobileMenu() {
 
       {open &&
         createPortal(
-          <div className="menu-overlay" ref={overlayRef} role="dialog" aria-modal="true">
+          <div
+            className={`menu-overlay${searchOpen ? " menu-overlay--searching" : ""}`}
+            ref={overlayRef}
+            role="dialog"
+            aria-modal="true"
+          >
             <div className="menu-overlay__header">
               <span className="menu-overlay__brand">
                 <Image src="/gv-system-logo.png" alt="" width={34} height={34} />
@@ -118,10 +125,18 @@ export function MobileMenu() {
             </div>
 
             <div className="menu-overlay__search">
-              <SearchBox className="search-box search-box--menu" />
+              <SearchBox
+                className="search-box search-box--menu"
+                onOpenChange={setSearchOpen}
+              />
             </div>
 
-            <nav className="menu-overlay__links" aria-label="Menú principal">
+            <nav
+              className="menu-overlay__links"
+              aria-label="Menú principal"
+              aria-hidden={searchOpen}
+              inert={searchOpen}
+            >
               {links.map((link, index) => (
                 <Link key={link.href} href={link.href} onClick={close}>
                   <small>{String(index + 1).padStart(2, "0")}</small>
@@ -131,7 +146,11 @@ export function MobileMenu() {
               ))}
             </nav>
 
-            <div className="menu-overlay__footer">
+            <div
+              className="menu-overlay__footer"
+              aria-hidden={searchOpen}
+              inert={searchOpen}
+            >
               <a
                 className="button button--primary"
                 href={generalWhatsAppUrl()}
