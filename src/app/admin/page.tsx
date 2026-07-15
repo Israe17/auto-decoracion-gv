@@ -2873,7 +2873,13 @@ function AdminDialog({
   return createPortal(
     <div className="admin-dialog-backdrop" role="presentation">
       <button type="button" className="admin-dialog__dismiss" aria-label="Cerrar" onClick={onClose} />
-      <div className="admin-dialog" role="dialog" aria-modal="true" aria-labelledby="admin-dialog-title">
+      <div
+        className="admin-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="admin-dialog-title"
+        data-lenis-prevent
+      >
         <div className="admin-dialog__header">
           <strong id="admin-dialog-title">{title}</strong>
           <button ref={closeRef} type="button" aria-label="Cerrar" onClick={onClose}>
