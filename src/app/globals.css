@@ -6504,10 +6504,15 @@ html.lenis body {
   }
 
   .topbar strong {
-    display: block;
+    align-items: center;
+    display: inline-flex;
+    justify-content: center;
+    line-height: 1;
   }
 
   .topbar {
+    align-items: center;
+    display: flex;
     justify-content: center;
     padding: 0 14px;
     text-align: center;
