@@ -11,10 +11,6 @@ import { ProductActions } from "./ProductActions";
 
 export function ProductCard({ product }: { product: Product }) {
   const cardRef = useRef<HTMLElement>(null);
-  const discount =
-    product.oldPrice && product.price && product.oldPrice > product.price
-      ? Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)
-      : 0;
   const status =
     product.status === "available"
       ? { label: "Disponible", className: "available", Icon: PackageCheck }
@@ -56,7 +52,7 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/productos/${product.slug}`} className="product-card__image">
         {(product.oldPrice || product.featured) && (
           <span className={`badge badge--${product.oldPrice ? "offer" : "featured"}`}>
-            {product.oldPrice ? (discount ? `-${discount}%` : "Oferta") : "Destacado"}
+            {product.oldPrice ? "Oferta" : "Destacado"}
           </span>
         )}
         <Image

@@ -6259,10 +6259,11 @@ textarea {
 }
 
 .product-card .badge {
-  background: var(--ink);
+  background: var(--red);
   border: 0;
   border-radius: 999px;
-  box-shadow: none;
+  box-shadow: 0 8px 18px rgba(230, 33, 53, 0.2);
+  color: white;
   font-size: 11px;
   letter-spacing: 0.04em;
   padding: 7px 10px;
@@ -6270,8 +6271,8 @@ textarea {
 }
 
 .product-card .badge--offer {
-  background: var(--yellow);
-  color: #4e3900;
+  background: var(--red);
+  color: white;
 }
 
 .product-card__body {
@@ -6303,9 +6304,9 @@ textarea {
 }
 
 .product-card__brand {
-  background: var(--soft);
-  border: 0;
-  color: #4f5a69;
+  background: rgba(230, 33, 53, 0.08);
+  border: 1px solid rgba(230, 33, 53, 0.16);
+  color: var(--red-dark);
   flex: none;
   font-size: 11px;
   padding: 6px 9px;
@@ -6355,14 +6356,14 @@ textarea {
 }
 
 .product-card .stock-row {
-  background: rgba(10, 159, 115, 0.08);
-  border: 1px solid rgba(10, 159, 115, 0.12);
+  background: rgba(10, 159, 115, 0.09);
+  border: 1px solid rgba(10, 159, 115, 0.14);
   color: #087855;
   flex: none;
-  font-size: 11px;
+  font-size: 12px;
   gap: 5px;
   margin-left: auto;
-  padding: 6px 8px;
+  padding: 7px 10px;
   white-space: nowrap;
 }
 
