@@ -3,8 +3,6 @@ import { NextResponse } from "next/server";
 
 export const runtime = "nodejs";
 
-const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
 const ALLOWED_FOLDERS = new Set(["products", "categories", "promos", "brands"]);
 const UPLOAD_TRANSFORMATION = "c_limit,w_1920,h_1920,q_auto:good,f_webp";
 
@@ -55,21 +53,8 @@ export async function POST(request: Request) {
       );
     }
 
-    const form = await request.formData();
-    const file = form.get("file");
-    const requestedFolder = String(form.get("folder") || "");
-    if (!(file instanceof File)) {
-      return NextResponse.json({ error: "No se recibio ninguna imagen." }, { status: 400 });
-    }
-    if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
-      return NextResponse.json(
-        { error: "Use una imagen JPG, PNG, WebP o AVIF." },
-        { status: 415 }
-      );
-    }
-    if (file.size > MAX_IMAGE_BYTES) {
-      return NextResponse.json({ error: "La imagen no puede pesar mas de 8 MB." }, { status: 413 });
-    }
+    const body = (await request.json().catch(() => null)) as { folder?: string } | null;
+    const requestedFolder = String(body?.folder || "");
 
     const assetFolder = `${configuredRootFolder()}/${
       ALLOWED_FOLDERS.has(requestedFolder) ? requestedFolder : "misc"
@@ -79,29 +64,14 @@ export async function POST(request: Request) {
       `asset_folder=${assetFolder}&timestamp=${timestamp}&transformation=${UPLOAD_TRANSFORMATION}${apiSecret}`;
     const signature = createHash("sha1").update(signatureSource).digest("hex");
 
-    const uploadForm = new FormData();
-    uploadForm.append("file", file, file.name);
-    uploadForm.append("api_key", apiKey);
-    uploadForm.append("timestamp", String(timestamp));
-    uploadForm.append("asset_folder", assetFolder);
-    uploadForm.append("transformation", UPLOAD_TRANSFORMATION);
-    uploadForm.append("signature", signature);
-
-    const uploadResponse = await fetch(
-      `https://api.cloudinary.com/v1_1/${encodeURIComponent(cloudName)}/image/upload`,
-      { method: "POST", body: uploadForm, cache: "no-store" }
-    );
-    const uploadResult = (await uploadResponse.json()) as {
-      secure_url?: string;
-      public_id?: string;
-      error?: { message?: string };
-    };
-    if (!uploadResponse.ok || !uploadResult.secure_url) {
-      console.error("Cloudinary upload failed:", uploadResult.error?.message || uploadResponse.statusText);
-      return NextResponse.json({ error: "Cloudinary rechazo la imagen." }, { status: 502 });
-    }
-
-    return NextResponse.json({ url: uploadResult.secure_url, publicId: uploadResult.public_id });
+    return NextResponse.json({
+      cloudName,
+      apiKey,
+      timestamp,
+      signature,
+      assetFolder,
+      transformation: UPLOAD_TRANSFORMATION
+    });
   } catch (error) {
     console.error("Image upload failed:", error);
     return NextResponse.json({ error: "No se pudo procesar la imagen." }, { status: 500 });

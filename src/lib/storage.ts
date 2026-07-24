@@ -16,28 +16,61 @@ export async function uploadAdminImage(file: File, folder: string): Promise<stri
     ? await services.auth.currentUser.getIdToken()
     : "";
 
-  const body = new FormData();
-  body.append("file", file);
-  body.append("folder", folder);
-
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 45_000);
 
   try {
-    const response = await fetch("/api/admin/images", {
+    const signatureResponse = await fetch("/api/admin/images", {
       method: "POST",
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-      body,
+      headers: {
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ folder }),
       signal: controller.signal
     });
-    const result = (await response.json().catch(() => null)) as
-      | { url?: string; error?: string }
+    const signatureResult = (await signatureResponse.json().catch(() => null)) as
+      | {
+          cloudName?: string;
+          apiKey?: string;
+          timestamp?: number;
+          signature?: string;
+          assetFolder?: string;
+          transformation?: string;
+          error?: string;
+        }
       | null;
-
-    if (!response.ok || !result?.url) {
-      throw new Error(result?.error || "No se pudo subir la imagen.");
+    if (
+      !signatureResponse.ok ||
+      !signatureResult?.cloudName ||
+      !signatureResult.apiKey ||
+      !signatureResult.timestamp ||
+      !signatureResult.signature ||
+      !signatureResult.assetFolder ||
+      !signatureResult.transformation
+    ) {
+      throw new Error(signatureResult?.error || "No se pudo autorizar la imagen.");
     }
-    return result.url;
+
+    const uploadForm = new FormData();
+    uploadForm.append("file", file);
+    uploadForm.append("api_key", signatureResult.apiKey);
+    uploadForm.append("timestamp", String(signatureResult.timestamp));
+    uploadForm.append("asset_folder", signatureResult.assetFolder);
+    uploadForm.append("transformation", signatureResult.transformation);
+    uploadForm.append("signature", signatureResult.signature);
+
+    const uploadResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${encodeURIComponent(signatureResult.cloudName)}/image/upload`,
+      { method: "POST", body: uploadForm, signal: controller.signal }
+    );
+    const uploadResult = (await uploadResponse.json().catch(() => null)) as
+      | { secure_url?: string; error?: { message?: string } }
+      | null;
+    if (!uploadResponse.ok || !uploadResult?.secure_url) {
+      throw new Error(uploadResult?.error?.message || "Cloudinary rechazo la imagen.");
+    }
+    return uploadResult.secure_url;
   } catch (error) {
     if (error instanceof DOMException && error.name === "AbortError") {
       throw new Error("La subida tardo demasiado. Revise su conexion e intente de nuevo.");
