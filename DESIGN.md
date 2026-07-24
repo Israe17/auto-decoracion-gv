@@ -132,9 +132,10 @@ Móvil (iPhone-first):
   ocultas. ScrollTrigger queda solo para efectos scrubbed (LogoSequence).
   Nuevas secciones/grillas se registran en los selectores de ese
   componente.
-- La imagen de producto se muestra COMPLETA: tarjeta con contenedor
-  cuadrado (los artes son 1:1) y galería con `object-fit: contain` sobre
-  blanco — sin parallax ni zooms que recorten el arte.
+- La tarjeta de producto muestra la imagen **a sangre**, sin relleno ni marco
+  blanco, en un contenedor cuadrado con `object-fit: cover`; las fotos deben
+  sentirse protagonistas y pueden tener un zoom leve al hover. La galería de
+  la ficha mantiene `object-fit: contain` para inspeccionar la imagen completa.
 - **Scroll suave global** con Lenis (`src/components/SmoothScroll.tsx`),
   equivalente libre del ScrollSmoother de pago de GSAP. Integrado con
   ScrollTrigger (los reveals siguen funcionando), activo en escritorio y
