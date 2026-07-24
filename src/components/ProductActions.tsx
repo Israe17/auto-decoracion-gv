@@ -54,7 +54,9 @@ export function ProductActions({
       >
         <MessageCircle size={18} />
         <span className="product-action__label product-action__label--mobile">Cotizar</span>
-        <span className="product-action__label product-action__label--desktop">Cotizar por WhatsApp</span>
+        <span className="product-action__label product-action__label--desktop">
+          {compact ? "Cotizar" : "Cotizar por WhatsApp"}
+        </span>
       </a>
       <button
         className="button button--secondary"
