@@ -33,8 +33,12 @@ export function ImageListField({
     try {
       const uploaded = await Promise.all(images.map((file) => uploadAdminImage(file, folder)));
       setUrls((current) => [...current, ...uploaded]);
-    } catch {
-      setError("No se pudieron subir una o mas imagenes. Intente de nuevo.");
+    } catch (error) {
+      setError(
+        error instanceof Error
+          ? error.message
+          : "No se pudieron subir una o mas imagenes. Intente de nuevo."
+      );
     } finally {
       setUploading(false);
     }

@@ -1,40 +1,49 @@
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { firebaseEnabled, getFirebaseServices } from "./firebase";
 
-function slugifyFileName(name: string) {
-  const dot = name.lastIndexOf(".");
-  const base = dot > 0 ? name.slice(0, dot) : name;
-  const ext = dot > 0 ? name.slice(dot) : "";
-  const slug = base
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[̀-ͯ]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-  return `${slug || "imagen"}${ext.toLowerCase()}`;
-}
+const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
+const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
 
-function fileToDataUrl(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(String(reader.result));
-    reader.onerror = () => reject(reader.error);
-    reader.readAsDataURL(file);
-  });
-}
-
-// Sube la imagen a Firebase Storage (carpeta admin/{folder}); si Firebase no
-// esta configurado (modo demo) la codifica como data URL para que el admin
-// siga funcionando con localStorage.
 export async function uploadAdminImage(file: File, folder: string): Promise<string> {
-  const services = getFirebaseServices();
-
-  if (!firebaseEnabled || !services) {
-    return fileToDataUrl(file);
+  if (!ALLOWED_IMAGE_TYPES.has(file.type)) {
+    throw new Error("Use una imagen JPG, PNG, WebP o AVIF.");
+  }
+  if (file.size > MAX_IMAGE_BYTES) {
+    throw new Error("La imagen no puede pesar mas de 8 MB.");
   }
 
-  const path = `${folder}/${Date.now()}-${slugifyFileName(file.name)}`;
-  const storageRef = ref(services.storage, path);
-  await uploadBytes(storageRef, file);
-  return getDownloadURL(storageRef);
+  const services = getFirebaseServices();
+  const token = firebaseEnabled && services?.auth.currentUser
+    ? await services.auth.currentUser.getIdToken()
+    : "";
+
+  const body = new FormData();
+  body.append("file", file);
+  body.append("folder", folder);
+
+  const controller = new AbortController();
+  const timeout = window.setTimeout(() => controller.abort(), 45_000);
+
+  try {
+    const response = await fetch("/api/admin/images", {
+      method: "POST",
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      body,
+      signal: controller.signal
+    });
+    const result = (await response.json().catch(() => null)) as
+      | { url?: string; error?: string }
+      | null;
+
+    if (!response.ok || !result?.url) {
+      throw new Error(result?.error || "No se pudo subir la imagen.");
+    }
+    return result.url;
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw new Error("La subida tardo demasiado. Revise su conexion e intente de nuevo.");
+    }
+    throw error;
+  } finally {
+    window.clearTimeout(timeout);
+  }
 }

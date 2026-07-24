@@ -34,8 +34,8 @@ export function ImageUploadField({
     try {
       const url = await uploadAdminImage(file, folder);
       setValue(url);
-    } catch {
-      setError("No se pudo subir la imagen. Intente de nuevo.");
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "No se pudo subir la imagen. Intente de nuevo.");
     } finally {
       setUploading(false);
     }
