@@ -85,6 +85,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         ? "Bajo pedido"
         : "Agotado";
 
+  const statusClass =
+    product.status === "available"
+      ? ""
+      : product.status === "on_request"
+        ? " product-status--on-request"
+        : " product-status--sold-out";
+
   const discount =
     product.oldPrice && product.price
       ? Math.round((1 - product.price / product.oldPrice) * 100)
@@ -160,7 +167,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   {product.isOwnBrand ? "G&V System" : product.brandName}
                 </span>
               )}
-              <span className="product-status">{statusLabel}</span>
+              <span className={`product-status${statusClass}`}>{statusLabel}</span>
             </div>
 
             <h1>{product.name}</h1>

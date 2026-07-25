@@ -897,13 +897,26 @@ img {
 }
 
 .product-status {
-  background: rgba(10, 159, 115, 0.1);
-  border: 1px solid rgba(10, 159, 115, 0.18);
+  background: linear-gradient(135deg, var(--green), #0bbf88);
+  border: 0;
   border-radius: 999px;
-  color: #087855;
+  box-shadow: 0 6px 16px rgba(10, 159, 115, 0.3);
+  color: white;
   font-size: 13px;
   font-weight: 800;
-  padding: 8px 11px;
+  padding: 8px 12px;
+}
+
+.product-status--on-request {
+  background: linear-gradient(135deg, #ffc72c, #ff9e2c);
+  box-shadow: 0 6px 16px rgba(255, 158, 44, 0.32);
+  color: #5a3d00;
+}
+
+.product-status--sold-out {
+  background: linear-gradient(135deg, #8a94a3, #697383);
+  box-shadow: 0 6px 16px rgba(17, 21, 28, 0.2);
+  color: white;
 }
 
 .product-status--own-brand,
@@ -955,10 +968,11 @@ img {
 }
 
 .price-chip--save {
-  background: rgba(10, 159, 115, 0.1);
-  border: 1px solid rgba(10, 159, 115, 0.22);
+  background: linear-gradient(135deg, var(--green), #0bbf88);
+  border: 0;
   border-radius: 999px;
-  color: #087855;
+  box-shadow: 0 6px 16px rgba(10, 159, 115, 0.28);
+  color: white;
   font-size: 13.5px;
   font-weight: 800;
   padding: 7px 13px;
@@ -2436,7 +2450,7 @@ input[type="checkbox"] {
 }
 
 .home-carousel__arrow:hover {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   color: white;
   transform: translateY(-50%) scale(1.03);
 }
@@ -2476,7 +2490,7 @@ input[type="checkbox"] {
 }
 
 .home-carousel__dots button[aria-current="true"] {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   width: 25px;
 }
 
@@ -3305,7 +3319,7 @@ body {
 }
 
 .admin-speed-dial__action--active .admin-speed-dial__icon {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border-color: var(--red);
   color: #ffffff;
 }
@@ -3315,7 +3329,7 @@ body {
 }
 
 .admin-speed-dial__trigger {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border: 0;
   box-shadow: 0 14px 32px rgba(230, 33, 53, 0.42);
   color: #ffffff;
@@ -4181,7 +4195,7 @@ body {
 }
 
 .admin-stepper__progress span.is-active {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
 }
 
 .admin-stepper__count {
@@ -4348,7 +4362,7 @@ body {
 }
 
 .tag-bank__group button.is-selected {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border-color: var(--red);
   box-shadow: 0 8px 18px rgba(230, 33, 53, 0.32);
   color: white;
@@ -6002,7 +6016,7 @@ textarea {
 }
 
 .compat-chip:hover {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   color: white;
   transform: translateY(-2px);
 }
@@ -6988,7 +7002,7 @@ html.lenis body {
 }
 
 .sliding-cards__dots button.is-active {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   width: 22px;
 }
 
