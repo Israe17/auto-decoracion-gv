@@ -31,10 +31,14 @@ Tokens:
 Reglas:
 - **Degradado cálido de marca** (rojo → naranja,
   `linear-gradient(135deg, var(--red), #ff6b42)`): permitido y preferido por
-  el dueño en **insignias, botón primario y listones de estado**. El hover
-  del primario profundiza el degradado (`--red-dark → #ff5a2c`). Las
-  superficies grandes (topbar, banda CTA, bandeja de cotización) siguen en
-  `var(--red)` **plano** para no saturar la vista.
+  el dueño en **todos los acentos del sitio** — insignias, botón primario,
+  listones/chips de estado, chips activos (banco de etiquetas), estados
+  hover/activo de flechas, puntos de carrusel y controles del admin. Los
+  estados verdes usan `var(--green) → #0bbf88` y los ámbar
+  `#ffc72c → #ff9e2c`. El hover del primario profundiza el degradado
+  (`--red-dark → #ff5a2c`). Las superficies grandes (topbar, banda CTA,
+  bandeja de cotización) siguen en `var(--red)` **plano** para no saturar
+  la vista.
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
