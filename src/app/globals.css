@@ -1069,10 +1069,23 @@ img {
   background: rgba(230, 33, 53, 0.08);
   border: 1px solid rgba(230, 33, 53, 0.14);
   border-radius: 999px;
+  box-shadow:
+    0 2px 10px rgba(17, 21, 28, 0.06),
+    0 1px 3px rgba(17, 21, 28, 0.05);
   color: var(--red);
   font-size: 14px;
   font-weight: 800;
   padding: 9px 12px;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    transform 160ms ease;
+}
+
+.product-tags span:hover {
+  border-color: rgba(230, 33, 53, 0.4);
+  box-shadow: 0 6px 16px rgba(230, 33, 53, 0.16);
+  transform: translateY(-1px);
 }
 
 .product-detail-card--dark {
@@ -1388,10 +1401,47 @@ body {
 .button--primary {
   background: var(--red);
   box-shadow: 0 10px 24px rgba(230, 33, 53, 0.18);
+  overflow: hidden;
 }
 
 .button--primary:hover {
   background: var(--red-dark);
+  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.3);
+}
+
+/* Destello diagonal que barre UNA vez al pasar el mouse: barrido unico por
+   hover (nunca infinito), coherente con el glare de la marca. */
+.button--primary::after {
+  background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.42), transparent);
+  bottom: 0;
+  content: "";
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transform: translateX(-220%) skewX(-14deg);
+  width: 55%;
+}
+
+@media (hover: hover) {
+  .button--primary:hover::after {
+    animation: btn-shine 0.9s ease-out;
+  }
+}
+
+@keyframes btn-shine {
+  from {
+    transform: translateX(-220%) skewX(-14deg);
+  }
+  to {
+    transform: translateX(360%) skewX(-14deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button--primary::after {
+    display: none;
+  }
 }
 
 .button--secondary {
@@ -4204,6 +4254,9 @@ body {
 .tag-bank__group button {
   align-items: center;
   border-radius: 999px;
+  box-shadow:
+    0 2px 10px rgba(17, 21, 28, 0.06),
+    0 1px 3px rgba(17, 21, 28, 0.05);
   cursor: pointer;
   display: inline-flex;
   font: inherit;
@@ -4216,6 +4269,7 @@ body {
   transition:
     background 180ms ease,
     border-color 180ms ease,
+    box-shadow 180ms ease,
     color 180ms ease,
     transform 180ms ease;
 }
@@ -4228,6 +4282,7 @@ body {
 
 .tag-bank__selected button:hover {
   border-color: rgba(230, 33, 53, 0.4);
+  box-shadow: 0 6px 16px rgba(230, 33, 53, 0.16);
   transform: translateY(-1px);
 }
 
@@ -4287,6 +4342,7 @@ body {
 
 .tag-bank__group button:hover {
   border-color: rgba(230, 33, 53, 0.35);
+  box-shadow: 0 6px 16px rgba(17, 21, 28, 0.11);
   color: var(--red-dark);
   transform: translateY(-1px);
 }
@@ -4294,7 +4350,9 @@ body {
 .tag-bank__group button.is-selected {
   background: var(--red);
   border-color: var(--red);
+  box-shadow: 0 8px 18px rgba(230, 33, 53, 0.32);
   color: white;
+  transform: translateY(-1px);
 }
 
 .admin-workspace--simple > .admin-form--panel {

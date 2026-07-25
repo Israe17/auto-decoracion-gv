@@ -97,15 +97,21 @@ Móvil (iPhone-first):
 ## 5. Components
 
 - `button--primary`: rojo, texto blanco. Un solo primario por bloque, siempre
-  ANTES que el secundario.
+  ANTES que el secundario. Lleva **sombra roja suave elevada**
+  (`rgba(230,33,53,…)`) que crece al hover con `translateY(-2px)`, y un
+  **destello diagonal que barre UNA vez al pasar el mouse** (keyframe
+  `btn-shine`, nunca infinito; se apaga en touch y reduced-motion).
 - `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
 - `button--ghost`: solo sobre fotos/fondos oscuros.
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
   se ajusta al contenido y nunca usa espacios flexibles que separen el título
   del precio o las acciones.
-- Chips (`product-tags`): pill 999px con fondo tenue del color. En tarjetas,
-  el estado "Disponible/Bajo pedido" se muestra como listón sólido sobre la
-  esquina superior derecha de la imagen, frente al badge de oferta/destacado.
+- Chips (`product-tags`, banco de etiquetas): pill 999px con fondo tenue del
+  color y **sombra suave de elevación** en reposo; al hover suben `-1px` con
+  sombra mayor. El chip/etiqueta **activo** va en rojo con **sombra de color**
+  (`rgba(230,33,53,.32)`). En tarjetas, el estado "Disponible/Bajo pedido" se
+  muestra como listón sólido sobre la esquina superior derecha de la imagen,
+  frente al badge de oferta/destacado.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
