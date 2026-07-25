@@ -1399,14 +1399,14 @@ body {
 }
 
 .button--primary {
-  background: var(--red);
-  box-shadow: 0 10px 24px rgba(230, 33, 53, 0.18);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  box-shadow: 0 10px 24px rgba(230, 33, 53, 0.24);
   overflow: hidden;
 }
 
 .button--primary:hover {
-  background: var(--red-dark);
-  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.3);
+  background: linear-gradient(135deg, var(--red-dark), #ff5a2c);
+  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.34);
 }
 
 /* Destello diagonal que barre UNA vez al pasar el mouse: barrido unico por
@@ -6475,10 +6475,10 @@ textarea {
 }
 
 .product-card .badge {
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border: 0;
   border-radius: 999px;
-  box-shadow: var(--shadow-sm);
+  box-shadow: 0 8px 18px rgba(230, 33, 53, 0.28);
   color: white;
   font-size: 12px;
   letter-spacing: 0.03em;
@@ -6487,8 +6487,9 @@ textarea {
 }
 
 .product-card .badge--offer {
-  background: var(--yellow);
-  color: var(--red-dark);
+  background: linear-gradient(135deg, #ffb300, #ff6b42);
+  box-shadow: 0 8px 18px rgba(255, 130, 44, 0.3);
+  color: #4a2600;
 }
 
 .product-card__body {
@@ -6571,11 +6572,14 @@ textarea {
   white-space: nowrap;
 }
 
+/* Listones de estado: pildora-liston con degradado a juego con las
+   insignias y sombra de color suave. Verde para disponible, ambar para
+   bajo pedido, gris para agotado. */
 .product-card .stock-row {
-  background: var(--green);
+  background: linear-gradient(135deg, var(--green), #0bbf88);
   border: 0;
-  border-radius: 7px;
-  box-shadow: var(--shadow-sm);
+  border-radius: 8px;
+  box-shadow: 0 6px 16px rgba(10, 159, 115, 0.3);
   clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
   color: white;
   flex: none;
@@ -6590,25 +6594,17 @@ textarea {
   z-index: 2;
 }
 
-/* "Disponible" es el estado normal: se muestra discreto para no competir
-   con el precio ni con el badge de oferta. Los estados que cambian la
-   decision de compra (bajo pedido / agotado) si van solidos y visibles. */
-.product-card .stock-row--available {
-  background: rgba(255, 255, 255, 0.86);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  color: #087855;
-}
-
 .product-card .stock-row--on-request {
-  background: var(--yellow);
+  background: linear-gradient(135deg, #ffc72c, #ff9e2c);
   border: 0;
-  color: #523b00;
+  box-shadow: 0 6px 16px rgba(255, 158, 44, 0.32);
+  color: #5a3d00;
 }
 
 .product-card .stock-row--sold-out {
-  background: var(--muted);
+  background: linear-gradient(135deg, #8a94a3, #697383);
   border: 0;
+  box-shadow: 0 6px 16px rgba(17, 21, 28, 0.2);
   color: white;
 }
 
