@@ -6417,10 +6417,10 @@ textarea {
 }
 
 .product-card .badge {
-  background: linear-gradient(135deg, var(--red), #ff6b42);
+  background: var(--red);
   border: 0;
   border-radius: 999px;
-  box-shadow: 0 10px 20px rgba(230, 33, 53, 0.24);
+  box-shadow: var(--shadow-sm);
   color: white;
   font-size: 12px;
   letter-spacing: 0.03em;
@@ -6429,8 +6429,8 @@ textarea {
 }
 
 .product-card .badge--offer {
-  background: var(--red);
-  color: white;
+  background: var(--yellow);
+  color: var(--red-dark);
 }
 
 .product-card__body {
@@ -6508,7 +6508,7 @@ textarea {
 
 .product-card .price-row strong {
   color: var(--red-dark);
-  font-size: 21px;
+  font-size: 22px;
   line-height: 1.05;
   white-space: nowrap;
 }
@@ -6517,7 +6517,7 @@ textarea {
   background: var(--green);
   border: 0;
   border-radius: 7px;
-  box-shadow: 0 10px 22px rgba(17, 21, 28, 0.2);
+  box-shadow: var(--shadow-sm);
   clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
   color: white;
   flex: none;
@@ -6530,6 +6530,16 @@ textarea {
   top: 12px;
   white-space: nowrap;
   z-index: 2;
+}
+
+/* "Disponible" es el estado normal: se muestra discreto para no competir
+   con el precio ni con el badge de oferta. Los estados que cambian la
+   decision de compra (bajo pedido / agotado) si van solidos y visibles. */
+.product-card .stock-row--available {
+  background: rgba(255, 255, 255, 0.86);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  color: #087855;
 }
 
 .product-card .stock-row--on-request {
