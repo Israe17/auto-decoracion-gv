@@ -103,7 +103,9 @@ Móvil (iPhone-first):
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
   se ajusta al contenido y nunca usa espacios flexibles que separen el título
   del precio o las acciones.
-- Chips (`product-tags`, estados): pill 999px con fondo tenue del color.
+- Chips (`product-tags`): pill 999px con fondo tenue del color. En tarjetas,
+  el estado "Disponible/Bajo pedido" se muestra como listón sólido sobre la
+  esquina superior derecha de la imagen, frente al badge de oferta/destacado.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y chip verde "Ahorra ₡X"); badge de
   descuento "−N%" en píldora sobre la foto; acciones lado a lado 1.5:1

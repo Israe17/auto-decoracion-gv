@@ -6359,27 +6359,34 @@ textarea {
 }
 
 .product-card .stock-row {
-  background: rgba(10, 159, 115, 0.08);
+  background: var(--green);
   border: 0;
-  color: #087855;
+  border-radius: 7px;
+  box-shadow: 0 10px 22px rgba(17, 21, 28, 0.2);
+  clip-path: polygon(10px 0, 100% 0, 100% 100%, 10px 100%, 0 50%);
+  color: white;
   flex: none;
-  font-size: 13px;
-  gap: 8px;
-  margin-left: auto;
-  padding: 8px 11px;
+  font-size: 12px;
+  gap: 6px;
+  margin: 0;
+  padding: 9px 12px 9px 19px;
+  position: absolute;
+  right: 12px;
+  top: 12px;
   white-space: nowrap;
+  z-index: 2;
 }
 
 .product-card .stock-row--on-request {
-  background: #fff8e5;
+  background: var(--yellow);
   border: 0;
-  color: #8a5a00;
+  color: #523b00;
 }
 
 .product-card .stock-row--sold-out {
-  background: var(--soft);
+  background: var(--muted);
   border: 0;
-  color: var(--muted);
+  color: white;
 }
 
 .product-card .product-actions {
@@ -6471,6 +6478,26 @@ textarea {
 
   .product-card {
     border-radius: 18px;
+  }
+
+  .product-card .badge {
+    font-size: 9px;
+    left: 6px;
+    padding: 6px 8px;
+    top: 6px;
+  }
+
+  .product-card .stock-row {
+    clip-path: polygon(6px 0, 100% 0, 100% 100%, 6px 100%, 0 50%);
+    font-size: 8px;
+    gap: 0;
+    padding: 5px 6px 5px 11px;
+    right: 6px;
+    top: 6px;
+  }
+
+  .product-card .stock-row svg {
+    display: none;
   }
 
   .product-card__image img {

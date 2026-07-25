@@ -55,6 +55,10 @@ export function ProductCard({ product }: { product: Product }) {
             {product.oldPrice ? "Oferta" : "Destacado"}
           </span>
         )}
+        <span className={`stock-row stock-row--${status.className}`}>
+          <StatusIcon size={15} />
+          {status.label}
+        </span>
         <Image
           src={product.images[0]}
           alt={product.name}
@@ -80,10 +84,6 @@ export function ProductCard({ product }: { product: Product }) {
             <strong>
               {product.saleMode === "price_quote" ? formatCRC(product.price) : "Consultar precio"}
             </strong>
-          </div>
-          <div className={`stock-row stock-row--${status.className}`}>
-            <StatusIcon size={15} />
-            {status.label}
           </div>
         </div>
         <ProductActions product={product} compact />
