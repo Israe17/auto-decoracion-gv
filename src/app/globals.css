@@ -6260,14 +6260,14 @@ textarea {
 }
 
 .product-card .badge {
-  background: var(--red);
-  border: 1px solid rgba(255, 255, 255, 0.38);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  border: 0;
   border-radius: 999px;
-  box-shadow: 0 10px 24px rgba(17, 21, 28, 0.2);
+  box-shadow: 0 10px 20px rgba(230, 33, 53, 0.24);
   color: white;
-  font-size: 11px;
-  letter-spacing: 0.04em;
-  padding: 8px 12px;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  padding: 7px 10px;
   text-transform: uppercase;
 }
 
@@ -6309,8 +6309,8 @@ textarea {
   border: 1px solid rgba(230, 33, 53, 0.16);
   color: var(--red-dark);
   flex: none;
-  font-size: 11px;
-  padding: 6px 9px;
+  font-size: 12px;
+  padding: 7px 10px;
 }
 
 .product-card__title {
@@ -6357,26 +6357,26 @@ textarea {
 }
 
 .product-card .stock-row {
-  background: rgba(10, 159, 115, 0.09);
-  border: 1px solid rgba(10, 159, 115, 0.14);
+  background: rgba(10, 159, 115, 0.08);
+  border: 0;
   color: #087855;
   flex: none;
-  font-size: 12px;
-  gap: 5px;
+  font-size: 13px;
+  gap: 8px;
   margin-left: auto;
-  padding: 7px 10px;
+  padding: 8px 11px;
   white-space: nowrap;
 }
 
 .product-card .stock-row--on-request {
   background: #fff8e5;
-  border-color: rgba(185, 119, 0, 0.16);
+  border: 0;
   color: #8a5a00;
 }
 
 .product-card .stock-row--sold-out {
   background: var(--soft);
-  border-color: var(--line);
+  border: 0;
   color: var(--muted);
 }
 
