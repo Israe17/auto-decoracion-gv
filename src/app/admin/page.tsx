@@ -1413,6 +1413,171 @@ function ProductAdminPanel({
   );
 }
 
+const PRODUCT_TAG_GROUPS = [
+  {
+    label: "Vehículo y uso",
+    tags: ["Universal", "Pickup", "SUV", "4x4", "Off-road", "Camping", "Trabajo"]
+  },
+  {
+    label: "Zona y acabado",
+    tags: ["Interior", "Exterior", "Batea", "Cabina", "Techo", "Suspensión", "A la medida"]
+  },
+  {
+    label: "Beneficios",
+    tags: ["Protección", "Seguridad", "Confort", "Antideslizante", "Impermeable", "Resistente"]
+  },
+  {
+    label: "Tecnología y servicio",
+    tags: ["LED", "Audio", "Video", "Bluetooth", "Cámara", "Sensores", "Polarizado", "Instalación"]
+  },
+  {
+    label: "Materiales",
+    tags: ["Caucho", "PVC", "Aluminio", "Acero inoxidable", "Plástico ABS"]
+  }
+] as const;
+
+function productTagKey(value: string) {
+  return value.trim().toLocaleLowerCase("es-CR");
+}
+
+function uniqueProductTags(tags: string[]) {
+  const seen = new Set<string>();
+
+  return tags.filter((tag) => {
+    const key = productTagKey(tag);
+    if (!key || seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
+}
+
+function ProductTagBank({ defaultValue }: { defaultValue: string[] }) {
+  const [selectedTags, setSelectedTags] = useState(() => uniqueProductTags(defaultValue));
+  const [query, setQuery] = useState("");
+  const normalizedQuery = productTagKey(query);
+  const selectedKeys = new Set(selectedTags.map(productTagKey));
+  const visibleGroups = PRODUCT_TAG_GROUPS.map((group) => ({
+    ...group,
+    tags: group.tags.filter((tag) => !normalizedQuery || productTagKey(tag).includes(normalizedQuery))
+  })).filter((group) => group.tags.length > 0);
+
+  function addTag(value: string) {
+    const cleanTag = value.replaceAll(",", " ").replace(/\s+/g, " ").trim().slice(0, 40);
+    if (!cleanTag) return;
+
+    setSelectedTags((tags) => uniqueProductTags([...tags, cleanTag]));
+    setQuery("");
+  }
+
+  function removeTag(value: string) {
+    const key = productTagKey(value);
+    setSelectedTags((tags) => tags.filter((tag) => productTagKey(tag) !== key));
+  }
+
+  function toggleTag(value: string) {
+    if (selectedKeys.has(productTagKey(value))) {
+      removeTag(value);
+      return;
+    }
+    addTag(value);
+  }
+
+  const canAddCustomTag = Boolean(
+    normalizedQuery && !selectedKeys.has(normalizedQuery)
+  );
+
+  return (
+    <fieldset className="tag-bank">
+      <legend>Etiquetas</legend>
+      <input name="tags" type="hidden" value={selectedTags.join(", ")} readOnly />
+      <p className="tag-bank__hint">
+        Seleccione las características que ayudan a encontrar y describir el producto.
+      </p>
+
+      {selectedTags.length > 0 ? (
+        <div className="tag-bank__selected" aria-label="Etiquetas seleccionadas">
+          {selectedTags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => removeTag(tag)}
+              aria-label={`Quitar ${tag}`}
+            >
+              {tag}
+              <X size={14} aria-hidden="true" />
+            </button>
+          ))}
+        </div>
+      ) : (
+        <p className="tag-bank__empty">Aún no ha seleccionado etiquetas.</p>
+      )}
+
+      <div className="tag-bank__composer">
+        <label>
+          Buscar o crear etiqueta
+          <input
+            type="text"
+            value={query}
+            maxLength={40}
+            placeholder="Ejemplo: Doble cabina"
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if ((event.key === "Enter" || event.key === ",") && query.trim()) {
+                event.preventDefault();
+                addTag(query);
+              }
+            }}
+          />
+        </label>
+        <button
+          className="button button--secondary"
+          type="button"
+          disabled={!canAddCustomTag}
+          onClick={() => addTag(query)}
+        >
+          <Plus size={16} aria-hidden="true" />
+          Agregar
+        </button>
+      </div>
+
+      <div className="tag-bank__catalog">
+        {visibleGroups.length > 0 ? (
+          visibleGroups.map((group) => (
+            <section className="tag-bank__group" key={group.label}>
+              <strong>{group.label}</strong>
+              <div>
+                {group.tags.map((tag) => {
+                  const isSelected = selectedKeys.has(productTagKey(tag));
+                  return (
+                    <button
+                      className={isSelected ? "is-selected" : undefined}
+                      type="button"
+                      key={tag}
+                      aria-pressed={isSelected}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {isSelected ? (
+                        <BadgeCheck size={14} aria-hidden="true" />
+                      ) : (
+                        <Plus size={14} aria-hidden="true" />
+                      )}
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+            </section>
+          ))
+        ) : (
+          <p className="tag-bank__empty">
+            No está en el banco. Puede agregarla como etiqueta personalizada.
+          </p>
+        )}
+      </div>
+    </fieldset>
+  );
+}
+
 function ProductDialog({
   product,
   categories,
@@ -1638,10 +1803,7 @@ function ProductDialog({
           <textarea name="description" rows={4} required defaultValue={product.description} />
         </label>
 
-        <label>
-          Etiquetas
-          <input name="tags" defaultValue={product.tags.join(", ")} />
-        </label>
+        <ProductTagBank defaultValue={product.tags} />
 
         </div>
         <div>

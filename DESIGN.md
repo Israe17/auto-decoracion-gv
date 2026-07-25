@@ -106,6 +106,9 @@ Móvil (iPhone-first):
 - Chips (`product-tags`): pill 999px con fondo tenue del color. En tarjetas,
   el estado "Disponible/Bajo pedido" se muestra como listón sólido sobre la
   esquina superior derecha de la imagen, frente al badge de oferta/destacado.
+- Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
+  selección activa roja y área separada para las etiquetas elegidas; permite
+  crear etiquetas propias sin sustituir las sugerencias del negocio.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y chip verde "Ahorra ₡X"); badge de
   descuento "−N%" en píldora sobre la foto; acciones lado a lado 1.5:1

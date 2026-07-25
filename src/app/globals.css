@@ -4169,6 +4169,134 @@ body {
   margin-right: auto;
 }
 
+.tag-bank {
+  border: 0;
+  display: grid;
+  gap: 14px;
+  margin: 0;
+  min-width: 0;
+  padding: 0;
+}
+
+.tag-bank > legend {
+  color: #121821;
+  font-size: 15px;
+  font-weight: var(--font-semibold);
+  margin-bottom: 8px;
+  padding: 0;
+}
+
+.tag-bank__hint,
+.tag-bank__empty {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.tag-bank__selected {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tag-bank__selected button,
+.tag-bank__group button {
+  align-items: center;
+  border-radius: 999px;
+  cursor: pointer;
+  display: inline-flex;
+  font: inherit;
+  font-size: 13px;
+  font-weight: var(--font-medium);
+  gap: 6px;
+  justify-content: center;
+  min-height: 40px;
+  padding: 8px 12px;
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    transform 180ms ease;
+}
+
+.tag-bank__selected button {
+  background: rgba(230, 33, 53, 0.09);
+  border: 1px solid rgba(230, 33, 53, 0.18);
+  color: var(--red-dark);
+}
+
+.tag-bank__selected button:hover {
+  border-color: rgba(230, 33, 53, 0.4);
+  transform: translateY(-1px);
+}
+
+.tag-bank__composer {
+  align-items: end;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.tag-bank__composer label {
+  min-width: 0;
+}
+
+.tag-bank__composer .button {
+  min-height: 50px;
+  min-width: 122px;
+}
+
+.tag-bank__composer .button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.tag-bank__catalog {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  display: grid;
+  gap: 16px;
+  padding: 16px;
+}
+
+.tag-bank__group {
+  display: grid;
+  gap: 8px;
+}
+
+.tag-bank__group > strong {
+  color: var(--muted);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.tag-bank__group > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.tag-bank__group button {
+  background: var(--surface);
+  border: 1px solid #dce3eb;
+  color: #344055;
+}
+
+.tag-bank__group button:hover {
+  border-color: rgba(230, 33, 53, 0.35);
+  color: var(--red-dark);
+  transform: translateY(-1px);
+}
+
+.tag-bank__group button.is-selected {
+  background: var(--red);
+  border-color: var(--red);
+  color: white;
+}
+
 .admin-workspace--simple > .admin-form--panel {
   display: none;
 }
@@ -4258,6 +4386,33 @@ body {
   .admin-dashboard {
     padding-bottom: 112px;
     padding-top: 34px;
+  }
+
+  .tag-bank {
+    gap: 12px;
+  }
+
+  .tag-bank__composer {
+    grid-template-columns: 1fr;
+  }
+
+  .tag-bank__composer input {
+    font-size: 16px;
+  }
+
+  .tag-bank__composer .button {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .tag-bank__catalog {
+    border-radius: 16px;
+    padding: 13px;
+  }
+
+  .tag-bank__selected button,
+  .tag-bank__group button {
+    min-height: 44px;
   }
 
   .admin-stats {
