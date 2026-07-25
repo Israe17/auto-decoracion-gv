@@ -29,9 +29,12 @@ Tokens:
 | WhatsApp | `#25d366` | SOLO el botón flotante de WhatsApp |
 
 Reglas:
-- **Colores planos**: nada de gradientes en botones ni franjas. Topbar,
-  banda CTA y bandeja de cotización van en `var(--red)` plano; el primario
-  hace hover a `--red-dark`.
+- **Degradado cálido de marca** (rojo → naranja,
+  `linear-gradient(135deg, var(--red), #ff6b42)`): permitido y preferido por
+  el dueño en **insignias, botón primario y listones de estado**. El hover
+  del primario profundiza el degradado (`--red-dark → #ff5a2c`). Las
+  superficies grandes (topbar, banda CTA, bandeja de cotización) siguen en
+  `var(--red)` **plano** para no saturar la vista.
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
@@ -96,9 +99,10 @@ Móvil (iPhone-first):
 
 ## 5. Components
 
-- `button--primary`: rojo, texto blanco. Un solo primario por bloque, siempre
-  ANTES que el secundario. Lleva **sombra roja suave elevada**
-  (`rgba(230,33,53,…)`) que crece al hover con `translateY(-2px)`, y un
+- `button--primary`: **degradado rojo → naranja** (`var(--red) → #ff6b42`),
+  texto blanco. Un solo primario por bloque, siempre ANTES que el secundario.
+  Lleva **sombra roja elevada** que crece al hover con `translateY(-2px)`
+  (el hover profundiza el degradado a `--red-dark → #ff5a2c`), y un
   **destello diagonal que barre UNA vez al pasar el mouse** (keyframe
   `btn-shine`, nunca infinito; se apaga en touch y reduced-motion).
 - `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
@@ -109,9 +113,14 @@ Móvil (iPhone-first):
 - Chips (`product-tags`, banco de etiquetas): pill 999px con fondo tenue del
   color y **sombra suave de elevación** en reposo; al hover suben `-1px` con
   sombra mayor. El chip/etiqueta **activo** va en rojo con **sombra de color**
-  (`rgba(230,33,53,.32)`). En tarjetas, el estado "Disponible/Bajo pedido" se
-  muestra como listón sólido sobre la esquina superior derecha de la imagen,
-  frente al badge de oferta/destacado.
+  (`rgba(230,33,53,.32)`).
+- Insignias de tarjeta (`badge`): pill con **degradado cálido** — "Destacado"
+  rojo → naranja; "Oferta" ámbar → naranja (texto oscuro) para distinguirse.
+  Van sobre la esquina superior izquierda de la imagen.
+- Listones de estado ("Disponible/Bajo pedido/Agotado"): listón con forma de
+  etiqueta sobre la esquina superior derecha, con **degradado** a juego
+  (verde para disponible, ámbar para bajo pedido, gris para agotado) y sombra
+  de color suave. Frente al badge de oferta/destacado.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
