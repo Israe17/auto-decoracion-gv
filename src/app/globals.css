@@ -1314,7 +1314,7 @@ body {
 
 .quote-link {
   align-items: center;
-  background: var(--red);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border-radius: 999px;
   box-shadow: 0 12px 28px rgba(230, 33, 53, 0.24);
   color: white;
@@ -1322,11 +1322,14 @@ body {
   font-weight: 900;
   gap: 8px;
   min-height: 44px;
+  overflow: hidden;
   padding: 0 16px;
+  position: relative;
 }
 
 .quote-link:hover {
-  background: var(--red-dark);
+  background: linear-gradient(135deg, var(--red-dark), #ff5a2c);
+  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.34);
   transform: translateY(-2px);
 }
 
@@ -1425,7 +1428,8 @@ body {
 
 /* Destello diagonal que barre UNA vez al pasar el mouse: barrido unico por
    hover (nunca infinito), coherente con el glare de la marca. */
-.button--primary::after {
+.button--primary::after,
+.quote-link::after {
   background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.42), transparent);
   bottom: 0;
   content: "";
@@ -1438,7 +1442,8 @@ body {
 }
 
 @media (hover: hover) {
-  .button--primary:hover::after {
+  .button--primary:hover::after,
+  .quote-link:hover::after {
     animation: btn-shine 0.9s ease-out;
   }
 }
@@ -1453,7 +1458,8 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .button--primary::after {
+  .button--primary::after,
+  .quote-link::after {
     display: none;
   }
 }
