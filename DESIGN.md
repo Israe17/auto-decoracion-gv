@@ -100,7 +100,9 @@ Móvil (iPhone-first):
   ANTES que el secundario.
 - `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
 - `button--ghost`: solo sobre fotos/fondos oscuros.
-- Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`.
+- Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
+  se ajusta al contenido y nunca usa espacios flexibles que separen el título
+  del precio o las acciones.
 - Chips (`product-tags`, estados): pill 999px con fondo tenue del color.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y chip verde "Ahorra ₡X"); badge de
@@ -229,7 +231,7 @@ Móvil (iPhone-first):
 3. Información duplicada en la misma vista (ej. estado como chip Y como fila).
 4. Botón secundario antes que el primario.
 5. Tarjetas casi vacías que no justifican su espacio.
-6. Grids con anchos arbitrarios y alturas desparejas.
+6. Grids con anchos arbitrarios o alturas forzadas que produzcan bloques vacíos.
 7. Faltas de ortografía o imperativos inventados ("Dígnos").
 8. Emojis en la interfaz.
 9. URLs de WhatsApp armadas a mano fuera de `src/lib/whatsapp.ts`.
