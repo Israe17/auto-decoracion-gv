@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
-import { PixelSnow } from "@/components/PixelSnow";
 import { QuoteTray } from "@/components/QuoteTray";
 import { ScrollFx } from "@/components/ScrollFx";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -88,7 +87,6 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
         />
-        <PixelSnow />
         <SmoothScroll />
         <Header />
         <main>{children}</main>
