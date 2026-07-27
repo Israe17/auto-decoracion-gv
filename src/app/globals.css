@@ -1314,9 +1314,9 @@ body {
 
 .quote-link {
   align-items: center;
-  background: linear-gradient(90deg, #161b22, #252b33 52%, #e62135);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   border-radius: 999px;
-  box-shadow: 0 12px 28px rgba(22, 27, 34, 0.28);
+  box-shadow: 0 12px 28px rgba(230, 33, 53, 0.24);
   color: white;
   display: inline-flex;
   font-weight: 900;
@@ -1328,8 +1328,8 @@ body {
 }
 
 .quote-link:hover {
-  background: linear-gradient(90deg, #0d1117, #1c2128 52%, #b91527);
-  box-shadow: 0 16px 34px rgba(22, 27, 34, 0.36);
+  background: linear-gradient(135deg, var(--red-dark), #ff5a2c);
+  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.34);
   transform: translateY(-2px);
 }
 
@@ -1415,17 +1415,17 @@ body {
   transform: translateY(0);
 }
 
-/* Los botones primarios usan el mismo degradado de la franja del topbar
-   (negro -> rojo) para que la accion combine con la banda de WhatsApp. */
+/* Botones primarios con el degradado calido de marca (rojo -> naranja),
+   a juego con el logo y las insignias. */
 .button--primary {
-  background: linear-gradient(90deg, #161b22, #252b33 52%, #e62135);
-  box-shadow: 0 10px 24px rgba(22, 27, 34, 0.28);
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  box-shadow: 0 10px 24px rgba(230, 33, 53, 0.24);
   overflow: hidden;
 }
 
 .button--primary:hover {
-  background: linear-gradient(90deg, #0d1117, #1c2128 52%, #b91527);
-  box-shadow: 0 16px 34px rgba(22, 27, 34, 0.36);
+  background: linear-gradient(135deg, var(--red-dark), #ff5a2c);
+  box-shadow: 0 16px 34px rgba(230, 33, 53, 0.34);
 }
 
 /* Destello diagonal que barre UNA vez al pasar el mouse: barrido unico por
@@ -2197,7 +2197,7 @@ input[type="checkbox"] {
 
 .category-accordion__title {
   align-items: center;
-  background: linear-gradient(135deg, var(--red), var(--red-dark));
+  background: linear-gradient(135deg, var(--red), #ff6b42);
   color: white;
   display: flex;
   font-weight: 760;
