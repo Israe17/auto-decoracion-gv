@@ -274,7 +274,7 @@ export function HomeShowcase({
 
         <div className="home-carousel__content">
           <span className="home-carousel__eyebrow">{active.eyebrow}</span>
-          <BlurText as="h2" text={active.title} key={active.id} />
+          <BlurText as="h1" text={active.title} key={active.id} />
           {active.description && <p>{active.description}</p>}
 
           <div className="home-carousel__actions">

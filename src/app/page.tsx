@@ -33,12 +33,6 @@ export default async function Home() {
 
   return (
     <>
-      <HeroShell
-        productsCount={products.length}
-        categoriesCount={mainCategories.length}
-        years={new Date().getFullYear() - 2008}
-      />
-
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section" id="servicios">
@@ -136,6 +130,12 @@ export default async function Home() {
           ))}
         </div>
       </section>
+
+      <HeroShell
+        productsCount={products.length}
+        categoriesCount={mainCategories.length}
+        years={new Date().getFullYear() - 2008}
+      />
 
       <section className="section section--tight">
         <div className="cta-band glare-host">
