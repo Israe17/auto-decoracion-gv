@@ -1,5 +1,12 @@
 import Link from "next/link";
-import { ArrowRight, PackageSearch, Wrench } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  LayoutGrid,
+  PackageSearch,
+  Sparkles,
+  Wrench
+} from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
@@ -28,8 +35,8 @@ export default async function Home() {
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section" id="servicios">
-        <div className="wtl-head">
-          <span className="wtl-head__pill">
+        <div className="section-head">
+          <span className="section-head__pill">
             <Wrench size={14} /> Taller propio
           </span>
           <h2>
@@ -45,11 +52,13 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="section__header">
-          <div>
-            <span className="eyebrow">Categorías</span>
-            <h2>Todo para su vehículo en un solo lugar</h2>
-          </div>
+        <div className="section-head">
+          <span className="section-head__pill">
+            <LayoutGrid size={14} /> Categorías
+          </span>
+          <h2>
+            Todo para su vehículo en un solo <em>lugar.</em>
+          </h2>
           <Link href="/catalogo" className="text-link">
             Ver todas <ArrowRight size={18} />
           </Link>
@@ -63,13 +72,15 @@ export default async function Home() {
 
       {ownBrandProducts.length > 0 && (
         <section className="section section--own-brand">
-          <div className="section__header">
-            <div>
-              <span className="eyebrow">Linea propia</span>
-              <h2>Productos G&amp;V System</h2>
-            </div>
+          <div className="section-head">
+            <span className="section-head__pill">
+              <BadgeCheck size={14} /> Línea propia
+            </span>
+            <h2>
+              Productos <em>G&amp;V System.</em>
+            </h2>
             <Link href="/catalogo?linea=propia" className="text-link">
-              Ver linea completa <ArrowRight size={18} />
+              Ver línea completa <ArrowRight size={18} />
             </Link>
           </div>
           <div className="product-grid">
@@ -87,13 +98,23 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="section__header">
-          <div>
-            <span className="eyebrow">Destacados</span>
-            <h2>{featured.length ? "Productos destacados de la semana" : "Productos recomendados"}</h2>
-          </div>
+        <div className="section-head">
+          <span className="section-head__pill">
+            <Sparkles size={14} /> Destacados
+          </span>
+          <h2>
+            {featured.length ? (
+              <>
+                Productos destacados de la <em>semana.</em>
+              </>
+            ) : (
+              <>
+                Productos <em>recomendados.</em>
+              </>
+            )}
+          </h2>
           <Link href="/catalogo" className="text-link">
-            Ir al catalogo <ArrowRight size={18} />
+            Ir al catálogo <ArrowRight size={18} />
           </Link>
         </div>
         <div className="product-grid">

@@ -7261,7 +7261,7 @@ select::-ms-expand {
 
 /* Encabezado centrado estilo Lightswind: pildora + titular grande con la
    palabra final enfatizada y subrayada con el degradado de marca. */
-.wtl-head {
+.section-head {
   display: grid;
   gap: 18px;
   justify-items: center;
@@ -7270,7 +7270,7 @@ select::-ms-expand {
   text-align: center;
 }
 
-.wtl-head__pill {
+.section-head__pill {
   align-items: center;
   background: var(--soft);
   border: 1px solid var(--line);
@@ -7285,11 +7285,11 @@ select::-ms-expand {
   text-transform: uppercase;
 }
 
-.wtl-head__pill svg {
+.section-head__pill svg {
   color: var(--red);
 }
 
-.wtl-head h2 {
+.section-head h2 {
   font-size: clamp(32px, 4.4vw, 54px);
   font-weight: 800;
   letter-spacing: -0.02em;
@@ -7297,12 +7297,12 @@ select::-ms-expand {
   margin: 0;
 }
 
-.wtl-head h2 em {
+.section-head h2 em {
   display: inline-block;
   font-style: italic;
 }
 
-.wtl-head h2 em::after {
+.section-head h2 em::after {
   background: linear-gradient(90deg, var(--red), #ff6b42);
   border-radius: 999px;
   content: "";
@@ -7311,7 +7311,7 @@ select::-ms-expand {
   margin-top: 8px;
 }
 
-.wtl-head .workshop-panel__trust {
+.section-head .workshop-panel__trust {
   justify-content: center;
 }
 
@@ -7462,7 +7462,7 @@ select::-ms-expand {
 }
 
 @media (max-width: 720px) {
-  .wtl-head {
+  .section-head {
     margin-bottom: 26px;
   }
 

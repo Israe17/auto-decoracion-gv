@@ -137,11 +137,18 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
+- **Encabezados de sección de la portada** (`.section-head`): centrados,
+  con **píldora con ícono** (uppercase, letter-spacing, fondo `--soft`) y
+  **titular grande** (clamp 32-54px, peso 800) con la palabra final en
+  **cursiva subrayada con el degradado de marca** (`em::after`). El enlace
+  de la sección ("Ver todas", etc.) va como text-link centrado debajo.
+  Preferido por el dueño sobre el `section__header` lateral (que sigue
+  vigente en páginas internas).
 - **Línea de tiempo del taller** (portada, `#servicios`,
   `WorkshopTimeline` / `.wtl`, adaptación propia del Industrial Vertical
   Timeline de Lightswind): UNA sola sección para beneficios + servicios
   (decisión del dueño: menos carga por pantalla). Encabezado **centrado**
-  con píldora (`.wtl-head__pill`, ícono + uppercase), titular grande con
+  (`.section-head`: píldora con ícono + uppercase), titular grande con
   la palabra final en **cursiva subrayada con el degradado de marca** y 3
   frases de confianza. Debajo, espina central que se **llena con el
   degradado al scrollear**; cada paso lleva **número fantasma** grande
