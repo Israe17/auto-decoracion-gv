@@ -1,21 +1,14 @@
 import Link from "next/link";
-import {
-  ArrowRight,
-  Film,
-  MessageCircle,
-  PackageSearch,
-  Speaker,
-  Wrench
-} from "lucide-react";
+import { ArrowRight, PackageSearch } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
 import { VehicleFinder } from "@/components/VehicleFinder";
+import { WorkshopTimeline } from "@/components/WorkshopTimeline";
 import { topCategories } from "@/lib/catalog";
 import { selectActiveFeaturedProducts } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
-import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 
 export const revalidate = 60;
 
@@ -35,72 +28,18 @@ export default async function Home() {
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section" id="servicios">
-        <div className="workshop-panel glare-host">
-          <span className="glare" aria-hidden="true" />
-          <div className="workshop-panel__intro">
+        <div className="section__header">
+          <div>
             <span className="eyebrow">Taller propio</span>
             <h2>Compre y salga con todo instalado</h2>
-            <p>
-              Polarizado, audio y accesorios con acabado garantizado, en
-              Liberia desde 2008.
-            </p>
-            <a
-              className="button button--primary"
-              href={serviceWhatsAppUrl("servicios del taller")}
-              target="_blank"
-              rel="noopener"
-            >
-              <MessageCircle size={18} /> Cotizar por WhatsApp
-            </a>
             <ul className="workshop-panel__trust">
               <li>En el local hoy mismo</li>
               <li>Instalación con garantía</li>
               <li>Si no está, se lo conseguimos</li>
             </ul>
           </div>
-          <div className="workshop-panel__services">
-            <a
-              className="workshop-tile"
-              href={serviceWhatsAppUrl("polarizado")}
-              target="_blank"
-              rel="noopener"
-            >
-              <span className="workshop-tile__icon"><Film /></span>
-              <strong>Polarizado</strong>
-              <span>Menos calor, más privacidad</span>
-            </a>
-            <a
-              className="workshop-tile"
-              href={serviceWhatsAppUrl("instalacion de audio y video")}
-              target="_blank"
-              rel="noopener"
-            >
-              <span className="workshop-tile__icon"><Speaker /></span>
-              <strong>Audio y video</strong>
-              <span>Pantallas, cámaras y sonido</span>
-            </a>
-            <a
-              className="workshop-tile"
-              href={serviceWhatsAppUrl("instalacion de accesorios")}
-              target="_blank"
-              rel="noopener"
-            >
-              <span className="workshop-tile__icon"><Wrench /></span>
-              <strong>Accesorios y 4x4</strong>
-              <span>Defensas, LED, racks y suspensión</span>
-            </a>
-            <a
-              className="workshop-tile"
-              href={serviceWhatsAppUrl("conseguir un repuesto o pieza")}
-              target="_blank"
-              rel="noopener"
-            >
-              <span className="workshop-tile__icon"><PackageSearch /></span>
-              <strong>Repuestos y piezas</strong>
-              <span>Se los conseguimos por usted</span>
-            </a>
-          </div>
         </div>
+        <WorkshopTimeline />
       </section>
 
       <section className="section">

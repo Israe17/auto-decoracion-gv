@@ -7227,41 +7227,10 @@ select::-ms-expand {
   display: none;
 }
 
-/* ===== Panel del taller (portada): una sola seccion de servicios ===== */
-/* Sustituye a la fila de beneficios + cuadricula de tarjetas de servicio:
-   un panel con intro (un solo primario) y 4 fichas mini tocables que
-   cierran en WhatsApp. */
-
-.workshop-panel {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 26px;
-  box-shadow: var(--shadow-md);
-  display: grid;
-  gap: clamp(26px, 4vw, 54px);
-  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
-  overflow: hidden;
-  padding: clamp(26px, 4vw, 46px);
-  position: relative;
-}
-
-.workshop-panel__intro {
-  align-content: center;
-  display: grid;
-  gap: 14px;
-  justify-items: start;
-}
-
-.workshop-panel__intro h2 {
-  margin: 0;
-}
-
-.workshop-panel__intro p {
-  color: var(--muted);
-  line-height: 1.55;
-  margin: 0;
-  max-width: 40ch;
-}
+/* ===== Taller en la portada: frases de confianza + linea de tiempo ===== */
+/* Una sola seccion de servicios: encabezado con 3 frases de confianza y
+   una linea de tiempo (.wtl) cuya espina se llena con el degradado de
+   marca al scrollear; cada servicio es una entrada con nodo e icono. */
 
 .workshop-panel__trust {
   display: flex;
@@ -7290,86 +7259,159 @@ select::-ms-expand {
   width: 7px;
 }
 
-.workshop-panel__services {
+.wtl {
   display: grid;
-  gap: 12px;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 30px;
+  padding: 12px 0 4px;
+  position: relative;
 }
 
-.workshop-tile {
-  background: var(--surface-strong);
+.wtl__spine {
+  background: var(--line);
+  border-radius: 999px;
+  bottom: 26px;
+  left: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 6px;
+  transform: translateX(-50%);
+  width: 3px;
+}
+
+.wtl__progress {
+  background: linear-gradient(180deg, var(--red), #ff6b42);
+  border-radius: inherit;
+  display: block;
+  height: 0%;
+  width: 100%;
+}
+
+.wtl__entry {
+  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 92px;
+  position: relative;
+}
+
+.wtl__node {
+  align-items: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: var(--shadow-sm);
+  color: var(--muted);
+  display: flex;
+  height: 46px;
+  justify-content: center;
+  left: 50%;
+  position: absolute;
+  transform: translateX(-50%);
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    color 220ms ease;
+  width: 46px;
+  z-index: 1;
+}
+
+.wtl__node svg {
+  height: 20px;
+  width: 20px;
+}
+
+.wtl__entry.is-active .wtl__node {
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  border-color: transparent;
+  box-shadow: 0 8px 18px rgba(230, 33, 53, 0.3);
+  color: white;
+}
+
+.wtl__card {
+  background: white;
   border: 1px solid var(--line);
   border-radius: 18px;
-  color: var(--ink);
+  box-shadow: var(--shadow-sm);
   display: grid;
   gap: 7px;
   justify-items: start;
-  padding: 18px;
-  text-decoration: none;
-  transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+  max-width: 480px;
+  padding: 18px 20px;
 }
 
-.workshop-tile:hover {
-  border-color: rgba(230, 33, 53, 0.35);
-  box-shadow: var(--shadow-md);
-  transform: translateY(-2px);
+.wtl__card h3 {
+  font-size: 17px;
+  margin: 0;
 }
 
-.workshop-tile__icon {
-  align-items: center;
-  background: rgba(230, 33, 53, 0.09);
-  border-radius: 12px;
-  color: var(--red);
-  display: flex;
-  height: 42px;
-  justify-content: center;
-  width: 42px;
-}
-
-.workshop-tile__icon svg {
-  height: 21px;
-  width: 21px;
-}
-
-.workshop-tile strong {
-  font-size: 16px;
-  font-weight: var(--font-semibold);
-}
-
-.workshop-tile > span:last-child {
+.wtl__card p {
   color: var(--muted);
-  font-size: 13.5px;
-  line-height: 1.4;
+  font-size: 14px;
+  line-height: 1.45;
+  margin: 0;
 }
 
-@media (max-width: 900px) {
-  .workshop-panel {
+.wtl__entry--left .wtl__card {
+  grid-column: 1;
+  justify-self: end;
+  margin-right: clamp(36px, 5vw, 58px);
+}
+
+.wtl__entry--right .wtl__card {
+  grid-column: 2;
+  justify-self: start;
+  margin-left: clamp(36px, 5vw, 58px);
+}
+
+.wtl__entry--cta {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-top: 6px;
+}
+
+.wtl__entry--cta .wtl__node {
+  position: static;
+  transform: none;
+}
+
+@media (max-width: 720px) {
+  .wtl__spine {
+    left: 23px;
+    transform: none;
+  }
+
+  .wtl__entry {
     grid-template-columns: 1fr;
+    min-height: 0;
   }
 
-  .workshop-panel__intro {
-    justify-items: stretch;
+  /* Nodo centrado sobre la espina (centro de espina ~24.5px). */
+  .wtl__node {
+    left: 2px;
+    transform: none;
   }
 
-  .workshop-panel__intro .button {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .workshop-panel {
-    border-radius: 20px;
+  .wtl__entry--left .wtl__card,
+  .wtl__entry--right .wtl__card {
+    grid-column: 1;
+    justify-self: stretch;
+    margin: 0 0 0 64px;
+    max-width: none;
   }
 
-  .workshop-tile {
-    padding: 14px;
+  .wtl__entry--cta {
+    justify-items: start;
   }
 
-  .workshop-tile strong {
-    font-size: 15px;
+  .wtl__entry--cta .wtl__node {
+    position: absolute;
+  }
+
+  .wtl__entry--cta .wtl__cta {
+    margin-left: 64px;
   }
 }
 
