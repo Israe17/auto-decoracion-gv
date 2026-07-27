@@ -22,20 +22,15 @@ export function PixelSnow() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    // Paleta: mayoria tinta muy tenue; acentos ocasionales del logo.
+    // Paleta de la bandera a cuadros del logo: SOLO amarillos y negros,
+    // mitad y mitad, en dos intensidades cada uno.
     const COLORS = [
-      "rgba(17, 21, 28, 0.16)",
-      "rgba(17, 21, 28, 0.11)",
       "rgba(17, 21, 28, 0.2)",
-      "rgba(255, 199, 44, 0.32)",
-      "rgba(230, 33, 53, 0.16)"
+      "rgba(17, 21, 28, 0.28)",
+      "rgba(255, 199, 44, 0.42)",
+      "rgba(255, 199, 44, 0.55)"
     ];
-    // Pesos: 3 de cada 4 copos son tinta; amarillo y rojo son detalles.
-    const pick = () => {
-      const r = Math.random();
-      if (r < 0.78) return COLORS[Math.floor(Math.random() * 3)];
-      return r < 0.9 ? COLORS[3] : COLORS[4];
-    };
+    const pick = () => COLORS[Math.floor(Math.random() * COLORS.length)];
 
     type Flake = {
       x: number;
@@ -55,7 +50,7 @@ export function PixelSnow() {
     const spawn = (randomY: boolean): Flake => ({
       x: Math.random() * width,
       y: randomY ? Math.random() * height : -6,
-      size: 2 + Math.floor(Math.random() * 3) * 2, // 2, 4 o 6 px: pixelado
+      size: 5 + Math.floor(Math.random() * 3) * 3, // 5, 8 u 11 px: pixelado
       speed: 0.25 + Math.random() * 0.55,
       drift: (Math.random() - 0.5) * 0.15,
       color: pick()
