@@ -45,8 +45,8 @@ Reglas:
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel de
   promociones (foto con sombreado), el footer y la bandeja flotante de
-  cotización (`--ink`, decisión del dueño). La escena oscura del logo
-  (`CompatHero`) fue RETIRADA con el hero claro.
+  cotización (`--ink`, decisión del dueño), y la escena oscura del logo
+  (`CompatHero`, restaurada a pedido del dueño).
 - El rojo es el único color de acción primaria; no competirlo con otros
   botones llamativos en la misma vista.
 - Amarillo cálido (`#fff8e5 → #ffefc4`) para tarjetas de consejo/apoyo.
@@ -184,8 +184,8 @@ Móvil (iPhone-first):
   CTA primario dominante (min-height 58, glow rojo detrás) + secundario, y
   **chips de contacto reales** de `business.ts` (Maps, horario, Instagram)
   sobre un hairline. Reveal escalonado fail-safe (`data-reveal` + `--d`;
-  sin JS o reduced-motion todo visible). Debajo, la **banda del buscador
-  por vehículo** (`.finder-band`, horizontal en escritorio).
+  sin JS o reduced-motion todo visible). El buscador por vehículo vive en
+  la escena del logo (`CompatHero`), entre Línea propia y Destacados.
 - Carrusel de promociones (debajo del hero): foto horizontal a todo lo
   ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
   — eyebrow, titular grande, subtítulo y botones. Toma las promociones de
@@ -230,9 +230,13 @@ Móvil (iPhone-first):
   otros elementos.
 - El desplegable de sugerencias es vidrio ligero: fondo blanco translúcido
   + `backdrop-filter: blur(16px)` + borde rojo transparente.
-- **Hero del logo** (`CompatHero` + `LogoSequence`): RETIRADO junto con la
-  adopción del hero claro; el buscador por vehículo vive ahora en el hero.
-  El CSS `.compat-hero*` queda inerte.
+- **Hero del logo** (`CompatHero` + `LogoSequence`): escena oscura radial
+  (excepción aprobada por el dueño, junto a carrusel/footer/bandeja) con el
+  logo flotando (bob 2.6s), halo rojo que respira, brillos que derivan y
+  **giro rotateY ligado al scroll** (scrub) tipo secuencia; el buscador por
+  vehículo flota encima en vidrio. Vive entre Línea propia y Destacados.
+  Respeta reduced-motion. (Se retiró brevemente con el hero claro y se
+  RESTAURÓ a pedido del dueño.)
 - El logo en alta resolución vive en `public/gv-system-logo.png` (256px,
   extraído del .ico).
 - Efecto **glare** (destello diagonal que barre al pasar el mouse):
