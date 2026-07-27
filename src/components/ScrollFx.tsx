@@ -10,7 +10,6 @@ const revealSelectors = [
   ".home-showcase",
   ".section__header",
   ".split__copy",
-  ".workshop-panel__intro",
   ".compat-hero",
   ".cta-band",
   ".product-gallery",
@@ -23,7 +22,6 @@ const revealSelectors = [
 
 // Grupos cuyos hijos entran en cascada (stagger).
 const staggerGroups: Array<[parent: string, children: string]> = [
-  [".workshop-panel__services", ".workshop-tile"],
   [".category-grid", ".category-card"],
   [".faq", "details"]
 ];

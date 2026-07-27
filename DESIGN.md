@@ -137,13 +137,17 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
-- **Panel del taller** (portada, `#servicios`, `.workshop-panel`): UNA sola
-  sección para beneficios + servicios (decisión del dueño: menos carga por
-  pantalla). Intro con eyebrow, H2 corto, una línea, UN primario ("Cotizar
-  por WhatsApp") y 3 frases de confianza con punto degradado; a la par, 4
-  fichas mini tocables (ícono en chip tenue + título + micro-frase) que
-  abren WhatsApp por tema. Prohibido volver a duplicar beneficios y
-  servicios como tarjetas separadas.
+- **Línea de tiempo del taller** (portada, `#servicios`,
+  `WorkshopTimeline` / `.wtl`, adaptación propia estilo Lightswind
+  Timeline): UNA sola sección para beneficios + servicios (decisión del
+  dueño: menos carga por pantalla). Encabezado con eyebrow, H2 corto y 3
+  frases de confianza con punto degradado; debajo, espina central que se
+  **llena con el degradado de marca al scrollear** y 4 entradas (nodo con
+  ícono que se enciende al entrar + tarjeta con título, una línea y
+  text-link a WhatsApp), alternadas en escritorio y en columna con espina
+  a la izquierda en móvil; cierra con UN primario "Cotizar por WhatsApp".
+  Prohibido volver a duplicar beneficios y servicios como tarjetas
+  separadas.
 - Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
   degradado oscuro a la izquierda y el texto encima — eyebrow, titular
   grande, subtítulo y botones (primario al enlace + WhatsApp). El contenido
@@ -165,7 +169,8 @@ Móvil (iPhone-first):
   y el pop del precio héroe se disparan con **IntersectionObserver**
   (rootMargin -12% ≈ "top 88%"), NO con posiciones de ScrollTrigger — así
   los cambios tardíos de layout (imágenes/datos) no dejan secciones
-  ocultas. ScrollTrigger queda solo para efectos scrubbed (LogoSequence).
+  ocultas. ScrollTrigger queda solo para efectos scrubbed (LogoSequence y
+  la espina de la línea de tiempo del taller).
   Nuevas secciones/grillas se registran en los selectores de ese
   componente.
 - La tarjeta de producto muestra la imagen **a sangre**, sin relleno ni marco
