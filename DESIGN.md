@@ -271,7 +271,7 @@ Móvil (iPhone-first):
   contenido (canvas fijo, `z-index: -1`; el color de fondo vive en `html`),
   guiño al patrón de bandera a cuadros del logo GV System. Excepción a
   "sin animaciones infinitas" aprobada por el dueño. Densidad baja (techo
-  90), cuadros de 5/8/11 px SOLO **amarillos y negros** mitad y mitad
+  90), cuadros de 4/6/8 px SOLO **amarillos y negros** mitad y mitad
   (pedido del dueño: los colores exactos de la bandera del logo),
   `pointer-events: none`, apagado con reduced-motion y en el admin.
 - Nada de otras animaciones infinitas llamativas.
