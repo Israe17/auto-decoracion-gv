@@ -7226,3 +7226,154 @@ select option:checked {
 select::-ms-expand {
   display: none;
 }
+
+/* ===== Panel del taller (portada): una sola seccion de servicios ===== */
+/* Sustituye a la fila de beneficios + cuadricula de tarjetas de servicio:
+   un panel con intro (un solo primario) y 4 fichas mini tocables que
+   cierran en WhatsApp. */
+
+.workshop-panel {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 26px;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  gap: clamp(26px, 4vw, 54px);
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+  overflow: hidden;
+  padding: clamp(26px, 4vw, 46px);
+  position: relative;
+}
+
+.workshop-panel__intro {
+  align-content: center;
+  display: grid;
+  gap: 14px;
+  justify-items: start;
+}
+
+.workshop-panel__intro h2 {
+  margin: 0;
+}
+
+.workshop-panel__intro p {
+  color: var(--muted);
+  line-height: 1.55;
+  margin: 0;
+  max-width: 40ch;
+}
+
+.workshop-panel__trust {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+}
+
+.workshop-panel__trust li {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 13.5px;
+  font-weight: var(--font-semibold);
+  gap: 7px;
+}
+
+.workshop-panel__trust li::before {
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  border-radius: 999px;
+  content: "";
+  flex: none;
+  height: 7px;
+  width: 7px;
+}
+
+.workshop-panel__services {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.workshop-tile {
+  background: var(--surface-strong);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  color: var(--ink);
+  display: grid;
+  gap: 7px;
+  justify-items: start;
+  padding: 18px;
+  text-decoration: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.workshop-tile:hover {
+  border-color: rgba(230, 33, 53, 0.35);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.workshop-tile__icon {
+  align-items: center;
+  background: rgba(230, 33, 53, 0.09);
+  border-radius: 12px;
+  color: var(--red);
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.workshop-tile__icon svg {
+  height: 21px;
+  width: 21px;
+}
+
+.workshop-tile strong {
+  font-size: 16px;
+  font-weight: var(--font-semibold);
+}
+
+.workshop-tile > span:last-child {
+  color: var(--muted);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+@media (max-width: 900px) {
+  .workshop-panel {
+    grid-template-columns: 1fr;
+  }
+
+  .workshop-panel__intro {
+    justify-items: stretch;
+  }
+
+  .workshop-panel__intro .button {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 480px) {
+  .workshop-panel {
+    border-radius: 20px;
+  }
+
+  .workshop-tile {
+    padding: 14px;
+  }
+
+  .workshop-tile strong {
+    font-size: 15px;
+  }
+}
+
+/* El header pegajoso no debe tapar el titulo al navegar a un ancla. */
+.section[id] {
+  scroll-margin-top: 120px;
+}
