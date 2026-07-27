@@ -8,10 +8,9 @@ import {
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
-import { CompatHero } from "@/components/CompatHero";
+import { HeroShell } from "@/components/HeroShell";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
-import { VehicleFinder } from "@/components/VehicleFinder";
 import { WorkshopTimeline } from "@/components/WorkshopTimeline";
 import { topCategories } from "@/lib/catalog";
 import { selectActiveFeaturedProducts } from "@/lib/featured";
@@ -32,6 +31,8 @@ export default async function Home() {
 
   return (
     <>
+      <HeroShell vehicles={vehicles} />
+
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section" id="servicios">
@@ -94,12 +95,6 @@ export default async function Home() {
           </div>
         </section>
       )}
-
-      <section className="section section--tight">
-        <CompatHero>
-          <VehicleFinder vehicles={vehicles} />
-        </CompatHero>
-      </section>
 
       <section className="section">
         <div className="section-head section-head--left">
