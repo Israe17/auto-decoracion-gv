@@ -266,6 +266,13 @@ Móvil (iPhone-first):
   lista se duplica en el JSX para un ciclo sin costura, tiene `padding`
   vertical para que la sombra no se corte, bordes desvanecidos con
   `mask-image` y se desactiva con reduced-motion. Es el único marquee.
+- **Fondo Pixel Snow** (`PixelSnow`, adaptación propia de React Bits SIN
+  three.js): cuadritos pixelados que caen lentamente detrás de todo el
+  contenido (canvas fijo, `z-index: -1`; el color de fondo vive en `html`),
+  guiño al patrón de bandera a cuadros del logo GV System. Excepción a
+  "sin animaciones infinitas" aprobada por el dueño. Densidad baja (techo
+  70), paleta de marca (tinta tenue + acentos amarillo/rojo ocasionales),
+  `pointer-events: none`, apagado con reduced-motion y en el admin.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
