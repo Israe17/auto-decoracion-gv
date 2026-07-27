@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Clock, MapPin, MessageCircle, Store } from "lucide-react";
+import { Clock, HelpCircle, MapPin, MessageCircle, Store } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 import { Faq } from "@/components/Faq";
 import { business } from "@/lib/business";
@@ -84,10 +84,14 @@ export default function ContactPage() {
       </section>
 
       <section className="section" id="preguntas-frecuentes">
-        <div className="section__header">
+        <div className="section-head section-head--left">
           <div>
-            <span className="eyebrow">Preguntas frecuentes</span>
-            <h2>Lo que más nos consultan</h2>
+            <span className="section-head__pill">
+              <HelpCircle size={14} /> Preguntas frecuentes
+            </span>
+            <h2>
+              Lo que más nos <em>consultan.</em>
+            </h2>
           </div>
         </div>
         <Faq />
