@@ -138,12 +138,18 @@ Móvil (iPhone-first):
   del dueño estilo tienda de accesorios): **panel promocional** con el
   degradado cálido a la izquierda — eyebrow píldora, titular corto, una
   línea de texto, **CTA blanco** y **sello circular punteado** — junto a
-  las tarjetas de la línea (máx. 3). El panel se **conecta a
-  admin > Promociones**: con promo activa muestra su título/subtítulo/CTA
-  y el sello dice "Oferta"; sin promo, mensaje de marca y sello
-  "Desde 2008". PROHIBIDO inventar cifras de descuento. Sin fila de "por
-  qué comprar" (decisión del dueño: no re-duplicar confianza). En móvil,
-  panel arriba y productos debajo.
+  un **carril horizontal** de tarjetas de la línea (hasta 8, scroll con
+  snap). El panel anuncia SOLO ofertas de productos de la marca: con un
+  producto de línea propia rebajado muestra su nombre, antes/ahora/ahorro
+  y el sello con el **porcentaje real calculado** (−N%), enlazando a la
+  ficha; sin oferta vigente, mensaje de marca y sello "Desde 2008".
+  PROHIBIDO inventar cifras de descuento. Sin fila de "por qué comprar"
+  (decisión del dueño: no re-duplicar confianza). En móvil, panel arriba
+  y carril debajo.
+- **Carril de productos** (`.product-rail`, en Línea propia y Destacados):
+  scroll horizontal real con `scroll-snap`, tarjetas de ~250-270px,
+  scrollbar fina que se tiñe de rojo al hover. Se desliza en touch y con
+  rueda/arrastre en escritorio.
 - Insignias de tarjeta (`badge`): pill con **degradado cálido** — "Destacado"
   rojo → naranja; "Oferta" ámbar → naranja (texto oscuro) para distinguirse.
   Van sobre la esquina superior izquierda de la imagen.

@@ -7965,10 +7965,46 @@ select::-ms-expand {
   width: 86px;
 }
 
-.own-brand-showcase__grid {
+/* Carril horizontal de tarjetas (linea propia y destacados): scroll real
+   con snap — se desliza en touch y con la rueda/arrastre en escritorio. */
+.product-rail {
   display: grid;
   gap: 18px;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-auto-columns: minmax(240px, 270px);
+  grid-auto-flow: column;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 4px 4px 14px;
+  scroll-snap-type: x mandatory;
+  scrollbar-color: rgba(17, 21, 28, 0.18) transparent;
+  scrollbar-width: thin;
+  -webkit-overflow-scrolling: touch;
+}
+
+.product-rail > * {
+  scroll-snap-align: start;
+}
+
+.product-rail::-webkit-scrollbar {
+  height: 8px;
+}
+
+.product-rail::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.product-rail::-webkit-scrollbar-thumb {
+  background: rgba(17, 21, 28, 0.14);
+  border-radius: 999px;
+}
+
+.product-rail:hover::-webkit-scrollbar-thumb {
+  background: rgba(230, 33, 53, 0.3);
+}
+
+/* Dentro de la vitrina, el carril debe poder encogerse en el grid. */
+.own-brand-showcase > .product-rail {
+  min-width: 0;
 }
 
 @media (max-width: 900px) {
