@@ -146,9 +146,11 @@ Móvil (iPhone-first):
   frases de confianza. Debajo, espina central que se **llena con el
   degradado al scrollear**; cada paso lleva **número fantasma** grande
   (gris claro), **nodo cuadrado redondeado** que hace *pop*
-  (`back.out`) al activarse y contenido SIN caja (título fuerte,
-  descripción en cursiva tenue, text-link a WhatsApp) que **entra
-  deslizándose desde su lado**; alternado en escritorio, columna con
+  (`back.out`) **exactamente cuando la espina de progreso lo alcanza**
+  (umbrales por posición del nodo en el onUpdate del scrub, uno por uno
+  al ritmo del scroll) y contenido SIN caja (título fuerte, descripción
+  en cursiva tenue, text-link a WhatsApp) que **entra deslizándose desde
+  su lado**; alternado en escritorio, columna con
   espina a la izquierda y número pequeño en móvil. Cierra con UN primario
   "Cotizar por WhatsApp". Prohibido volver a duplicar beneficios y
   servicios como tarjetas separadas.
