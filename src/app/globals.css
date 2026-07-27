@@ -23,10 +23,15 @@
   box-sizing: border-box;
 }
 
+/* El canvas del fondo Pixel Snow (z-index -1) vive entre el fondo del
+   html y el contenido del body: por eso el color de fondo va en html. */
+html {
+  background: var(--bg);
+}
+
 /* UNICA declaracion de familia del sitio (ver DESIGN.md §2). */
 body {
   margin: 0;
-  background: var(--bg);
   color: var(--ink);
   font-family:
     Inter,
@@ -7869,4 +7874,12 @@ select::-ms-expand {
   .hero-cta__chip {
     width: 100%;
   }
+}
+
+/* ===== Fondo Pixel Snow (guino a los cuadros del logo GV System) ===== */
+.pixel-snow {
+  inset: 0;
+  pointer-events: none;
+  position: fixed;
+  z-index: -1;
 }
