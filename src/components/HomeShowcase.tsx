@@ -27,24 +27,12 @@ type Slide = {
   external: boolean;
 };
 
-// Lamina de respaldo: garantiza que el hero nunca quede vacio aunque no
-// haya promociones ni categorias con imagen.
-const FALLBACK_SLIDE: Slide = {
-  id: "fallback",
-  eyebrow: "Auto Decoración G&V",
-  title: "Todo para su vehículo, instalado por expertos",
-  description:
-    "Accesorios, polarizado e instalación profesional en Liberia desde 2008. Lo tenemos en el local o se lo conseguimos.",
-  image: "/hero/vehiculo.jpg",
-  href: "/catalogo",
-  ctaLabel: "Ver catálogo",
-  external: false
-};
-
-// Carrusel del hero: foto horizontal a todo lo ancho con el texto sobre
-// un degradado oscuro y botones de accion. Toma las promociones de
-// admin > Promociones; sin promociones activas cae a las lineas de
-// catalogo (categorias). Hasta 5 laminas.
+// Vitrina de promociones (debajo del hero claro): foto horizontal a todo
+// lo ancho con el texto sobre un degradado oscuro y botones de accion.
+// Toma las promociones de admin > Promociones; sin promociones activas
+// cae a las lineas de catalogo (categorias). Hasta 5 laminas. Sin
+// contenido real NO se muestra (el hero ya cubre el primer viewport, asi
+// que no hay lamina de respaldo que duplique su mensaje).
 export function HomeShowcase({
   categories,
   products,
@@ -98,7 +86,7 @@ export function HomeShowcase({
       external: false
     }));
 
-    return categorySlides.length ? categorySlides : [FALLBACK_SLIDE];
+    return categorySlides;
   }, [promos, categories, categoryCounts]);
 
   const mainCategories = useMemo(() => topCategories(categories), [categories]);
@@ -197,7 +185,7 @@ export function HomeShowcase({
     setActiveSlide((current) => (current + direction + slideCount) % slideCount);
   }
 
-  const active = slides[activeSlide % (slideCount || 1)];
+  const active = slideCount ? slides[activeSlide % slideCount] : null;
   if (!active) return null;
 
   return (
@@ -246,6 +234,7 @@ export function HomeShowcase({
         </Link>
       </aside>
 
+      {active && (
       <div
         className="home-carousel spotlight-host"
         style={{ ["--spot-color" as string]: "rgba(255, 255, 255, 0.22)" }}
@@ -285,7 +274,7 @@ export function HomeShowcase({
 
         <div className="home-carousel__content">
           <span className="home-carousel__eyebrow">{active.eyebrow}</span>
-          <BlurText as="h1" text={active.title} key={active.id} />
+          <BlurText as="h2" text={active.title} key={active.id} />
           {active.description && <p>{active.description}</p>}
 
           <div className="home-carousel__actions">
@@ -348,6 +337,7 @@ export function HomeShowcase({
           </>
         )}
       </div>
+      )}
     </section>
   );
 }

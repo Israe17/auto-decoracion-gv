@@ -43,9 +43,10 @@ Reglas:
   superficies grandes (banda CTA, bandeja de cotización) siguen planas.
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
-  (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
-  (foto con sombreado), el footer y la bandeja flotante de cotización
-  (`--ink`, decisión del dueño).
+  (charcoal/negro); los únicos oscuros permitidos son el carrusel de
+  promociones (foto con sombreado), el footer y la bandeja flotante de
+  cotización (`--ink`, decisión del dueño). La escena oscura del logo
+  (`CompatHero`) fue RETIRADA con el hero claro.
 - El rojo es el único color de acción primaria; no competirlo con otros
   botones llamativos en la misma vista.
 - Amarillo cálido (`#fff8e5 → #ffefc4`) para tarjetas de consejo/apoyo.
@@ -174,17 +175,20 @@ Móvil (iPhone-first):
   espina a la izquierda y número pequeño en móvil. Cierra con UN primario
   "Cotizar por WhatsApp". Prohibido volver a duplicar beneficios y
   servicios como tarjetas separadas.
-- Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
-  degradado oscuro a la izquierda y el texto encima — eyebrow, titular
-  grande, subtítulo y botones (primario al enlace + WhatsApp). El contenido
-  se alinea a la izquierda y queda **centrado verticalmente** (mismo espacio
-  arriba y abajo) en móvil y escritorio. El velo suma un oscurecido en el
-  borde superior para que el marquee de categorías se funda con el hero sin
-  línea visible. Toma las
-  promociones de admin > Promociones; sin promociones activas cae a las
-  líneas de catálogo. Las fotos del hero son horizontales ambientales
-  (taller/vehículos/servicios), NUNCA los afiches cuadrados de producto.
-  Fotos de ejemplo self-hosted en `public/hero/`.
+- **Hero de la portada** (`HeroShell`, estilo "hero limpio" de Estética
+  Dalay): copy sobre el fondo claro a la izquierda — eyebrow, titular
+  display con **BlurText** (palabra por palabra), subtítulo y botones
+  (primario WhatsApp + secundario al catálogo) — y a la derecha la
+  **acción desde el primer viewport**: el buscador por vehículo
+  (`VehicleFinder`) en tarjeta flotante (`--shadow-lg`, radio 24). En
+  móvil, columna: copy primero, buscador después.
+- Carrusel de promociones (debajo del hero): foto horizontal a todo lo
+  ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
+  — eyebrow, titular grande, subtítulo y botones. Toma las promociones de
+  admin > Promociones; sin promociones activas cae a las líneas de
+  catálogo. Fotos horizontales ambientales (taller/vehículos/servicios),
+  NUNCA los afiches cuadrados de producto. Fotos de ejemplo en
+  `public/hero/`.
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
   `rgba(15,23,42,.48)` a viewport completo.
 
@@ -222,11 +226,9 @@ Móvil (iPhone-first):
   otros elementos.
 - El desplegable de sugerencias es vidrio ligero: fondo blanco translúcido
   + `backdrop-filter: blur(16px)` + borde rojo transparente.
-- **Hero del logo** (`CompatHero`): escena oscura radial (excepción
-  aprobada por el dueño, junto a carrusel/footer/bandeja) con el logo
-  flotando (bob 2.6s), halo rojo que respira, brillos que derivan y
-  **giro rotateY ligado al scroll** (scrub) tipo secuencia; el formulario
-  flota encima en vidrio (`blur 16px`). Respeta reduced-motion.
+- **Hero del logo** (`CompatHero` + `LogoSequence`): RETIRADO junto con la
+  adopción del hero claro; el buscador por vehículo vive ahora en el hero.
+  El CSS `.compat-hero*` queda inerte.
 - El logo en alta resolución vive en `public/gv-system-logo.png` (256px,
   extraído del .ico).
 - Efecto **glare** (destello diagonal que barre al pasar el mouse):
