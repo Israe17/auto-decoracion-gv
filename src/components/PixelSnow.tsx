@@ -50,7 +50,7 @@ export function PixelSnow() {
     const spawn = (randomY: boolean): Flake => ({
       x: Math.random() * width,
       y: randomY ? Math.random() * height : -6,
-      size: 5 + Math.floor(Math.random() * 3) * 3, // 5, 8 u 11 px: pixelado
+      size: 4 + Math.floor(Math.random() * 3) * 2, // 4, 6 u 8 px: pixelado
       speed: 0.25 + Math.random() * 0.55,
       drift: (Math.random() - 0.5) * 0.15,
       color: pick()
