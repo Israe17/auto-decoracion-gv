@@ -134,6 +134,16 @@ Móvil (iPhone-first):
   color y **sombra suave de elevación** en reposo; al hover suben `-1px` con
   sombra mayor. El chip/etiqueta **activo** va en rojo con **sombra de color**
   (`rgba(230,33,53,.32)`).
+- **Vitrina de línea propia** (portada, `.own-brand-showcase`, referencia
+  del dueño estilo tienda de accesorios): **panel promocional** con el
+  degradado cálido a la izquierda — eyebrow píldora, titular corto, una
+  línea de texto, **CTA blanco** y **sello circular punteado** — junto a
+  las tarjetas de la línea (máx. 3). El panel se **conecta a
+  admin > Promociones**: con promo activa muestra su título/subtítulo/CTA
+  y el sello dice "Oferta"; sin promo, mensaje de marca y sello
+  "Desde 2008". PROHIBIDO inventar cifras de descuento. Sin fila de "por
+  qué comprar" (decisión del dueño: no re-duplicar confianza). En móvil,
+  panel arriba y productos debajo.
 - Insignias de tarjeta (`badge`): pill con **degradado cálido** — "Destacado"
   rojo → naranja; "Oferta" ámbar → naranja (texto oscuro) para distinguirse.
   Van sobre la esquina superior izquierda de la imagen.
