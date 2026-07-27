@@ -7548,82 +7548,361 @@ select::-ms-expand {
   scroll-margin-top: 120px;
 }
 
-/* ===== Hero estilo Dalay: copy claro + accion en el primer viewport ===== */
 
-.hero-shell {
+
+/* ===== Hero centrado estilo Dalay: tarjeta glass + aura + prueba social ===== */
+
+.hero-cta {
+  display: grid;
+  isolation: isolate;
+  justify-items: center;
+  overflow: hidden;
+  padding: clamp(40px, 6vw, 72px) 24px 26px;
+  position: relative;
+}
+
+/* Fondo tenue: UN glow rojo + textura de puntos apenas perceptible. */
+.hero-cta__aura {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: -1;
+}
+
+.hero-cta__aura::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(230, 33, 53, 0.13),
+    transparent 68%
+  );
+  content: "";
+  height: 520px;
+  left: 50%;
+  position: absolute;
+  top: 0;
+  transform: translateX(-50%);
+  width: min(760px, 92vw);
+}
+
+.hero-cta__aura::after {
+  background-image: radial-gradient(rgba(230, 33, 53, 0.12) 1px, transparent 1.4px);
+  background-size: 22px 22px;
+  content: "";
+  inset: 0;
+  -webkit-mask-image: radial-gradient(ellipse 60% 42% at 50% 55%, #000, transparent 74%);
+  mask-image: radial-gradient(ellipse 60% 42% at 50% 55%, #000, transparent 74%);
+  opacity: 0.5;
+  position: absolute;
+}
+
+/* Tarjeta central: profundidad en capas + glass ligero. */
+.hero-cta__card {
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.74),
+    rgba(248, 250, 252, 0.62)
+  );
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  box-shadow: var(--shadow-md);
+  display: grid;
+  gap: 22px;
+  justify-items: center;
+  padding: clamp(30px, 5vw, 56px);
+  position: relative;
+  text-align: center;
+  width: min(760px, 100%);
+}
+
+.hero-cta__badge {
   align-items: center;
-  display: grid;
-  gap: clamp(24px, 4vw, 48px);
-  grid-template-columns: minmax(0, 1fr) minmax(360px, 0.62fr);
-  margin: 18px auto 0;
-  max-width: var(--max);
-  min-height: 540px;
-  padding: 24px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--red-dark);
+  display: inline-flex;
+  font-size: 12.5px;
+  font-weight: var(--font-heavy);
+  gap: 7px;
+  padding: 7px 14px;
 }
 
-.hero-copy {
-  align-content: center;
-  display: grid;
-  gap: 18px;
-  justify-items: start;
+.hero-cta__badge svg {
+  color: var(--red);
 }
 
-.hero-copy h1 {
-  font-size: clamp(40px, 5.6vw, 68px);
+.hero-cta__title {
+  font-size: clamp(32px, 5.4vw, 56px);
   font-weight: var(--font-heavy);
   letter-spacing: -0.022em;
   line-height: 1.04;
   margin: 0;
-  max-width: 15ch;
+  max-width: 16ch;
+  text-wrap: balance;
 }
 
-.hero-copy p {
+.hero-cta__title em {
+  color: var(--red-dark);
+  font-style: normal;
+}
+
+/* Prueba social: fila con separadores finos entre stats. */
+.hero-cta__stats {
+  align-items: stretch;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  justify-content: center;
+  list-style: none;
+  margin: 2px 0 0;
+  padding: 0;
+}
+
+.hero-cta__stat {
+  display: grid;
+  gap: 3px;
+  padding: 2px 22px;
+  position: relative;
+}
+
+.hero-cta__stat + .hero-cta__stat::before {
+  background: var(--line);
+  content: "";
+  height: 70%;
+  left: 0;
+  position: absolute;
+  top: 15%;
+  width: 1px;
+}
+
+.hero-cta__stat-value b {
+  color: var(--ink);
+  font-size: clamp(24px, 3.4vw, 32px);
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-heavy);
+  letter-spacing: -0.02em;
+}
+
+.hero-cta__stat:first-child .hero-cta__stat-value b {
+  color: var(--red-dark);
+}
+
+.hero-cta__stat-label {
   color: var(--muted);
-  font-size: 18px;
+  font-size: 12.5px;
+  font-weight: var(--font-bold);
+}
+
+.hero-cta__sub {
+  color: var(--muted);
+  font-size: clamp(15px, 1.6vw, 17px);
   line-height: 1.55;
   margin: 0;
-  max-width: 52ch;
+  max-width: 46ch;
 }
 
-.hero-actions {
+/* Acciones: el primario domina, con glow rojo puntual detras. */
+.hero-cta__actions {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
+  isolation: isolate;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+
+.hero-cta__actions::before {
+  background: radial-gradient(
+    ellipse at center,
+    rgba(230, 33, 53, 0.16),
+    transparent 70%
+  );
+  content: "";
+  filter: blur(10px);
+  height: 130px;
+  left: 50%;
+  pointer-events: none;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 320px;
+  z-index: -1;
+}
+
+.hero-cta__cta {
+  font-size: 17px;
+  min-height: 58px;
+  padding: 0 32px;
+}
+
+.hero-cta__catalog {
+  min-height: 58px;
+}
+
+/* Chips de contacto reales, sobre un hairline. */
+.hero-cta__chips {
+  border-top: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
   margin-top: 4px;
+  padding-top: 22px;
+  width: 100%;
 }
 
-.hero-panel {
-  align-content: center;
+.hero-cta__chip {
+  align-items: center;
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  display: inline-flex;
+  gap: 10px;
+  padding: 10px 14px;
+  text-align: left;
+  text-decoration: none;
+  transition:
+    border-color 0.16s ease,
+    box-shadow 0.16s ease,
+    transform 0.16s ease;
+}
+
+.hero-cta__chip-ico {
+  align-items: center;
+  background: var(--soft);
+  border-radius: 12px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.hero-cta__chip-ico svg {
+  color: var(--red);
+}
+
+.hero-cta__chip-body {
   display: grid;
+  gap: 1px;
 }
 
-.hero-shell .vehicle-finder {
+.hero-cta__chip strong {
+  color: var(--ink);
+  font-size: 13.5px;
+  font-weight: var(--font-heavy);
+  line-height: 1.2;
+}
+
+.hero-cta__chip small {
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: var(--font-semibold);
+}
+
+.hero-cta__chip-arrow {
+  color: var(--red);
+  flex: 0 0 auto;
+  opacity: 0;
+  transform: translateX(-4px);
+  transition: opacity 0.16s ease, transform 0.16s ease;
+}
+
+@media (hover: hover) {
+  a.hero-cta__chip:hover {
+    border-color: var(--red);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+  }
+
+  a.hero-cta__chip:hover .hero-cta__chip-arrow {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  a.hero-cta__chip:active {
+    transform: scale(0.98);
+  }
+}
+
+/* Reveal fail-safe: solo se oculta cuando el JS agrega .cta-anim. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-cta.cta-anim [data-reveal] {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s ease,
+      transform 0.6s cubic-bezier(0.2, 0.7, 0.3, 1);
+    transition-delay: var(--d, 0s);
+  }
+
+  .hero-cta.cta-anim.is-in [data-reveal] {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Banda del buscador por vehiculo, bajo el hero. */
+.finder-band {
+  margin: 0 auto;
+  max-width: var(--max);
+  padding: 10px 24px 0;
+}
+
+.finder-band .vehicle-finder {
+  align-items: end;
   border-radius: 24px;
   box-shadow: var(--shadow-lg);
-  padding: clamp(24px, 2.6vw, 32px);
+  display: grid;
+  gap: 14px 16px;
+  grid-template-columns: auto repeat(3, minmax(0, 1fr)) auto;
+  padding: 20px 24px;
+}
+
+.finder-band .vehicle-finder > div {
+  align-self: center;
+}
+
+.finder-band .vehicle-finder h3 {
+  margin: 0;
+  white-space: nowrap;
 }
 
 @media (max-width: 980px) {
-  .hero-shell {
+  .finder-band .vehicle-finder {
     grid-template-columns: 1fr;
-    min-height: 0;
-    padding-top: 12px;
   }
 
-  .hero-copy h1 {
-    max-width: none;
+  .finder-band .vehicle-finder h3 {
+    white-space: normal;
   }
 }
 
-@media (max-width: 640px) {
-  .hero-shell {
-    gap: 20px;
-    margin-top: 6px;
-    padding: 12px 16px 0;
+@media (max-width: 520px) {
+  .hero-cta__stat {
+    padding: 2px 14px;
   }
 
-  .hero-actions .button {
-    flex: 1;
+  .hero-cta__actions {
+    flex-direction: column;
+  }
+
+  .hero-cta__cta,
+  .hero-cta__catalog {
     justify-content: center;
+    width: 100%;
+  }
+
+  .hero-cta__chip {
+    width: 100%;
   }
 }

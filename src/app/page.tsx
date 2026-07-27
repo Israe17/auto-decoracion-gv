@@ -10,6 +10,7 @@ import {
 import { CategoryCard } from "@/components/CategoryCard";
 import { HeroShell } from "@/components/HeroShell";
 import { HomeShowcase } from "@/components/HomeShowcase";
+import { VehicleFinder } from "@/components/VehicleFinder";
 import { ProductCard } from "@/components/ProductCard";
 import { WorkshopTimeline } from "@/components/WorkshopTimeline";
 import { topCategories } from "@/lib/catalog";
@@ -31,7 +32,15 @@ export default async function Home() {
 
   return (
     <>
-      <HeroShell vehicles={vehicles} />
+      <HeroShell
+        productsCount={products.length}
+        categoriesCount={mainCategories.length}
+        years={new Date().getFullYear() - 2008}
+      />
+
+      <section className="finder-band">
+        <VehicleFinder vehicles={vehicles} />
+      </section>
 
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
