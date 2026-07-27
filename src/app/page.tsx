@@ -2,17 +2,15 @@ import Link from "next/link";
 import {
   ArrowRight,
   Film,
+  MessageCircle,
   PackageSearch,
-  Store,
-  Truck,
+  Speaker,
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { ProductCard } from "@/components/ProductCard";
-import { ServicesShowcase } from "@/components/ServicesShowcase";
-import { Spotlight } from "@/components/Spotlight";
 import { VehicleFinder } from "@/components/VehicleFinder";
 import { topCategories } from "@/lib/catalog";
 import { selectActiveFeaturedProducts } from "@/lib/featured";
@@ -36,39 +34,73 @@ export default async function Home() {
     <>
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
-      <section className="section section--tight">
-        <div className="benefits">
-          <Spotlight color="rgba(230, 33, 53, 0.14)">
-            <Store />
-            <strong>Disponible de inmediato</strong>
-            <span>Visite nuestro local en Liberia y llévese el producto el mismo día.</span>
-          </Spotlight>
-          <Spotlight color="rgba(230, 33, 53, 0.14)">
-            <Truck />
-            <strong>Lo conseguimos por usted</strong>
-            <span>Si no está disponible, lo pedimos a nuestros distribuidores de confianza.</span>
-          </Spotlight>
-          <Spotlight color="rgba(230, 33, 53, 0.14)">
-            <Wrench />
-            <strong>Instalación profesional</strong>
-            <span>Instalamos todo lo que vendemos, con acabado limpio y garantizado.</span>
-          </Spotlight>
-          <Spotlight color="rgba(230, 33, 53, 0.14)">
-            <Film />
-            <strong>Polarizado de calidad</strong>
-            <span>Protección solar, privacidad y un acabado uniforme para su vehículo.</span>
-          </Spotlight>
-        </div>
-      </section>
-
       <section className="section" id="servicios">
-        <div className="section__header">
-          <div>
-            <span className="eyebrow">Servicios</span>
-            <h2>Servicio completo en nuestro taller</h2>
+        <div className="workshop-panel glare-host">
+          <span className="glare" aria-hidden="true" />
+          <div className="workshop-panel__intro">
+            <span className="eyebrow">Taller propio</span>
+            <h2>Compre y salga con todo instalado</h2>
+            <p>
+              Polarizado, audio y accesorios con acabado garantizado, en
+              Liberia desde 2008.
+            </p>
+            <a
+              className="button button--primary"
+              href={serviceWhatsAppUrl("servicios del taller")}
+              target="_blank"
+              rel="noopener"
+            >
+              <MessageCircle size={18} /> Cotizar por WhatsApp
+            </a>
+            <ul className="workshop-panel__trust">
+              <li>En el local hoy mismo</li>
+              <li>Instalación con garantía</li>
+              <li>Si no está, se lo conseguimos</li>
+            </ul>
+          </div>
+          <div className="workshop-panel__services">
+            <a
+              className="workshop-tile"
+              href={serviceWhatsAppUrl("polarizado")}
+              target="_blank"
+              rel="noopener"
+            >
+              <span className="workshop-tile__icon"><Film /></span>
+              <strong>Polarizado</strong>
+              <span>Menos calor, más privacidad</span>
+            </a>
+            <a
+              className="workshop-tile"
+              href={serviceWhatsAppUrl("instalacion de audio y video")}
+              target="_blank"
+              rel="noopener"
+            >
+              <span className="workshop-tile__icon"><Speaker /></span>
+              <strong>Audio y video</strong>
+              <span>Pantallas, cámaras y sonido</span>
+            </a>
+            <a
+              className="workshop-tile"
+              href={serviceWhatsAppUrl("instalacion de accesorios")}
+              target="_blank"
+              rel="noopener"
+            >
+              <span className="workshop-tile__icon"><Wrench /></span>
+              <strong>Accesorios y 4x4</strong>
+              <span>Defensas, LED, racks y suspensión</span>
+            </a>
+            <a
+              className="workshop-tile"
+              href={serviceWhatsAppUrl("conseguir un repuesto o pieza")}
+              target="_blank"
+              rel="noopener"
+            >
+              <span className="workshop-tile__icon"><PackageSearch /></span>
+              <strong>Repuestos y piezas</strong>
+              <span>Se los conseguimos por usted</span>
+            </a>
           </div>
         </div>
-        <ServicesShowcase />
       </section>
 
       <section className="section">

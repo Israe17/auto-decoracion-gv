@@ -137,6 +137,13 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
+- **Panel del taller** (portada, `#servicios`, `.workshop-panel`): UNA sola
+  sección para beneficios + servicios (decisión del dueño: menos carga por
+  pantalla). Intro con eyebrow, H2 corto, una línea, UN primario ("Cotizar
+  por WhatsApp") y 3 frases de confianza con punto degradado; a la par, 4
+  fichas mini tocables (ícono en chip tenue + título + micro-frase) que
+  abren WhatsApp por tema. Prohibido volver a duplicar beneficios y
+  servicios como tarjetas separadas.
 - Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
   degradado oscuro a la izquierda y el texto encima — eyebrow, titular
   grande, subtítulo y botones (primario al enlace + WhatsApp). El contenido
@@ -193,25 +200,19 @@ Móvil (iPhone-first):
   extraído del .ico).
 - Efecto **glare** (destello diagonal que barre al pasar el mouse):
   pieza reutilizable — contenedor con `.glare-host` + `<span class="glare">`.
-  Se usa en tarjetas de servicio, banda CTA y hero. Solo `:hover`, se
+  Se usa en el panel del taller, banda CTA y hero. Solo `:hover`, se
   apaga en touch (`@media (hover: none)`) y con reduced-motion. No es
   animación infinita; es un barrido único por hover.
-- Efecto **spotlight** (luz que sigue el cursor): componente
-  `src/components/Spotlight.tsx` (`.spotlight-host` + `<span class="spotlight">`).
-  Coordenadas por `onMouseMove`, color por prop (`--spot-color`). Blanco
-  sobre fondos oscuros/foto (hero); rojo tenue sobre tarjetas claras
-  (fila de beneficios). Se apaga en touch y reduced-motion.
+- Efecto **spotlight**: RETIRADO junto con la fila de beneficios (la
+  portada compacta no lo usa; el CSS `.spotlight-*` queda inerte).
 - Efecto **BlurText** (título que entra palabra por palabra desde arriba,
   desenfocado → nítido): componente `src/components/BlurText.tsx` —
   adaptación de React Bits a GSAP (sin la dependencia `motion`). Se usa en
   el título del hero y re-anima al cambiar de slide. Texto accesible
   (`aria-label`), respeta reduced-motion.
-- Efecto **Sliding Cards** (baraja deslizable) en **Servicios** SOLO en
-  móvil (`ServicesShowcase`): se arrastra la tarjeta de arriba para pasar
-  a la siguiente, con profundidad 3D en las de atrás y puntos de posición;
-  en escritorio queda la cuadrícula con glare. Adaptación propia (sin
-  Tailwind) con pointer events; `touch-action: pan-y` para no bloquear el
-  scroll vertical.
+- Efecto **Sliding Cards**: RETIRADO junto con la cuadrícula de tarjetas
+  de servicio (la portada compacta usa el panel del taller en todos los
+  tamaños; el CSS `.sliding-cards*`/`.service-*` queda inerte).
 - Efecto **marquee de categorías** (`.category-marquee`, estilo Logo Loop
   de React Bits): carril de píldoras de vidrio sobre el hero en móvil
   (excepción a "sin animaciones infinitas", aprobada por el dueño). Es un
