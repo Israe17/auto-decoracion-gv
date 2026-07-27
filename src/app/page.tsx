@@ -8,6 +8,7 @@ import {
   Wrench
 } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
+import { CompatHero } from "@/components/CompatHero";
 import { HeroShell } from "@/components/HeroShell";
 import { HomeShowcase } from "@/components/HomeShowcase";
 import { VehicleFinder } from "@/components/VehicleFinder";
@@ -37,10 +38,6 @@ export default async function Home() {
         categoriesCount={mainCategories.length}
         years={new Date().getFullYear() - 2008}
       />
-
-      <section className="finder-band">
-        <VehicleFinder vehicles={vehicles} />
-      </section>
 
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
@@ -104,6 +101,12 @@ export default async function Home() {
           </div>
         </section>
       )}
+
+      <section className="section section--tight">
+        <CompatHero>
+          <VehicleFinder vehicles={vehicles} />
+        </CompatHero>
+      </section>
 
       <section className="section">
         <div className="section-head section-head--left">
