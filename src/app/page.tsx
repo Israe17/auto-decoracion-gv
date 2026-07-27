@@ -52,13 +52,15 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="section-head">
-          <span className="section-head__pill">
-            <LayoutGrid size={14} /> Categorías
-          </span>
-          <h2>
-            Todo para su vehículo en un solo <em>lugar.</em>
-          </h2>
+        <div className="section-head section-head--left">
+          <div>
+            <span className="section-head__pill">
+              <LayoutGrid size={14} /> Categorías
+            </span>
+            <h2>
+              Todo para su vehículo en un solo <em>lugar.</em>
+            </h2>
+          </div>
           <Link href="/catalogo" className="text-link">
             Ver todas <ArrowRight size={18} />
           </Link>
@@ -72,13 +74,15 @@ export default async function Home() {
 
       {ownBrandProducts.length > 0 && (
         <section className="section section--own-brand">
-          <div className="section-head">
-            <span className="section-head__pill">
-              <BadgeCheck size={14} /> Línea propia
-            </span>
-            <h2>
-              Productos <em>G&amp;V System.</em>
-            </h2>
+          <div className="section-head section-head--left">
+            <div>
+              <span className="section-head__pill">
+                <BadgeCheck size={14} /> Línea propia
+              </span>
+              <h2>
+                Productos <em>G&amp;V System.</em>
+              </h2>
+            </div>
             <Link href="/catalogo?linea=propia" className="text-link">
               Ver línea completa <ArrowRight size={18} />
             </Link>
@@ -98,21 +102,23 @@ export default async function Home() {
       </section>
 
       <section className="section">
-        <div className="section-head">
-          <span className="section-head__pill">
-            <Sparkles size={14} /> Destacados
-          </span>
-          <h2>
-            {featured.length ? (
-              <>
-                Productos destacados de la <em>semana.</em>
-              </>
-            ) : (
-              <>
-                Productos <em>recomendados.</em>
-              </>
-            )}
-          </h2>
+        <div className="section-head section-head--left">
+          <div>
+            <span className="section-head__pill">
+              <Sparkles size={14} /> Destacados
+            </span>
+            <h2>
+              {featured.length ? (
+                <>
+                  Productos destacados de la <em>semana.</em>
+                </>
+              ) : (
+                <>
+                  Productos <em>recomendados.</em>
+                </>
+              )}
+            </h2>
+          </div>
           <Link href="/catalogo" className="text-link">
             Ir al catálogo <ArrowRight size={18} />
           </Link>

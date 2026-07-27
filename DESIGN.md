@@ -137,13 +137,14 @@ Móvil (iPhone-first):
   (primario dominante); meta-información como chips suaves en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
-- **Encabezados de sección de la portada** (`.section-head`): centrados,
-  con **píldora con ícono** (uppercase, letter-spacing, fondo `--soft`) y
-  **titular grande** (clamp 32-54px, peso 800) con la palabra final en
-  **cursiva subrayada con el degradado de marca** (`em::after`). El enlace
-  de la sección ("Ver todas", etc.) va como text-link centrado debajo.
-  Preferido por el dueño sobre el `section__header` lateral (que sigue
-  vigente en páginas internas).
+- **Encabezados de sección de la portada** (`.section-head`): **píldora
+  con ícono** (uppercase, letter-spacing, fondo `--soft`) y **titular
+  fuerte** con la palabra final en **cursiva subrayada con el degradado de
+  marca** (`em::after`). SOLO el timeline del taller va **centrado**
+  (decisión del dueño); las demás secciones usan la variante
+  **`.section-head--left`**: título a la izquierda (clamp 28-42px) y el
+  enlace de la sección como text-link a la derecha, en la posición del
+  `section__header` clásico (que sigue vigente en páginas internas).
 - **Línea de tiempo del taller** (portada, `#servicios`,
   `WorkshopTimeline` / `.wtl`, adaptación propia del Industrial Vertical
   Timeline de Lightswind): UNA sola sección para beneficios + servicios

@@ -7315,6 +7315,34 @@ select::-ms-expand {
   justify-content: center;
 }
 
+/* Variante lateral: misma pildora y enfasis, pero en la posicion
+   original de los encabezados (titulo a la izquierda, enlace a la
+   derecha). Solo el timeline del taller queda centrado. */
+.section-head--left {
+  align-items: flex-end;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 22px;
+  justify-content: space-between;
+  margin: 0 0 30px;
+  max-width: none;
+  text-align: left;
+}
+
+.section-head--left > div {
+  display: grid;
+  gap: 12px;
+  justify-items: start;
+}
+
+.section-head--left h2 {
+  font-size: clamp(28px, 3.2vw, 42px);
+}
+
+.section-head--left .text-link {
+  margin-bottom: 6px;
+}
+
 .wtl {
   display: grid;
   gap: 12px;
