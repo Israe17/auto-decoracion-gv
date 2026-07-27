@@ -2373,7 +2373,7 @@ input[type="checkbox"] {
   text-transform: uppercase;
 }
 
-.home-carousel h2 {
+.home-carousel h1 {
   font-size: clamp(38px, 4.5vw, 58px);
   font-weight: var(--font-heavy);
   letter-spacing: 0;
@@ -2557,7 +2557,7 @@ input[type="checkbox"] {
     width: auto;
   }
 
-  .home-carousel h2 {
+  .home-carousel h1 {
     font-size: clamp(31px, 10vw, 42px);
   }
 
@@ -2789,7 +2789,7 @@ body {
   letter-spacing: 0.02em;
 }
 
-.home-carousel h2 {
+.home-carousel h1 {
   font-size: clamp(34px, 4vw, 52px);
   font-weight: var(--font-bold);
   line-height: 1.08;
@@ -2888,7 +2888,7 @@ body {
 }
 
 @media (max-width: 640px) {
-  .home-carousel h2 {
+  .home-carousel h1 {
     font-size: clamp(30px, 9vw, 38px);
   }
 
@@ -3042,7 +3042,7 @@ body {
   font-weight: var(--font-medium);
 }
 
-.home-carousel h2 {
+.home-carousel h1 {
   font-size: clamp(34px, 4vw, 50px);
   font-weight: var(--font-bold);
   line-height: 1.08;
@@ -3150,7 +3150,7 @@ body {
     font-size: clamp(34px, 10vw, 42px);
   }
 
-  .home-carousel h2 {
+  .home-carousel h1 {
     font-size: clamp(30px, 9vw, 38px);
   }
 

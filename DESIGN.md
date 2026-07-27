@@ -175,17 +175,20 @@ Móvil (iPhone-first):
   espina a la izquierda y número pequeño en móvil. Cierra con UN primario
   "Cotizar por WhatsApp". Prohibido volver a duplicar beneficios y
   servicios como tarjetas separadas.
-- **Hero de la portada** (`HeroShell` / `.hero-cta`, réplica del hero
-  centrado de conversión de Estética Dalay): **tarjeta glass centrada**
-  (blur 14, radio 30) sobre un **aura roja tenue con textura de puntos**;
-  dentro: badge píldora con rayo, titular display con la frase final en
-  `--red-dark`, **prueba social real con count-up** (años desde 2008 +
-  productos y líneas del catálogo — NUNCA inventar cifras), subtítulo,
-  CTA primario dominante (min-height 58, glow rojo detrás) + secundario, y
-  **chips de contacto reales** de `business.ts` (Maps, horario, Instagram)
-  sobre un hairline. Reveal escalonado fail-safe (`data-reveal` + `--d`;
-  sin JS o reduced-motion todo visible). El buscador por vehículo vive en
-  la escena del logo (`CompatHero`), entre Línea propia y Destacados.
+- **Cierre de conversión** (`HeroShell` / `.hero-cta`, réplica de la
+  sección de conversión centrada de Estética Dalay; por decisión del dueño
+  va como **penúltimo elemento de la portada, justo antes de la banda
+  CTA**): **tarjeta glass centrada** (blur 14, radio 30) sobre un **aura
+  roja tenue con textura de puntos**; dentro: badge píldora con rayo,
+  titular (h2) con la frase final en `--red-dark`, **prueba social real
+  con count-up** (años desde 2008 + productos y líneas del catálogo —
+  NUNCA inventar cifras), subtítulo, CTA primario dominante (min-height
+  58, glow rojo detrás) + secundario, y **chips de contacto reales** de
+  `business.ts` (Maps, horario, Instagram) sobre un hairline. Reveal
+  escalonado fail-safe (`data-reveal` + `--d`; sin JS o reduced-motion
+  todo visible). La portada ABRE con el carrusel de promociones +
+  acordeón (su titular es el h1); el buscador por vehículo vive en la
+  escena del logo (`CompatHero`), entre Línea propia y Destacados.
 - Carrusel de promociones (debajo del hero): foto horizontal a todo lo
   ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
   — eyebrow, titular grande, subtítulo y botones. Toma las promociones de

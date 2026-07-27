@@ -99,9 +99,9 @@ export function HeroShell({
           <Zap size={15} /> Cotización en minutos por WhatsApp
         </span>
 
-        <h1 className="hero-cta__title" data-reveal style={d(".06s")}>
+        <h2 className="hero-cta__title" data-reveal style={d(".06s")}>
           Todo para su vehículo, <em>instalado por expertos</em>
-        </h1>
+        </h2>
 
         <ul className="hero-cta__stats" data-reveal style={d(".12s")}>
           {stats.map((stat) => (
