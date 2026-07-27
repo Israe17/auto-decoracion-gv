@@ -177,8 +177,8 @@ Móvil (iPhone-first):
   servicios como tarjetas separadas.
 - **Cierre de conversión** (`HeroShell` / `.hero-cta`, réplica de la
   sección de conversión centrada de Estética Dalay; por decisión del dueño
-  va como **penúltimo elemento de la portada, justo antes de la banda
-  CTA**): **tarjeta glass centrada** (blur 14, radio 30) sobre un **aura
+  va como **ÚLTIMO elemento de la portada, después de la banda CTA** — el
+  remate final antes del footer): **tarjeta glass centrada** (blur 14, radio 30) sobre un **aura
   roja tenue con textura de puntos**; dentro: badge píldora con rayo,
   titular (h2) con la frase final en `--red-dark`, **prueba social real
   con count-up** (años desde 2008 + productos y líneas del catálogo —

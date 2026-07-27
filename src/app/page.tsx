@@ -131,12 +131,6 @@ export default async function Home() {
         </div>
       </section>
 
-      <HeroShell
-        productsCount={products.length}
-        categoriesCount={mainCategories.length}
-        years={new Date().getFullYear() - 2008}
-      />
-
       <section className="section section--tight">
         <div className="cta-band glare-host">
           <span className="glare" aria-hidden="true" />
@@ -154,6 +148,12 @@ export default async function Home() {
           </Link>
         </div>
       </section>
+
+      <HeroShell
+        productsCount={products.length}
+        categoriesCount={mainCategories.length}
+        years={new Date().getFullYear() - 2008}
+      />
     </>
   );
 }
