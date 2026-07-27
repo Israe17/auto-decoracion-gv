@@ -14,7 +14,7 @@ import { HomeShowcase } from "@/components/HomeShowcase";
 import { VehicleFinder } from "@/components/VehicleFinder";
 import { ProductCard } from "@/components/ProductCard";
 import { WorkshopTimeline } from "@/components/WorkshopTimeline";
-import { topCategories } from "@/lib/catalog";
+import { formatCRC, topCategories } from "@/lib/catalog";
 import { selectActiveFeaturedProducts } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
 
@@ -22,18 +22,29 @@ export const revalidate = 60;
 
 export default async function Home() {
   const { products, categories, vehicles, promos } = await fetchPublicCatalog();
-  const featured = selectActiveFeaturedProducts(products, 4);
+  const featured = selectActiveFeaturedProducts(products, 8);
   const showcaseProducts = featured.length
     ? featured
-    : products.filter((product) => product.status !== "sold_out").slice(0, 4);
+    : products.filter((product) => product.status !== "sold_out").slice(0, 8);
   const ownBrandProducts = products
     .filter((product) => product.isOwnBrand && product.status !== "sold_out")
-    .slice(0, 3);
-  const ownPromo =
-    promos.find((promo) => promo.active !== false && promo.title) ?? null;
-  const ownPromoExternal = Boolean(
-    ownPromo?.link && /^https?:/i.test(ownPromo.link)
-  );
+    .slice(0, 8);
+  // Oferta real de la linea propia: el producto de la marca con mayor
+  // descuento vigente (precio rebajado). El panel promocional lo anuncia
+  // con su porcentaje calculado; sin ofertas cae al mensaje de marca.
+  const ownOffer =
+    ownBrandProducts
+      .filter(
+        (product) =>
+          product.oldPrice && product.price && product.oldPrice > product.price
+      )
+      .sort(
+        (a, b) =>
+          (b.oldPrice ?? 0) - (b.price ?? 0) - ((a.oldPrice ?? 0) - (a.price ?? 0))
+      )[0] ?? null;
+  const ownOfferDiscount = ownOffer?.oldPrice
+    ? Math.round((1 - (ownOffer.price ?? 0) / ownOffer.oldPrice) * 100)
+    : 0;
   const mainCategories = topCategories(categories);
 
   return (
@@ -97,39 +108,32 @@ export default async function Home() {
             <aside className="own-panel glare-host">
               <span className="glare" aria-hidden="true" />
               <span className="own-panel__eyebrow">
-                {ownPromo ? "Promoción" : "Línea propia"}
+                {ownOffer ? "Oferta de la línea" : "Línea propia"}
               </span>
-              <h3>{ownPromo ? ownPromo.title : "Diseñadas para su vehículo"}</h3>
-              {(ownPromo
-                ? ownPromo.subtitle
-                : "Alfombras y accesorios de nuestra línea, con ajuste perfecto e instalación en el taller.") && (
-                <p>
-                  {ownPromo
-                    ? ownPromo.subtitle
-                    : "Alfombras y accesorios de nuestra línea, con ajuste perfecto e instalación en el taller."}
-                </p>
-              )}
-              {ownPromoExternal && ownPromo?.link ? (
-                <a
-                  className="own-panel__cta"
-                  href={ownPromo.link}
-                  target="_blank"
-                  rel="noopener"
-                >
-                  {ownPromo.ctaLabel || "Ver ofertas"} <ArrowRight size={17} />
-                </a>
-              ) : (
-                <Link
-                  className="own-panel__cta"
-                  href={ownPromo?.link || "/catalogo?linea=propia"}
-                >
-                  {ownPromo ? ownPromo.ctaLabel || "Ver ofertas" : "Ver línea completa"}{" "}
-                  <ArrowRight size={17} />
-                </Link>
-              )}
+              <h3>{ownOffer ? ownOffer.name : "Diseñadas para su vehículo"}</h3>
+              <p>
+                {ownOffer
+                  ? `Antes ${formatCRC(ownOffer.oldPrice)} — ahora ${formatCRC(
+                      ownOffer.price
+                    )}. Ahorre ${formatCRC(
+                      (ownOffer.oldPrice ?? 0) - (ownOffer.price ?? 0)
+                    )}.`
+                  : "Alfombras y accesorios de nuestra línea, con ajuste perfecto e instalación en el taller."}
+              </p>
+              <Link
+                className="own-panel__cta"
+                href={
+                  ownOffer
+                    ? `/productos/${ownOffer.slug}`
+                    : "/catalogo?linea=propia"
+                }
+              >
+                {ownOffer ? "Ver la oferta" : "Ver línea completa"}{" "}
+                <ArrowRight size={17} />
+              </Link>
               <span className="own-panel__seal" aria-hidden="true">
-                {ownPromo ? (
-                  "Oferta"
+                {ownOffer && ownOfferDiscount > 0 ? (
+                  `−${ownOfferDiscount}%`
                 ) : (
                   <>
                     Desde
@@ -139,7 +143,7 @@ export default async function Home() {
                 )}
               </span>
             </aside>
-            <div className="own-brand-showcase__grid">
+            <div className="product-rail">
               {ownBrandProducts.map((product) => (
                 <ProductCard key={product.id} product={product} />
               ))}
@@ -176,7 +180,7 @@ export default async function Home() {
             Ir al catálogo <ArrowRight size={18} />
           </Link>
         </div>
-        <div className="product-grid">
+        <div className="product-rail">
           {showcaseProducts.map((product) => (
             <ProductCard key={product.id} product={product} />
           ))}
