@@ -23,14 +23,19 @@
   box-sizing: border-box;
 }
 
+/* UNICA declaracion de familia del sitio (ver DESIGN.md §2). */
 body {
   margin: 0;
   background: var(--bg);
   color: var(--ink);
   font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
     Arial,
-    Helvetica Neue,
-    Helvetica,
     sans-serif;
 }
 
@@ -94,7 +99,7 @@ img {
   border-radius: 8px;
   color: var(--yellow);
   display: grid;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   height: 48px;
   letter-spacing: 0;
   place-items: center;
@@ -178,7 +183,7 @@ img {
   color: var(--red);
   display: inline-block;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   letter-spacing: 0;
   margin-bottom: 10px;
   text-transform: uppercase;
@@ -218,7 +223,7 @@ img {
   border-radius: 999px;
   cursor: pointer;
   display: inline-flex;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 9px;
   justify-content: center;
   min-height: 48px;
@@ -287,7 +292,7 @@ img {
   align-items: center;
   color: var(--red);
   display: inline-flex;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 8px;
 }
 
@@ -367,7 +372,7 @@ img {
 .category-card span:last-child {
   align-items: center;
   display: inline-flex;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 8px;
 }
 
@@ -401,7 +406,7 @@ img {
 .vehicle-finder label,
 .admin-form label {
   display: grid;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   gap: 8px;
 }
 
@@ -449,7 +454,7 @@ img {
   border-radius: 8px;
   color: white;
   font-size: 13px;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   left: 12px;
   padding: 7px 10px;
   position: absolute;
@@ -489,7 +494,7 @@ img {
   align-items: center;
   color: var(--green);
   display: flex;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 8px;
 }
 
@@ -534,7 +539,7 @@ img {
   align-items: center;
   display: flex;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   gap: 8px;
 }
 
@@ -696,7 +701,7 @@ img {
 
 .form-status {
   color: var(--green);
-  font-weight: 800;
+  font-weight: var(--font-heavy);
 }
 
 .footer {
@@ -903,7 +908,7 @@ img {
   box-shadow: 0 6px 16px rgba(10, 159, 115, 0.3);
   color: white;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   padding: 8px 12px;
 }
 
@@ -926,13 +931,13 @@ img {
   border-radius: 999px;
   color: var(--red-dark);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   padding: 7px 10px;
 }
 
 .product-info h1 {
   font-size: clamp(29px, 2.5vw, 37px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: -0.02em;
   line-height: 1.03;
   margin: 0;
@@ -962,7 +967,7 @@ img {
 .product-price-hero strong {
   color: var(--red-dark);
   font-size: clamp(27px, 2.4vw, 34px);
-  font-weight: 680;
+  font-weight: var(--font-bold);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -974,7 +979,7 @@ img {
   box-shadow: 0 6px 16px rgba(10, 159, 115, 0.28);
   color: white;
   font-size: 13.5px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   padding: 7px 13px;
   white-space: nowrap;
 }
@@ -1013,7 +1018,7 @@ img {
   color: var(--muted);
   display: inline-flex;
   font-size: 13.5px;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   gap: 7px;
   padding: 8px 13px;
 }
@@ -1088,7 +1093,7 @@ img {
     0 1px 3px rgba(17, 21, 28, 0.05);
   color: var(--red);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   padding: 9px 12px;
   transition:
     border-color 160ms ease,
@@ -1271,7 +1276,7 @@ body {
   border-radius: 999px;
   color: #333a45;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   padding: 10px 12px;
   position: relative;
   transition:
@@ -1319,7 +1324,7 @@ body {
   box-shadow: 0 12px 28px rgba(230, 33, 53, 0.24);
   color: white;
   display: inline-flex;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   gap: 8px;
   min-height: 44px;
   overflow: hidden;
@@ -1696,7 +1701,7 @@ body {
 .product-card__category {
   color: var(--red);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   text-transform: uppercase;
 }
 
@@ -1711,7 +1716,7 @@ body {
 .price-row strong,
 .product-info__price {
   color: var(--red);
-  font-weight: 900;
+  font-weight: var(--font-heavy);
 }
 
 .stock-row {
@@ -1761,7 +1766,7 @@ input[type="checkbox"] {
 
 .catalog-toolbar span:first-child {
   color: var(--ink);
-  font-weight: 900;
+  font-weight: var(--font-heavy);
 }
 
 .product-gallery {
@@ -2000,7 +2005,7 @@ input[type="checkbox"] {
 .admin-heading__meta span {
   color: rgba(255, 255, 255, 0.68);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   text-transform: uppercase;
 }
 
@@ -2065,7 +2070,7 @@ input[type="checkbox"] {
 .admin-form input,
 .admin-form select,
 .admin-form textarea {
-  font-weight: 800;
+  font-weight: var(--font-heavy);
 }
 
 .admin-form textarea {
@@ -2093,7 +2098,7 @@ input[type="checkbox"] {
   color: var(--ink);
   cursor: pointer;
   display: inline-flex;
-  font-weight: 900;
+  font-weight: var(--font-heavy);
   gap: 12px;
 }
 
@@ -2200,7 +2205,7 @@ input[type="checkbox"] {
   background: linear-gradient(135deg, var(--red), #ff6b42);
   color: white;
   display: flex;
-  font-weight: 760;
+  font-weight: var(--font-heavy);
   gap: 10px;
   min-height: 58px;
   padding: 0 20px;
@@ -2223,7 +2228,7 @@ input[type="checkbox"] {
   cursor: pointer;
   display: flex;
   font-size: 16px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
   gap: 12px;
   justify-content: space-between;
   min-height: 47px;
@@ -2243,7 +2248,7 @@ input[type="checkbox"] {
 .category-accordion__item button:hover,
 .category-accordion__item button[aria-expanded="true"] {
   color: var(--red);
-  font-weight: 720;
+  font-weight: var(--font-bold);
 }
 
 .category-accordion__item button[aria-expanded="true"] svg {
@@ -2262,7 +2267,7 @@ input[type="checkbox"] {
 .category-accordion__panel p {
   color: var(--muted);
   font-size: 15px;
-  font-weight: 400;
+  font-weight: var(--font-regular);
   line-height: 1.45;
   margin: 0 0 10px;
 }
@@ -2277,7 +2282,7 @@ input[type="checkbox"] {
 .category-accordion__panel span {
   color: #738092;
   font-size: 13px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .category-accordion__panel a,
@@ -2285,7 +2290,7 @@ input[type="checkbox"] {
   align-items: center;
   color: var(--red);
   display: inline-flex;
-  font-weight: 760;
+  font-weight: var(--font-heavy);
   gap: 7px;
 }
 
@@ -2354,7 +2359,7 @@ input[type="checkbox"] {
   color: var(--yellow);
   display: inline-flex;
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 7px;
   padding: 8px 12px;
   text-transform: uppercase;
@@ -2364,13 +2369,13 @@ input[type="checkbox"] {
 .home-carousel__category {
   color: rgba(255, 255, 255, 0.72);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   text-transform: uppercase;
 }
 
 .home-carousel h1 {
   font-size: clamp(38px, 4.5vw, 58px);
-  font-weight: 760;
+  font-weight: var(--font-heavy);
   letter-spacing: 0;
   line-height: 1.04;
   margin: 0;
@@ -2383,7 +2388,7 @@ input[type="checkbox"] {
   color: rgba(255, 255, 255, 0.8);
   display: -webkit-box;
   font-size: 16px;
-  font-weight: 400;
+  font-weight: var(--font-regular);
   line-height: 1.5;
   margin: 0;
   max-width: 540px;
@@ -2406,7 +2411,7 @@ input[type="checkbox"] {
   border-radius: 999px;
   color: #9bf0cf;
   font-size: 13px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   padding: 8px 11px;
 }
 
@@ -2425,7 +2430,7 @@ input[type="checkbox"] {
 .home-carousel__price strong {
   color: white;
   font-size: clamp(26px, 3vw, 36px);
-  font-weight: 760;
+  font-weight: var(--font-heavy);
 }
 
 .home-carousel__actions {
@@ -2631,7 +2636,7 @@ input[type="checkbox"] {
 
 .product-detail-hero .product-info h1 {
   font-size: clamp(29px, 2.5vw, 37px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: -0.02em;
   line-height: 1.03;
 }
@@ -2721,29 +2726,21 @@ input[type="checkbox"] {
   }
 }
 
-/* Typography polish: softer, more retail-oriented hierarchy. */
+/* Typography polish: softer, more retail-oriented hierarchy.
+   (La familia se declara UNA sola vez en el body base.) */
 body {
-  font-family:
-    Inter,
-    ui-sans-serif,
-    system-ui,
-    -apple-system,
-    BlinkMacSystemFont,
-    "Segoe UI",
-    Arial,
-    sans-serif;
-  font-weight: 400;
+  font-weight: var(--font-regular);
 }
 
 .brand strong {
   font-size: 19px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: 0;
 }
 
 .brand small {
   font-size: 13px;
-  font-weight: 400;
+  font-weight: var(--font-regular);
 }
 
 .topbar {
@@ -2755,7 +2752,7 @@ body {
 .quote-link,
 .button,
 .text-link {
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .nav__links a {
@@ -2770,31 +2767,31 @@ body {
 .section h2,
 .split h2 {
   font-size: clamp(28px, 3vw, 40px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
   line-height: 1.12;
 }
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: 0.02em;
 }
 
 .home-carousel__tag {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: 0.02em;
 }
 
 .home-carousel__category {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   letter-spacing: 0.02em;
 }
 
 .home-carousel h1 {
   font-size: clamp(34px, 4vw, 52px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
   line-height: 1.08;
   max-width: 570px;
 }
@@ -2807,30 +2804,30 @@ body {
 
 .home-carousel__price strong {
   font-size: clamp(25px, 2.7vw, 34px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .home-carousel__meta > span {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 .category-accordion__title {
   font-size: 17px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .category-accordion__item button {
   color: #1d2430;
   font-size: 15px;
-  font-weight: 560;
+  font-weight: var(--font-semibold);
   line-height: 1.28;
   min-height: 43px;
 }
 
 .category-accordion__item button:hover,
 .category-accordion__item button[aria-expanded="true"] {
-  font-weight: 620;
+  font-weight: var(--font-bold);
 }
 
 .category-accordion__panel p {
@@ -2840,54 +2837,54 @@ body {
 .category-accordion__panel span,
 .category-accordion__panel a,
 .category-accordion__more {
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 .product-card__category {
   font-size: 12px;
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: 0.02em;
 }
 
 .product-card h3 {
   color: #151b25;
   font-size: 18px;
-  font-weight: 620;
+  font-weight: var(--font-bold);
   line-height: 1.25;
 }
 
 .price-row strong,
 .product-info__price,
 .product-info__price-card strong {
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .stock-row {
   font-size: 13px;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 .product-card .button {
   font-size: 14px;
-  font-weight: 620;
+  font-weight: var(--font-bold);
   line-height: 1.2;
 }
 
 .product-info h1 {
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 .product-info p,
 .detail-list,
 .product-detail-card p {
-  font-weight: 400;
+  font-weight: var(--font-regular);
 }
 
 .filters__title,
 .catalog-toolbar span:first-child,
 .form-section__header strong,
 .admin-heading__meta strong {
-  font-weight: 650;
+  font-weight: var(--font-bold);
 }
 
 @media (max-width: 640px) {
@@ -2906,7 +2903,8 @@ body {
   --font-regular: 400;
   --font-medium: 500;
   --font-semibold: 600;
-  --font-bold: 680;
+  --font-bold: 700;
+  --font-heavy: 800;
   --type-xs: 12px;
   --type-sm: 14px;
   --type-md: 16px;
@@ -3109,7 +3107,7 @@ body {
 
 .product-info h1 {
   font-size: clamp(29px, 2.5vw, 37px);
-  font-weight: 650;
+  font-weight: var(--font-bold);
   letter-spacing: -0.02em;
   line-height: 1.03;
 }
@@ -5063,7 +5061,7 @@ body {
 
 .contact-card__row a {
   color: var(--red-dark);
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 .contact-map iframe {
@@ -5098,7 +5096,7 @@ body {
 .contact-form label {
   display: grid;
   font-size: 0.92rem;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   gap: 7px;
 }
 
@@ -5107,7 +5105,7 @@ body {
   background: var(--surface-strong);
   border: 1px solid var(--line);
   border-radius: 12px;
-  font-weight: 400;
+  font-weight: var(--font-regular);
   padding: 11px 13px;
 }
 
@@ -5143,7 +5141,7 @@ body {
 
 .faq summary {
   cursor: pointer;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   list-style: none;
   padding: 17px 0;
   position: relative;
@@ -5307,7 +5305,7 @@ body {
 
 .badge--discount {
   font-size: 15px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   letter-spacing: 0;
   padding: 9px 15px;
 }
@@ -5411,7 +5409,7 @@ textarea {
   align-items: center;
   display: inline-flex;
   font-size: 15px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   gap: 10px;
 }
 
@@ -5457,7 +5455,7 @@ textarea {
   border-bottom: 1px solid var(--line);
   display: flex;
   font-size: 17px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   gap: 14px;
   letter-spacing: 0;
   min-height: 56px;
@@ -5484,7 +5482,7 @@ textarea {
 .menu-overlay__links a small {
   color: var(--red);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
 }
 
 .menu-overlay__links a svg {
@@ -5640,7 +5638,7 @@ textarea {
   cursor: pointer;
   display: inline-flex;
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   gap: 6px;
   padding: 8px 14px;
   transition: border-color 180ms ease, color 180ms ease;
@@ -5733,7 +5731,7 @@ textarea {
   border-color: #dfe6ef;
   border-radius: 999px;
   color: #384252;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
   min-height: 46px;
 }
 
@@ -5865,7 +5863,7 @@ textarea {
   color: var(--red-dark);
   font-size: 14px;
   font-style: normal;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   white-space: nowrap;
 }
 
@@ -5880,7 +5878,7 @@ textarea {
   cursor: pointer;
   display: flex;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   gap: 7px;
   height: auto;
   justify-content: center;
@@ -5900,7 +5898,7 @@ textarea {
 
 .search-suggest__empty a {
   color: var(--red-dark);
-  font-weight: 700;
+  font-weight: var(--font-bold);
 }
 
 /* Desplegable de sugerencias: vidrio ligero con acento rojo que respira,
@@ -6006,7 +6004,7 @@ textarea {
 .compat-band__models > span {
   color: var(--muted);
   font-size: 13.5px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
 }
 
 .compat-chip {
@@ -6015,7 +6013,7 @@ textarea {
   border-radius: 999px;
   color: var(--red-dark);
   font-size: 14px;
-  font-weight: 700;
+  font-weight: var(--font-bold);
   padding: 9px 15px;
   transition:
     background 180ms ease,
@@ -6842,7 +6840,7 @@ textarea {
 .home-carousel__eyebrow {
   color: var(--yellow);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -7081,7 +7079,7 @@ html.lenis body {
     display: inline-flex;
     flex: 0 0 auto;
     font-size: 13.5px;
-    font-weight: 700;
+    font-weight: var(--font-bold);
     letter-spacing: 0.2px;
     margin-right: 10px;
     min-height: 40px;
@@ -7291,7 +7289,7 @@ select::-ms-expand {
 
 .section-head h2 {
   font-size: clamp(32px, 4.4vw, 54px);
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   letter-spacing: -0.02em;
   line-height: 1.06;
   margin: 0;
@@ -7382,7 +7380,7 @@ select::-ms-expand {
 .wtl__num {
   color: #d3dae2;
   font-size: clamp(34px, 4vw, 52px);
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   letter-spacing: -0.02em;
   line-height: 1;
 }
@@ -7432,7 +7430,7 @@ select::-ms-expand {
 
 .wtl__body h3 {
   font-size: 20px;
-  font-weight: 800;
+  font-weight: var(--font-heavy);
   margin: 0;
 }
 
