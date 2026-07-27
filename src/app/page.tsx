@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowRight, PackageSearch } from "lucide-react";
+import { ArrowRight, PackageSearch, Wrench } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import { CompatHero } from "@/components/CompatHero";
 import { HomeShowcase } from "@/components/HomeShowcase";
@@ -28,16 +28,18 @@ export default async function Home() {
       <HomeShowcase categories={categories} products={products} promos={promos} />
 
       <section className="section" id="servicios">
-        <div className="section__header">
-          <div>
-            <span className="eyebrow">Taller propio</span>
-            <h2>Compre y salga con todo instalado</h2>
-            <ul className="workshop-panel__trust">
-              <li>En el local hoy mismo</li>
-              <li>Instalación con garantía</li>
-              <li>Si no está, se lo conseguimos</li>
-            </ul>
-          </div>
+        <div className="wtl-head">
+          <span className="wtl-head__pill">
+            <Wrench size={14} /> Taller propio
+          </span>
+          <h2>
+            Compre y salga con todo <em>instalado.</em>
+          </h2>
+          <ul className="workshop-panel__trust">
+            <li>En el local hoy mismo</li>
+            <li>Instalación con garantía</li>
+            <li>Si no está, se lo conseguimos</li>
+          </ul>
         </div>
         <WorkshopTimeline />
       </section>

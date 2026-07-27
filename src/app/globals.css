@@ -7259,9 +7259,65 @@ select::-ms-expand {
   width: 7px;
 }
 
+/* Encabezado centrado estilo Lightswind: pildora + titular grande con la
+   palabra final enfatizada y subrayada con el degradado de marca. */
+.wtl-head {
+  display: grid;
+  gap: 18px;
+  justify-items: center;
+  margin: 0 auto 40px;
+  max-width: 760px;
+  text-align: center;
+}
+
+.wtl-head__pill {
+  align-items: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #4a5361;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  gap: 7px;
+  letter-spacing: 0.09em;
+  padding: 9px 14px;
+  text-transform: uppercase;
+}
+
+.wtl-head__pill svg {
+  color: var(--red);
+}
+
+.wtl-head h2 {
+  font-size: clamp(32px, 4.4vw, 54px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.06;
+  margin: 0;
+}
+
+.wtl-head h2 em {
+  display: inline-block;
+  font-style: italic;
+}
+
+.wtl-head h2 em::after {
+  background: linear-gradient(90deg, var(--red), #ff6b42);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 6px;
+  margin-top: 8px;
+}
+
+.wtl-head .workshop-panel__trust {
+  justify-content: center;
+}
+
 .wtl {
   display: grid;
-  gap: 30px;
+  gap: 12px;
   padding: 12px 0 4px;
   position: relative;
 }
@@ -7290,19 +7346,29 @@ select::-ms-expand {
   align-items: center;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  min-height: 92px;
+  min-height: 150px;
   position: relative;
 }
 
+/* Numero fantasma del paso (como los anos del timeline de referencia). */
+.wtl__num {
+  color: #d3dae2;
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* Nodo cuadrado redondeado con sombra suave, como la referencia. */
 .wtl__node {
   align-items: center;
   background: white;
   border: 1px solid var(--line);
-  border-radius: 999px;
-  box-shadow: var(--shadow-sm);
-  color: var(--muted);
+  border-radius: 16px;
+  box-shadow: var(--shadow-md);
+  color: var(--red);
   display: flex;
-  height: 46px;
+  height: 54px;
   justify-content: center;
   left: 50%;
   position: absolute;
@@ -7312,7 +7378,7 @@ select::-ms-expand {
     border-color 220ms ease,
     box-shadow 220ms ease,
     color 220ms ease;
-  width: 46px;
+  width: 54px;
   z-index: 1;
 }
 
@@ -7328,40 +7394,58 @@ select::-ms-expand {
   color: white;
 }
 
-.wtl__card {
-  background: white;
-  border: 1px solid var(--line);
-  border-radius: 18px;
-  box-shadow: var(--shadow-sm);
+/* Contenido sin caja: titulo fuerte, descripcion en cursiva tenue y
+   text-link, como el timeline industrial de referencia. */
+.wtl__body {
   display: grid;
-  gap: 7px;
-  justify-items: start;
-  max-width: 480px;
-  padding: 18px 20px;
+  gap: 8px;
+  max-width: 430px;
 }
 
-.wtl__card h3 {
-  font-size: 17px;
+.wtl__body h3 {
+  font-size: 20px;
+  font-weight: 800;
   margin: 0;
 }
 
-.wtl__card p {
+.wtl__body p {
   color: var(--muted);
-  font-size: 14px;
-  line-height: 1.45;
+  font-size: 15px;
+  font-style: italic;
+  line-height: 1.5;
   margin: 0;
 }
 
-.wtl__entry--left .wtl__card {
+/* Entrada izquierda: contenido a la izquierda (alineado hacia la espina),
+   numero fantasma al otro lado. */
+.wtl__entry--left .wtl__body {
   grid-column: 1;
+  grid-row: 1;
+  justify-items: end;
   justify-self: end;
   margin-right: clamp(36px, 5vw, 58px);
+  text-align: right;
 }
 
-.wtl__entry--right .wtl__card {
+.wtl__entry--left .wtl__num {
   grid-column: 2;
+  grid-row: 1;
   justify-self: start;
   margin-left: clamp(36px, 5vw, 58px);
+}
+
+.wtl__entry--right .wtl__body {
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: start;
+  margin-left: clamp(36px, 5vw, 58px);
+}
+
+.wtl__entry--right .wtl__num {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: end;
+  margin-right: clamp(36px, 5vw, 58px);
 }
 
 .wtl__entry--cta {
@@ -7378,28 +7462,46 @@ select::-ms-expand {
 }
 
 @media (max-width: 720px) {
+  .wtl-head {
+    margin-bottom: 26px;
+  }
+
   .wtl__spine {
-    left: 23px;
+    left: 25px;
     transform: none;
   }
 
   .wtl__entry {
     grid-template-columns: 1fr;
     min-height: 0;
+    padding: 10px 0;
   }
 
-  /* Nodo centrado sobre la espina (centro de espina ~24.5px). */
+  /* Nodo centrado sobre la espina (centro de espina ~26.5px). */
   .wtl__node {
-    left: 2px;
+    left: 0;
     transform: none;
   }
 
-  .wtl__entry--left .wtl__card,
-  .wtl__entry--right .wtl__card {
+  /* En columna el numero fantasma va pequeno sobre el titulo. */
+  .wtl__entry--left .wtl__num,
+  .wtl__entry--right .wtl__num {
+    font-size: 24px;
     grid-column: 1;
+    grid-row: 1;
+    justify-self: start;
+    margin: 0 0 2px 70px;
+  }
+
+  .wtl__entry--left .wtl__body,
+  .wtl__entry--right .wtl__body {
+    grid-column: 1;
+    grid-row: 2;
+    justify-items: start;
     justify-self: stretch;
-    margin: 0 0 0 64px;
+    margin: 0 0 0 70px;
     max-width: none;
+    text-align: left;
   }
 
   .wtl__entry--cta {
@@ -7411,7 +7513,7 @@ select::-ms-expand {
   }
 
   .wtl__entry--cta .wtl__cta {
-    margin-left: 64px;
+    margin-left: 70px;
   }
 }
 

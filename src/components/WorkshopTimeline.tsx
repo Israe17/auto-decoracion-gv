@@ -44,10 +44,11 @@ const STEPS = [
   }
 ];
 
-// Linea de tiempo del taller (adaptacion propia estilo Lightswind
-// Timeline): espina central que se llena con el degradado de marca en
-// sincronia con el scroll (scrub) y entradas que se activan al entrar al
-// viewport. Con reduced-motion todo queda visible y la espina llena.
+// Linea de tiempo del taller (adaptacion propia del Industrial Vertical
+// Timeline de Lightswind): espina central que se llena con el degradado
+// de marca al scrollear (scrub), numero fantasma por paso, nodo cuadrado
+// redondeado que hace "pop" al activarse y contenido sin caja que entra
+// deslizandose desde su lado. Con reduced-motion todo queda visible.
 export function WorkshopTimeline() {
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -64,6 +65,7 @@ export function WorkshopTimeline() {
     }
 
     gsap.registerPlugin(ScrollTrigger);
+    const mobile = window.matchMedia("(max-width: 720px)").matches;
     const observers: IntersectionObserver[] = [];
     const ctx = gsap.context(() => {
       if (progress) {
@@ -84,15 +86,40 @@ export function WorkshopTimeline() {
       }
 
       entries.forEach((entry) => {
-        const card = entry.querySelector<HTMLElement>(".wtl__card, .wtl__cta");
-        if (card) gsap.set(card, { autoAlpha: 0, y: 26 });
+        const node = entry.querySelector<HTMLElement>(".wtl__node");
+        const num = entry.querySelector<HTMLElement>(".wtl__num");
+        const body = entry.querySelector<HTMLElement>(".wtl__body, .wtl__cta");
+        const fromX = entry.classList.contains("wtl__entry--left") ? -36 : 36;
+
+        if (node) gsap.set(node, { autoAlpha: 0, scale: 0.5 });
+        if (num) gsap.set(num, { autoAlpha: 0, y: 18 });
+        if (body) gsap.set(body, mobile ? { autoAlpha: 0, y: 24 } : { autoAlpha: 0, x: fromX });
+
         const io = new IntersectionObserver(
           ([hit]) => {
             if (!hit.isIntersecting) return;
             io.disconnect();
             entry.classList.add("is-active");
-            if (card) {
-              gsap.to(card, { autoAlpha: 1, y: 0, duration: 0.6, ease: "power2.out" });
+            const tl = gsap.timeline();
+            if (node) {
+              tl.to(node, {
+                autoAlpha: 1,
+                scale: 1,
+                duration: 0.45,
+                ease: "back.out(1.7)"
+              });
+            }
+            if (num) {
+              tl.to(num, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.08);
+            }
+            if (body) {
+              tl.to(
+                body,
+                mobile
+                  ? { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }
+                  : { autoAlpha: 1, x: 0, duration: 0.6, ease: "power2.out" },
+                0.14
+              );
             }
           },
           { rootMargin: "0px 0px -12% 0px" }
@@ -118,10 +145,13 @@ export function WorkshopTimeline() {
           className={`wtl__entry ${index % 2 ? "wtl__entry--right" : "wtl__entry--left"}`}
           key={step.title}
         >
+          <span className="wtl__num" aria-hidden="true">
+            {String(index + 1).padStart(2, "0")}
+          </span>
           <span className="wtl__node">
             <step.icon />
           </span>
-          <div className="wtl__card">
+          <div className="wtl__body">
             <h3>{step.title}</h3>
             <p>{step.text}</p>
             <a
