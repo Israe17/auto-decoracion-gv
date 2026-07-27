@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import { LayoutGrid } from "lucide-react";
 import { CatalogExplorer } from "@/components/CatalogExplorer";
 import { CategoryCard } from "@/components/CategoryCard";
 import { topCategories } from "@/lib/catalog";
@@ -33,10 +34,14 @@ export default async function CatalogPage() {
       </section>
 
       <section className="section" id="categorias">
-        <div className="section__header">
+        <div className="section-head section-head--left">
           <div>
-            <span className="eyebrow">Categorías completas</span>
-            <h2>Líneas de producto</h2>
+            <span className="section-head__pill">
+              <LayoutGrid size={14} /> Categorías completas
+            </span>
+            <h2>
+              Líneas de <em>producto.</em>
+            </h2>
           </div>
         </div>
         <div className="category-grid">
