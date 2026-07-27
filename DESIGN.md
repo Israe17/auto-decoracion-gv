@@ -52,11 +52,23 @@ Reglas:
 
 ## 2. Typography
 
-- Familia: Arial / Helvetica (system stack, sin webfonts).
-- H1 de ficha/página: `clamp(30px, 3vw, 42px)`, peso 760.
-- H2 de sección: ~1.35-1.6rem, peso 700-760.
-- Eyebrow (etiqueta sobre títulos): 13px, 800, uppercase, color rojo o muted.
+- Familia: pila del sistema moderna (`Inter, ui-sans-serif, system-ui,
+  -apple-system, "Segoe UI", Arial, sans-serif`), sin webfonts. Se declara
+  **UNA sola vez** en el `body` base de `globals.css`; prohibido volver a
+  declarar `font-family` en otra regla.
+- **Pesos SOLO por tokens** (prohibido hardcodear números):
+  `--font-regular` 400 (cuerpo), `--font-medium` 500 (meta/chips),
+  `--font-semibold` 600 (botones, enlaces, etiquetas), `--font-bold` 700
+  (títulos h3/h2 internos), `--font-heavy` 800 (titulares display de la
+  portada, números fantasma del timeline).
+- Tamaños por tokens `--type-xs…--type-3xl`; H1 de ficha/página
+  `clamp(30px, 3vw, 42px)`; titulares display de portada
+  `clamp(32px, 4.4vw, 54px)` (centrado) / `clamp(28px, 3.2vw, 42px)`
+  (variante lateral).
+- Eyebrow/píldoras: 12px, `--font-semibold`, uppercase con letter-spacing.
 - Cuerpo: 15-17px, `line-height: 1.55`, color `--muted` para descripciones.
+  Cursiva SOLO en las descripciones del timeline y los énfasis `em` de los
+  titulares display.
 - Español correcto con tildes en textos visibles ("díganos", nunca "dígnos").
 
 ## 3. Spacing
