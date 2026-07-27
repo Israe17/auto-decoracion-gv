@@ -28,7 +28,12 @@ export default async function Home() {
     : products.filter((product) => product.status !== "sold_out").slice(0, 4);
   const ownBrandProducts = products
     .filter((product) => product.isOwnBrand && product.status !== "sold_out")
-    .slice(0, 4);
+    .slice(0, 3);
+  const ownPromo =
+    promos.find((promo) => promo.active !== false && promo.title) ?? null;
+  const ownPromoExternal = Boolean(
+    ownPromo?.link && /^https?:/i.test(ownPromo.link)
+  );
   const mainCategories = topCategories(categories);
 
   return (
@@ -88,10 +93,57 @@ export default async function Home() {
               Ver línea completa <ArrowRight size={18} />
             </Link>
           </div>
-          <div className="product-grid">
-            {ownBrandProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
+          <div className="own-brand-showcase">
+            <aside className="own-panel glare-host">
+              <span className="glare" aria-hidden="true" />
+              <span className="own-panel__eyebrow">
+                {ownPromo ? "Promoción" : "Línea propia"}
+              </span>
+              <h3>{ownPromo ? ownPromo.title : "Diseñadas para su vehículo"}</h3>
+              {(ownPromo
+                ? ownPromo.subtitle
+                : "Alfombras y accesorios de nuestra línea, con ajuste perfecto e instalación en el taller.") && (
+                <p>
+                  {ownPromo
+                    ? ownPromo.subtitle
+                    : "Alfombras y accesorios de nuestra línea, con ajuste perfecto e instalación en el taller."}
+                </p>
+              )}
+              {ownPromoExternal && ownPromo?.link ? (
+                <a
+                  className="own-panel__cta"
+                  href={ownPromo.link}
+                  target="_blank"
+                  rel="noopener"
+                >
+                  {ownPromo.ctaLabel || "Ver ofertas"} <ArrowRight size={17} />
+                </a>
+              ) : (
+                <Link
+                  className="own-panel__cta"
+                  href={ownPromo?.link || "/catalogo?linea=propia"}
+                >
+                  {ownPromo ? ownPromo.ctaLabel || "Ver ofertas" : "Ver línea completa"}{" "}
+                  <ArrowRight size={17} />
+                </Link>
+              )}
+              <span className="own-panel__seal" aria-hidden="true">
+                {ownPromo ? (
+                  "Oferta"
+                ) : (
+                  <>
+                    Desde
+                    <br />
+                    2008
+                  </>
+                )}
+              </span>
+            </aside>
+            <div className="own-brand-showcase__grid">
+              {ownBrandProducts.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
           </div>
         </section>
       )}
