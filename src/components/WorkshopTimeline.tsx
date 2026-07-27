@@ -66,8 +66,67 @@ export function WorkshopTimeline() {
 
     gsap.registerPlugin(ScrollTrigger);
     const mobile = window.matchMedia("(max-width: 720px)").matches;
-    const observers: IntersectionObserver[] = [];
     const ctx = gsap.context(() => {
+      const activated = new Set<HTMLElement>();
+
+      function activate(entry: HTMLElement) {
+        if (activated.has(entry)) return;
+        activated.add(entry);
+        entry.classList.add("is-active");
+        const node = entry.querySelector<HTMLElement>(".wtl__node");
+        const num = entry.querySelector<HTMLElement>(".wtl__num");
+        const body = entry.querySelector<HTMLElement>(".wtl__body, .wtl__cta");
+        const tl = gsap.timeline();
+        if (node) {
+          tl.to(node, { autoAlpha: 1, scale: 1, duration: 0.5, ease: "back.out(2)" });
+        }
+        if (num) {
+          tl.to(num, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.1);
+        }
+        if (body) {
+          tl.to(
+            body,
+            mobile
+              ? { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }
+              : {
+                  autoAlpha: 1,
+                  x: 0,
+                  duration: 0.6,
+                  ease: "power2.out"
+                },
+            0.16
+          );
+        }
+      }
+
+      // Estados iniciales ocultos.
+      entries.forEach((entry) => {
+        const node = entry.querySelector<HTMLElement>(".wtl__node");
+        const num = entry.querySelector<HTMLElement>(".wtl__num");
+        const body = entry.querySelector<HTMLElement>(".wtl__body, .wtl__cta");
+        const fromX = entry.classList.contains("wtl__entry--left") ? -36 : 36;
+        if (node) gsap.set(node, { autoAlpha: 0, scale: 0.4 });
+        if (num) gsap.set(num, { autoAlpha: 0, y: 18 });
+        if (body) gsap.set(body, mobile ? { autoAlpha: 0, y: 24 } : { autoAlpha: 0, x: fromX });
+      });
+
+      // Cada paso "hace pop" EXACTAMENTE cuando la espina de progreso
+      // alcanza su nodo: se calculan umbrales (posicion del centro de cada
+      // nodo dentro de la espina) y el onUpdate del scrub los dispara en
+      // orden, uno por uno, al ritmo del scroll.
+      const spine = root.querySelector<HTMLElement>(".wtl__spine");
+      const rootRect = root.getBoundingClientRect();
+      const spineRect = spine?.getBoundingClientRect();
+      const spineTop = spineRect ? spineRect.top - rootRect.top : 0;
+      const spineHeight = spineRect ? spineRect.height : root.offsetHeight;
+      const thresholds = Array.from(entries).map((entry) => {
+        const node = entry.querySelector<HTMLElement>(".wtl__node");
+        if (!node) return 1;
+        const r = node.getBoundingClientRect();
+        const center = r.top - rootRect.top + r.height / 2;
+        return Math.min(1, Math.max(0, (center - spineTop) / spineHeight));
+      });
+
       if (progress) {
         gsap.fromTo(
           progress,
@@ -79,58 +138,19 @@ export function WorkshopTimeline() {
               trigger: root,
               start: "top 78%",
               end: "bottom 58%",
-              scrub: true
+              scrub: true,
+              onUpdate: (self) => {
+                entries.forEach((entry, i) => {
+                  if (self.progress >= thresholds[i]) activate(entry);
+                });
+              }
             }
           }
         );
       }
-
-      entries.forEach((entry) => {
-        const node = entry.querySelector<HTMLElement>(".wtl__node");
-        const num = entry.querySelector<HTMLElement>(".wtl__num");
-        const body = entry.querySelector<HTMLElement>(".wtl__body, .wtl__cta");
-        const fromX = entry.classList.contains("wtl__entry--left") ? -36 : 36;
-
-        if (node) gsap.set(node, { autoAlpha: 0, scale: 0.5 });
-        if (num) gsap.set(num, { autoAlpha: 0, y: 18 });
-        if (body) gsap.set(body, mobile ? { autoAlpha: 0, y: 24 } : { autoAlpha: 0, x: fromX });
-
-        const io = new IntersectionObserver(
-          ([hit]) => {
-            if (!hit.isIntersecting) return;
-            io.disconnect();
-            entry.classList.add("is-active");
-            const tl = gsap.timeline();
-            if (node) {
-              tl.to(node, {
-                autoAlpha: 1,
-                scale: 1,
-                duration: 0.45,
-                ease: "back.out(1.7)"
-              });
-            }
-            if (num) {
-              tl.to(num, { autoAlpha: 1, y: 0, duration: 0.5, ease: "power2.out" }, 0.08);
-            }
-            if (body) {
-              tl.to(
-                body,
-                mobile
-                  ? { autoAlpha: 1, y: 0, duration: 0.55, ease: "power2.out" }
-                  : { autoAlpha: 1, x: 0, duration: 0.6, ease: "power2.out" },
-                0.14
-              );
-            }
-          },
-          { rootMargin: "0px 0px -12% 0px" }
-        );
-        io.observe(entry);
-        observers.push(io);
-      });
     }, root);
 
     return () => {
-      observers.forEach((io) => io.disconnect());
       ctx.revert();
     };
   }, []);
