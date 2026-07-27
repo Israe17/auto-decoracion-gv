@@ -138,16 +138,20 @@ Móvil (iPhone-first):
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
 - **Línea de tiempo del taller** (portada, `#servicios`,
-  `WorkshopTimeline` / `.wtl`, adaptación propia estilo Lightswind
-  Timeline): UNA sola sección para beneficios + servicios (decisión del
-  dueño: menos carga por pantalla). Encabezado con eyebrow, H2 corto y 3
-  frases de confianza con punto degradado; debajo, espina central que se
-  **llena con el degradado de marca al scrollear** y 4 entradas (nodo con
-  ícono que se enciende al entrar + tarjeta con título, una línea y
-  text-link a WhatsApp), alternadas en escritorio y en columna con espina
-  a la izquierda en móvil; cierra con UN primario "Cotizar por WhatsApp".
-  Prohibido volver a duplicar beneficios y servicios como tarjetas
-  separadas.
+  `WorkshopTimeline` / `.wtl`, adaptación propia del Industrial Vertical
+  Timeline de Lightswind): UNA sola sección para beneficios + servicios
+  (decisión del dueño: menos carga por pantalla). Encabezado **centrado**
+  con píldora (`.wtl-head__pill`, ícono + uppercase), titular grande con
+  la palabra final en **cursiva subrayada con el degradado de marca** y 3
+  frases de confianza. Debajo, espina central que se **llena con el
+  degradado al scrollear**; cada paso lleva **número fantasma** grande
+  (gris claro), **nodo cuadrado redondeado** que hace *pop*
+  (`back.out`) al activarse y contenido SIN caja (título fuerte,
+  descripción en cursiva tenue, text-link a WhatsApp) que **entra
+  deslizándose desde su lado**; alternado en escritorio, columna con
+  espina a la izquierda y número pequeño en móvil. Cierra con UN primario
+  "Cotizar por WhatsApp". Prohibido volver a duplicar beneficios y
+  servicios como tarjetas separadas.
 - Carrusel del inicio: foto horizontal a todo lo ancho (`cover`) con un
   degradado oscuro a la izquierda y el texto encima — eyebrow, titular
   grande, subtítulo y botones (primario al enlace + WhatsApp). El contenido
