@@ -9,6 +9,7 @@ const revealSelectors = [
   ".page-hero",
   ".home-showcase",
   ".section__header",
+  ".section-head",
   ".split__copy",
   ".compat-hero",
   ".cta-band",
