@@ -29,16 +29,19 @@ Tokens:
 | WhatsApp | `#25d366` | SOLO el botón flotante de WhatsApp |
 
 Reglas:
+- **Degradado de franja para la acción** (negro → rojo,
+  `linear-gradient(90deg, #161b22, #252b33 52%, #e62135)` — el mismo del
+  topbar): es el fondo de los **botones primarios** (`button--primary`,
+  `quote-link`), decisión del dueño para que la acción combine con la banda
+  de WhatsApp. El hover lo profundiza
+  (`#0d1117, #1c2128 52%, #b91527`).
 - **Degradado cálido de marca** (rojo → naranja,
-  `linear-gradient(135deg, var(--red), #ff6b42)`): permitido y preferido por
-  el dueño en **todos los acentos del sitio** — insignias, botón primario,
-  listones/chips de estado, chips activos (banco de etiquetas), estados
-  hover/activo de flechas, puntos de carrusel y controles del admin. Los
-  estados verdes usan `var(--green) → #0bbf88` y los ámbar
-  `#ffc72c → #ff9e2c`. El hover del primario profundiza el degradado
-  (`--red-dark → #ff5a2c`). Las superficies grandes (topbar, banda CTA,
-  bandeja de cotización) siguen en `var(--red)` **plano** para no saturar
-  la vista.
+  `linear-gradient(135deg, var(--red), #ff6b42)`): para los **acentos
+  informativos** — insignias, listones/chips de estado, chips activos
+  (banco de etiquetas), estados hover/activo de flechas, puntos de carrusel
+  y controles del admin. Los estados verdes usan `var(--green) → #0bbf88` y
+  los ámbar `#ffc72c → #ff9e2c`. Las superficies grandes (topbar, banda
+  CTA, bandeja de cotización) siguen planas para no saturar la vista.
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel del hero
@@ -103,12 +106,13 @@ Móvil (iPhone-first):
 
 ## 5. Components
 
-- `button--primary`: **degradado rojo → naranja** (`var(--red) → #ff6b42`),
-  texto blanco. Un solo primario por bloque, siempre ANTES que el secundario.
-  Lleva **sombra roja elevada** que crece al hover con `translateY(-2px)`
-  (el hover profundiza el degradado a `--red-dark → #ff5a2c`), y un
-  **destello diagonal que barre UNA vez al pasar el mouse** (keyframe
-  `btn-shine`, nunca infinito; se apaga en touch y reduced-motion).
+- `button--primary` (y `quote-link` del header): **degradado de franja
+  negro → rojo** (el mismo del topbar), texto blanco. Un solo primario por
+  bloque, siempre ANTES que el secundario. Lleva **sombra oscura elevada**
+  que crece al hover con `translateY(-2px)` (el hover profundiza el
+  degradado), y un **destello diagonal que barre UNA vez al pasar el mouse**
+  (keyframe `btn-shine`, nunca infinito; se apaga en touch y
+  reduced-motion).
 - `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
 - `button--ghost`: solo sobre fotos/fondos oscuros.
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
