@@ -374,3 +374,6 @@ Móvil (iPhone-first):
 8. Emojis en la interfaz.
 9. URLs de WhatsApp armadas a mano fuera de `src/lib/whatsapp.ts`.
 10. Modales renderizados dentro de secciones animadas sin portal.
+11. Capas superpuestas (`::before` / `::after` con `inset: 0`) sobre un
+    bloque redondeado sin `border-radius: inherit`: la capa es un
+    rectángulo recto y sus esquinas se asoman por fuera del cuadro.

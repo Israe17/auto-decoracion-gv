@@ -520,8 +520,14 @@ img {
 }
 
 .page-hero {
+  /* La foto propia (public/hero/catalogo.jpg) va encima de la de stock:
+     las capas de background se pintan de arriba hacia abajo y una que no
+     carga simplemente no se pinta, asi que si el archivo no existe se ve
+     la de stock y la pagina nunca queda sin fondo. Para cambiar la foto
+     basta con reemplazar ese archivo. */
   background:
     linear-gradient(90deg, rgba(12, 14, 18, 0.86), rgba(12, 14, 18, 0.22)),
+    url("/hero/catalogo.jpg") center/cover,
     url("https://images.unsplash.com/photo-1487754180451-c456f719a1fc?auto=format&fit=crop&w=1800&q=80")
       center/cover;
   color: white;
@@ -1383,6 +1389,11 @@ body {
   background:
     linear-gradient(135deg, rgba(255, 199, 44, 0.22), transparent 34%),
     linear-gradient(315deg, rgba(230, 33, 53, 0.25), transparent 40%);
+  /* SIN esto la capa de color es un rectangulo recto y sus esquinas se
+     asoman por fuera de las esquinas redondeadas del bloque (se ve una
+     cuna rosada saliendose del cuadro). Hereda el radio del anfitrion,
+     que cambia segun el breakpoint. */
+  border-radius: inherit;
   content: "";
   inset: 0;
   mix-blend-mode: screen;
