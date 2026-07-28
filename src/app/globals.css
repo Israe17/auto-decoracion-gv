@@ -2002,17 +2002,6 @@ input[type="checkbox"] {
   z-index: 1;
 }
 
-.admin-heading__meta span {
-  color: rgba(255, 255, 255, 0.68);
-  font-size: 13px;
-  font-weight: var(--font-heavy);
-  text-transform: uppercase;
-}
-
-.admin-heading__meta strong {
-  color: var(--yellow);
-}
-
 .admin-form {
   background: transparent;
   border: 0;
@@ -6749,13 +6738,6 @@ textarea {
   transform: none;
 }
 
-.admin-heading__meta .button {
-  font-size: 14px;
-  justify-content: center;
-  margin-top: 10px;
-  padding: 9px 14px;
-}
-
 /* Eyebrow del carrusel del inicio (etiqueta sobre el titular) */
 .home-carousel__eyebrow {
   color: var(--yellow);
@@ -8331,4 +8313,81 @@ select::-ms-expand {
   .admin-dash__names {
     display: none;
   }
+}
+
+/* ===== Modo del admin: chip compacto en vez de bloque oscuro ===== */
+/* El bloque oscuro ocupaba media pantalla en movil antes de llegar al
+   trabajo (y contradecia la regla de no meter bloques oscuros grandes).
+   Ahora es un par de chips que se acomodan en una linea. */
+
+.admin-heading__meta {
+  align-items: center;
+  background: none;
+  box-shadow: none;
+  color: inherit;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  min-width: 0;
+  padding: 0;
+}
+
+.admin-mode {
+  align-items: center;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #45505f;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  gap: 7px;
+  letter-spacing: 0.04em;
+  padding: 8px 13px;
+  text-transform: uppercase;
+}
+
+.admin-mode i {
+  background: var(--muted);
+  border-radius: 50%;
+  flex: none;
+  height: 8px;
+  width: 8px;
+}
+
+/* En Firebase los cambios salen publicados: punto verde. */
+.admin-mode--live i {
+  background: var(--green);
+  box-shadow: 0 0 0 3px rgba(10, 159, 115, 0.16);
+}
+
+.admin-mode__sync {
+  align-items: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #56606f;
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  gap: 6px;
+  padding: 8px 13px;
+  transition:
+    border-color 160ms ease,
+    color 160ms ease;
+}
+
+.admin-mode__sync:hover:not(:disabled) {
+  border-color: rgba(230, 33, 53, 0.35);
+  color: var(--red-dark);
+}
+
+.admin-mode__sync:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.admin-mode__sync svg {
+  flex: none;
 }

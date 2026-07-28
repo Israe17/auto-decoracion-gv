@@ -10,6 +10,7 @@ import {
   FolderTree,
   Megaphone,
   Plus,
+  RefreshCw,
   Save,
   Search,
   ShieldAlert,
@@ -748,16 +749,27 @@ export default function AdminPage() {
           <p>Gestione productos, ofertas, modelos de autos y categorias desde una sola pantalla.</p>
         </div>
         <div className="admin-heading__meta">
-          <span>Modo actual</span>
-          <strong>{firebaseEnabled ? "Firebase" : "Local demo"}</strong>
+          <span
+            className={`admin-mode${firebaseEnabled ? " admin-mode--live" : ""}`}
+            title={
+              firebaseEnabled
+                ? "Los cambios se publican en el sitio"
+                : "Los cambios se guardan solo en este navegador"
+            }
+          >
+            <i aria-hidden="true" />
+            {firebaseEnabled ? "Firebase" : "Local demo"}
+          </span>
           {firebaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
             <button
-              className="button button--secondary"
+              className="admin-mode__sync"
               type="button"
               disabled={importing}
               onClick={confirmImportSeed}
+              title="Restaura los productos de ejemplo a su version original"
             >
-              {importing ? "Importando..." : "Sincronizar catalogo de ejemplo"}
+              <RefreshCw size={13} />
+              {importing ? "Sincronizando..." : "Catalogo de ejemplo"}
             </button>
           )}
         </div>
