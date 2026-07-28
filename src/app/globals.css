@@ -535,6 +535,17 @@ img {
   padding: 72px 56px;
 }
 
+.page-hero--catalog {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 13, 17, 0.92) 0%,
+      rgba(10, 13, 17, 0.72) 52%,
+      rgba(10, 13, 17, 0.24) 100%
+    ),
+    url("/hero/catalogo-4x4.jpg") center 58% / cover;
+}
+
 .catalog-layout {
   align-items: start;
   display: grid;
