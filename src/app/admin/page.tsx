@@ -670,8 +670,10 @@ export default function AdminPage() {
     <section className="section admin-page admin-dashboard">
       <div className="admin-heading">
         <div>
-          <span className="eyebrow">Panel privado</span>
-          <h1>Administracion del catalogo</h1>
+          <span className="section-head__pill">
+            <ShieldAlert size={14} /> Panel privado
+          </span>
+          <h1>Administración del catálogo</h1>
           <p>Gestione productos, ofertas, modelos de autos y categorias desde una sola pantalla.</p>
         </div>
         <div className="admin-heading__meta">
@@ -1279,7 +1281,9 @@ function FeaturedOverview({
     <section className="admin-featured-overview" aria-labelledby="featured-overview-title">
       <div className="admin-featured-overview__header">
         <div>
-          <span className="eyebrow">Inicio</span>
+          <span className="section-head__pill">
+            <Star size={14} /> Inicio
+          </span>
           <h2 id="featured-overview-title">Destacados de la semana</h2>
           <p>
             {products.length} activo(s)
