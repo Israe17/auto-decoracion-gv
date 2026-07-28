@@ -7113,6 +7113,10 @@ html.lenis body {
     padding: 38px 22px;
   }
 
+  .page-hero--catalog {
+    background-position: center, 82% 58%;
+  }
+
   .page-hero p {
     font-size: 15.5px;
     margin-bottom: 20px;
