@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   ArrowLeft,
+  ArrowRight,
   CheckCircle2,
   MessageCircle,
   ShieldCheck,
@@ -269,13 +270,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       {related.length > 0 && (
         <section className="section section--tight">
-          <div className="section__header">
+          <div className="section-head section-head--left">
             <div>
-              <span className="eyebrow">Tambien le puede servir</span>
-              <h2>Productos relacionados</h2>
+              <span className="section-head__pill">
+                <Sparkles size={14} /> También le puede servir
+              </span>
+              <h2>
+                Productos <em>relacionados.</em>
+              </h2>
             </div>
             <Link href="/catalogo" className="text-link">
-              Ver catalogo completo
+              Ver catálogo completo <ArrowRight size={18} />
             </Link>
           </div>
           <div className="product-grid">

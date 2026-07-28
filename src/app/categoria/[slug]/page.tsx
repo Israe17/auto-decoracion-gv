@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight } from "lucide-react";
+import { ArrowLeft, ArrowRight, LayoutGrid } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
 import {
   categories as seedCategories,
@@ -76,10 +76,14 @@ export default async function CategoryPage({
       </section>
 
       <section className="section">
-        <div className="section__header">
+        <div className="section-head section-head--left">
           <div>
-            <span className="eyebrow">Subcategorías</span>
-            <h2>Elija el tipo que busca</h2>
+            <span className="section-head__pill">
+              <LayoutGrid size={14} /> Subcategorías
+            </span>
+            <h2>
+              Elija el tipo que <em>busca.</em>
+            </h2>
           </div>
           <Link href={`/catalogo?categoria=${slug}`} className="text-link">
             Ver todo <ArrowRight size={18} />
