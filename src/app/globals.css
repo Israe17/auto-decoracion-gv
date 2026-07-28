@@ -7892,9 +7892,14 @@ select::-ms-expand {
   gap: 18px;
   grid-auto-columns: minmax(240px, 270px);
   grid-auto-flow: column;
+  /* El scroll recorta lo que sobresale, asi que el carril necesita
+     padding suficiente para que la sombra de las tarjetas respire; el
+     margen negativo lo compensa para no desalinear con el resto. */
+  margin: -18px -18px -12px;
   overflow-x: auto;
   overscroll-behavior-x: contain;
-  padding: 4px 4px 14px;
+  padding: 18px 18px 28px;
+  scroll-padding-left: 18px;
   scroll-snap-type: x mandatory;
   scrollbar-color: rgba(17, 21, 28, 0.18) transparent;
   scrollbar-width: thin;
