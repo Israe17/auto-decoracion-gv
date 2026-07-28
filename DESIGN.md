@@ -80,6 +80,11 @@ Reglas:
   inputs 12px.
 - Sombras SIEMPRE suaves y difusas (tokens `--shadow-sm/md/lg`); nunca
   sombras duras u oscuras.
+- Para tarjetas de **foto oscura sobre fondo claro** (las de categoría) los
+  tokens sueltos se pierden y la tarjeta se ve pegada al fondo: usar
+  `--shadow-card` / `--shadow-card-hover`, que son elevaciones en tres
+  capas (contacto corto + media + ambiente largo). Siguen siendo suaves —
+  la profundidad viene de superponer capas, NO de subir la opacidad.
 - Ritmo vertical por secciones `.section` / `.section--tight`.
 
 ## 4. Layout
@@ -297,8 +302,10 @@ Móvil (iPhone-first):
   - `dragstart` anulado y `-webkit-user-drag: none`, o el navegador
     arranca su arrastre nativo de enlace/imagen y mata el gesto con
     `pointercancel`.
-  - Sombra únicamente en la tarjeta del frente (`.is-front`); apilar seis
-    sombras convierte el borde inferior en una mancha.
+  - La elevación completa (`--shadow-card`) va solo en la tarjeta del
+    frente (`.is-front`); las de atrás llevan una sombra mínima. Si las
+    seis llevaran la elevación completa se suman una sobre otra y el borde
+    inferior del mazo se convierte en una mancha.
 - Efecto **marquee de categorías** (`.category-marquee`, estilo Logo Loop
   de React Bits): carril de píldoras de vidrio sobre el hero en móvil
   (excepción a "sin animaciones infinitas", aprobada por el dueño). Es un
