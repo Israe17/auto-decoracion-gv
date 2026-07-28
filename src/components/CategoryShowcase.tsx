@@ -6,6 +6,16 @@ import { Category } from "@/types";
 
 const DEPTH_Z = 10;
 const DEPTH_Y = 6;
+// Cuantas tarjetas asoman por detras. El mazo lleva todas las categorias
+// (son casi veinte), asi que sin este tope la pila se desbordaria mas de
+// cien pixeles hacia abajo; de la quinta en adelante quedan alineadas
+// detras de la cuarta y no se notan.
+const DEPTH_MAX = 4;
+
+const depthTransform = (offset: number, x = 0, rotate = 0) => {
+  const depth = Math.min(offset, DEPTH_MAX);
+  return `perspective(900px) translateZ(${-DEPTH_Z * depth}px) translateY(${DEPTH_Y * depth}px) translateX(${x}px) rotateY(${rotate}deg)`;
+};
 
 // Mazo deslizable de categorias para movil (adaptacion propia del Sliding
 // Cards de Estetica Dalay): se arrastra la tarjeta de arriba y pasa al
@@ -36,8 +46,7 @@ function SlidingDeck({ categories }: { categories: Category[] }) {
 
     const active = () => cardsRef.current[0];
 
-    const stackTransform = (offset: number, x = 0, rotate = 0) =>
-      `perspective(900px) translateZ(${-DEPTH_Z * offset}px) translateY(${DEPTH_Y * offset}px) translateX(${x}px) rotateY(${rotate}deg)`;
+    const stackTransform = depthTransform;
 
     const updateDots = () => {
       const front = active();
@@ -186,7 +195,7 @@ function SlidingDeck({ categories }: { categories: Category[] }) {
               style={
                 {
                   zIndex: 100 - offset,
-                  transform: `perspective(900px) translateZ(${-DEPTH_Z * offset}px) translateY(${DEPTH_Y * offset}px)`
+                  transform: depthTransform(offset)
                 } as CSSProperties
               }
             >

@@ -287,9 +287,9 @@ Móvil (iPhone-first):
 - Efecto **Sliding Cards** (mazo deslizable): componente
   `src/components/CategoryShowcase.tsx`. Se usa **solo en móvil**
   (`max-width: 640px`) para la sección de categorías: en escritorio queda
-  la `.category-grid` de siempre y en móvil las seis categorías se apilan
-  en un mazo que se arrastra con el dedo; la tarjeta de arriba se va al
-  fondo y los puntos (`.sliding-cards__dot`) marcan la posición. La
+  la `.category-grid` de siempre y en móvil **todas** las categorías madre
+  se apilan en un mazo que se arrastra con el dedo; la tarjeta de arriba
+  se va al fondo y los puntos (`.sliding-cards__dot`) marcan la posición. La
   tarjeta conserva su estilo propio (`.category-card`), el degradado
   cálido de marca vive solo en el punto activo.
   Detalles que hay que respetar si se toca:
@@ -302,6 +302,9 @@ Móvil (iPhone-first):
   - `dragstart` anulado y `-webkit-user-drag: none`, o el navegador
     arranca su arrastre nativo de enlace/imagen y mata el gesto con
     `pointercancel`.
+  - La profundidad del apilado está topada en `DEPTH_MAX` tarjetas: el
+    mazo lleva casi veinte categorías y sin el tope la pila se desborda
+    más de cien píxeles por debajo del contenedor.
   - La elevación completa (`--shadow-card`) va solo en la tarjeta del
     frente (`.is-front`); las de atrás llevan una sombra mínima. Si las
     seis llevaran la elevación completa se suman una sobre otra y el borde

@@ -82,7 +82,7 @@ export default async function Home() {
             Ver todas <ArrowRight size={18} />
           </Link>
         </div>
-        <CategoryShowcase categories={mainCategories.slice(0, 6)} />
+        <CategoryShowcase categories={mainCategories} />
       </section>
 
       {ownBrandProducts.length > 0 && (
