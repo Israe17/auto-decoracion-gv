@@ -6939,6 +6939,9 @@ html.lenis body {
 .sliding-cards__dots {
   align-items: center;
   display: flex;
+  /* el mazo lleva todas las categorias: si algun dia no caben en una
+     linea, que bajen en vez de desbordarse */
+  flex-wrap: wrap;
   gap: 7px;
   justify-content: center;
   margin-top: 22px;
