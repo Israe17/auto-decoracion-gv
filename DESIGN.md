@@ -286,6 +286,16 @@ Móvil (iPhone-first):
   probado y **DESCARTADO por el dueño** — saturaba las secciones sin
   tarjetas (el texto convive directo con el canvas). NO reintroducir
   fondos animados de página completa.
+- **Overlay de carga** (`LoadingOverlay`, adaptación propia a GSAP del de
+  Estética Dalay): pantalla completa con el degradado cálido en dos
+  mitades, marca en versalitas, **tres puntos que laten** y la etiqueta
+  ("Verificando sesión"). Al terminar, una costura blanca crece en el
+  centro y las dos mitades se abren hacia los lados revelando la app
+  ("line reveal"). Va por **portal al body** y debe mantenerse SIEMPRE
+  montado alternando `show` (si se desmonta, la salida no se ve). Los
+  puntos son excepción aprobada a "sin animaciones infinitas" — solo
+  viven mientras carga; con reduced-motion quedan quietos y la salida es
+  un fundido.
 - Nada de otras animaciones infinitas llamativas.
 
 ## 7. Voice
