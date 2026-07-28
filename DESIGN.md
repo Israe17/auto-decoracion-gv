@@ -157,6 +157,15 @@ Móvil (iPhone-first):
   etiqueta sobre la esquina superior derecha, con **degradado** a juego
   (verde para disponible, ámbar para bajo pedido, gris para agotado) y sombra
   de color suave. Frente al badge de oferta/destacado.
+- **Dashboard del admin** (`.admin-stats` + `.admin-dash`): fila de KPIs
+  con ícono rojo y rejilla `auto-fit` (nunca dejar tarjetas huérfanas en
+  una fila sola), y debajo tres paneles: **Requiere atención** (avisos
+  calculados de datos reales — sin foto, precio vacío, oferta sin
+  descuento, destacados vencidos, agotados; cada fila lleva a la pestaña
+  donde se arregla y si no hay nada muestra un mensaje en verde),
+  **Accesos rápidos** y **Catálogo por categoría** (barras con el
+  degradado de marca). PROHIBIDO inventar métricas: si el dato no existe
+  en el catálogo, no se muestra.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
