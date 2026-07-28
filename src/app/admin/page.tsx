@@ -245,6 +245,77 @@ export default function AdminPage() {
     brands: brands.length
   };
 
+  // Avisos accionables: cada uno se calcula de los datos reales y lleva a
+  // la pestana donde se arregla. Nunca se inventa un problema: si la lista
+  // esta vacia, el panel felicita en vez de mostrar ruido.
+  const attention = useMemo(() => {
+    const noImage = products.filter((product) => !product.images?.[0]);
+    const noPrice = products.filter(
+      (product) => product.saleMode === "price_quote" && !product.price
+    );
+    const soldOut = products.filter((product) => product.status === "sold_out");
+    const badOffer = products.filter(
+      (product) =>
+        product.oldPrice && product.price && product.oldPrice <= product.price
+    );
+    const expiredFeatured = products.filter(
+      (product) => getFeaturedStatus(product) === "expired"
+    );
+
+    return [
+      {
+        id: "no-image",
+        label: "Sin foto",
+        hint: "No se ven en el catalogo",
+        items: noImage,
+        tone: "danger" as const
+      },
+      {
+        id: "no-price",
+        label: "Con precio vacio",
+        hint: "Marcados para mostrar precio",
+        items: noPrice,
+        tone: "danger" as const
+      },
+      {
+        id: "bad-offer",
+        label: "Oferta sin descuento",
+        hint: "El precio anterior no es mayor",
+        items: badOffer,
+        tone: "warn" as const
+      },
+      {
+        id: "expired-featured",
+        label: "Destacados vencidos",
+        hint: "Ya no salen en la portada",
+        items: expiredFeatured,
+        tone: "warn" as const
+      },
+      {
+        id: "sold-out",
+        label: "Agotados",
+        hint: "Visibles pero sin existencias",
+        items: soldOut,
+        tone: "info" as const
+      }
+    ].filter((row) => row.items.length > 0);
+  }, [products]);
+
+  // Resumen del catalogo: categorias con mas productos (solo las que
+  // tienen), para ver de un vistazo donde esta cargado el inventario.
+  const categoryBreakdown = useMemo(() => {
+    const counts = categories
+      .map((category) => ({
+        id: category.id,
+        name: category.name,
+        total: products.filter((product) => product.categorySlug === category.slug).length
+      }))
+      .filter((row) => row.total > 0)
+      .sort((a, b) => b.total - a.total);
+    const max = counts[0]?.total ?? 1;
+    return { rows: counts.slice(0, 6), max, empty: categories.length - counts.length };
+  }, [categories, products]);
+
   const productCountByBrand = useMemo(() => {
     const counts: Record<string, number> = {};
     brands.forEach((brand) => {
@@ -736,32 +807,136 @@ export default function AdminPage() {
         ) : (
           <>
             <div>
-              <span>Productos</span>
+              <span>
+                <Tags size={15} /> Productos
+              </span>
               <strong>{stats.products}</strong>
             </div>
             <div>
-              <span>Ofertas</span>
+              <span>
+                <Megaphone size={15} /> Ofertas
+              </span>
               <strong>{stats.offers}</strong>
             </div>
             <div>
-              <span>Destacados activos</span>
+              <span>
+                <Star size={15} /> Destacados activos
+              </span>
               <strong>{stats.featured}</strong>
             </div>
             <div>
-              <span>Categorias</span>
+              <span>
+                <FolderTree size={15} /> Categorias
+              </span>
               <strong>{stats.categories}</strong>
             </div>
             <div>
-              <span>Modelos</span>
+              <span>
+                <Car size={15} /> Modelos
+              </span>
               <strong>{stats.vehicles}</strong>
             </div>
             <div>
-              <span>Marcas</span>
+              <span>
+                <BadgeCheck size={15} /> Marcas
+              </span>
               <strong>{stats.brands}</strong>
             </div>
           </>
         )}
       </div>
+
+      {!loading && (
+        <div className="admin-dash">
+          <section className="admin-dash__card admin-dash__card--attention">
+            <div className="admin-dash__title">
+              <ShieldAlert size={17} />
+              <strong>Requiere atencion</strong>
+            </div>
+            {attention.length ? (
+              <ul className="admin-dash__list">
+                {attention.map((row) => (
+                  <li key={row.id}>
+                    <button
+                      type="button"
+                      className={`admin-dash__row admin-dash__row--${row.tone}`}
+                      onClick={() => setActiveTab("products")}
+                    >
+                      <span className="admin-dash__count">{row.items.length}</span>
+                      <span className="admin-dash__text">
+                        <strong>{row.label}</strong>
+                        <small>{row.hint}</small>
+                      </span>
+                      <span className="admin-dash__names">
+                        {row.items
+                          .slice(0, 2)
+                          .map((item) => item.name)
+                          .join(", ")}
+                        {row.items.length > 2 ? ` +${row.items.length - 2}` : ""}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="admin-dash__ok">
+                <BadgeCheck size={17} /> Todo en orden: sin productos incompletos ni
+                ofertas mal configuradas.
+              </p>
+            )}
+          </section>
+
+          <section className="admin-dash__card">
+            <div className="admin-dash__title">
+              <Plus size={17} />
+              <strong>Accesos rapidos</strong>
+            </div>
+            <div className="admin-dash__quick">
+              <button type="button" onClick={() => setActiveTab("products")}>
+                <Tags size={16} /> Nuevo producto
+              </button>
+              <button type="button" onClick={() => setActiveTab("offers")}>
+                <Megaphone size={16} /> Ofertas
+              </button>
+              <button type="button" onClick={() => setActiveTab("promos")}>
+                <Star size={16} /> Promociones
+              </button>
+              <a href="/" target="_blank" rel="noopener">
+                <Eye size={16} /> Ver el sitio
+              </a>
+            </div>
+          </section>
+
+          <section className="admin-dash__card">
+            <div className="admin-dash__title">
+              <FolderTree size={17} />
+              <strong>Catalogo por categoria</strong>
+            </div>
+            {categoryBreakdown.rows.length ? (
+              <ul className="admin-dash__bars">
+                {categoryBreakdown.rows.map((row) => (
+                  <li key={row.id}>
+                    <span className="admin-dash__bar-label">
+                      {row.name}
+                      <b>{row.total}</b>
+                    </span>
+                    <span className="admin-dash__bar" aria-hidden="true">
+                      <i style={{ width: `${(row.total / categoryBreakdown.max) * 100}%` }} />
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="admin-dash__ok">Aun no hay productos cargados.</p>
+            )}
+            {categoryBreakdown.empty > 0 && (
+              <p className="admin-dash__note">
+                {categoryBreakdown.empty} categoria(s) todavia sin productos.
+              </p>
+            )}
+          </section>
+        </div>
+      )}
 
       <div className="admin-tabs" role="tablist" aria-label="Administracion">
         {tabs.map(([id, label]) => (
