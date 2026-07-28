@@ -6854,40 +6854,70 @@ html.lenis body {
   pointer-events: none;
 }
 
-/* ===== Sliding Cards (baraja deslizable, solo movil) =====
-   Se arrastra la tarjeta de arriba para pasar a la siguiente; las de
-   atras se ven con profundidad 3D. La tarjeta conserva su estilo propio
-   (.service-card). */
-.services-deck {
+/* ===== Sliding Cards (mazo deslizable de categorias, solo movil) =====
+   En pantallas pequenas la cuadricula de categorias se convierte en un
+   mazo: la tarjeta de arriba se arrastra con el dedo y pasa al fondo
+   mientras la siguiente ocupa su lugar. Las de atras se ven con
+   profundidad 3D real (translateZ + translateY escalonados desde el JS).
+   La tarjeta conserva su estilo propio (.category-card); aqui solo se
+   define el contenedor, la pila y los puntos de posicion. */
+.sliding-cards-wrap {
+  display: grid;
+  justify-items: center;
   margin: 0 auto;
   max-width: 380px;
 }
 
 .sliding-cards {
-  height: 330px;
+  height: min(58vh, 300px);
+  /* la pila se apila sobre si misma: el z-index de las tarjetas no debe
+     escaparse al resto de la pagina */
+  isolation: isolate;
   position: relative;
+  /* el gesto horizontal es del mazo, el vertical sigue siendo scroll */
+  touch-action: pan-y;
+  user-select: none;
+  width: min(86vw, 340px);
 }
 
-.sliding-cards .service-card {
-  bottom: 0;
-  box-shadow: var(--shadow-lg);
-  left: 0;
-  margin: 0;
+.sliding-card {
+  inset: 0;
   position: absolute;
-  right: 0;
-  top: 0;
-  touch-action: pan-y;
   transform-origin: center top;
-  user-select: none;
+  transition:
+    transform 320ms ease,
+    opacity 320ms ease;
   will-change: transform;
 }
 
-.sliding-cards .service-card.is-front {
-  cursor: grab;
+/* sin esto el navegador arranca su propio arrastre de enlace/imagen y
+   aborta el gesto del mazo con pointercancel */
+.sliding-card a,
+.sliding-card img {
+  -webkit-user-drag: none;
 }
 
-.sliding-cards .service-card.is-front:active {
+.sliding-card > .category-card {
+  border-radius: 24px;
+  box-shadow: none;
+  cursor: grab;
+  height: 100%;
+}
+
+/* solo la tarjeta de arriba proyecta sombra: si la llevaran las seis, se
+   suman una sobre otra y el borde inferior del mazo se ve como una mancha */
+.sliding-card.is-front > .category-card {
+  box-shadow: 0 16px 40px rgba(9, 12, 16, 0.24);
+}
+
+.sliding-card.is-front > .category-card:active {
   cursor: grabbing;
+}
+
+/* el hover de escritorio (levantar la tarjeta) pelearia con el transform
+   de la pila: dentro del mazo se apaga */
+.sliding-card > .category-card:hover {
+  transform: none;
 }
 
 .sliding-cards__dots {
@@ -6895,21 +6925,20 @@ html.lenis body {
   display: flex;
   gap: 7px;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 22px;
 }
 
-.sliding-cards__dots button {
+.sliding-cards__dot {
   background: #c8d0da;
-  border: 0;
   border-radius: 999px;
-  cursor: pointer;
   height: 8px;
-  padding: 0;
-  transition: background 200ms ease, width 200ms ease;
+  transition:
+    background 200ms ease,
+    width 200ms ease;
   width: 8px;
 }
 
-.sliding-cards__dots button.is-active {
+.sliding-cards__dot.is-active {
   background: linear-gradient(135deg, var(--red), #ff6b42);
   width: 22px;
 }
@@ -6919,6 +6948,12 @@ html.lenis body {
   font-size: 13px;
   margin: 10px 0 0;
   text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sliding-card {
+    transition: none;
+  }
 }
 
 /* ===== Marquee de categorias (solo movil) =====

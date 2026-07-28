@@ -279,9 +279,26 @@ Móvil (iPhone-first):
   adaptación de React Bits a GSAP (sin la dependencia `motion`). Se usa en
   el título del hero y re-anima al cambiar de slide. Texto accesible
   (`aria-label`), respeta reduced-motion.
-- Efecto **Sliding Cards**: RETIRADO junto con la cuadrícula de tarjetas
-  de servicio (la portada compacta usa el panel del taller en todos los
-  tamaños; el CSS `.sliding-cards*`/`.service-*` queda inerte).
+- Efecto **Sliding Cards** (mazo deslizable): componente
+  `src/components/CategoryShowcase.tsx`. Se usa **solo en móvil**
+  (`max-width: 640px`) para la sección de categorías: en escritorio queda
+  la `.category-grid` de siempre y en móvil las seis categorías se apilan
+  en un mazo que se arrastra con el dedo; la tarjeta de arriba se va al
+  fondo y los puntos (`.sliding-cards__dot`) marcan la posición. La
+  tarjeta conserva su estilo propio (`.category-card`), el degradado
+  cálido de marca vive solo en el punto activo.
+  Detalles que hay que respetar si se toca:
+  - La tarjeta **entera es un enlace**, así que se arrastra desde
+    cualquier punto y, tras un arrastre real, se traga el clic fantasma
+    para no navegar sin querer.
+  - El puntero se captura **solo al superar el umbral de arrastre**: si
+    se capturara desde el `pointerdown`, el `click` se redirigiría al
+    contenedor y un toque simple nunca abriría la categoría.
+  - `dragstart` anulado y `-webkit-user-drag: none`, o el navegador
+    arranca su arrastre nativo de enlace/imagen y mata el gesto con
+    `pointercancel`.
+  - Sombra únicamente en la tarjeta del frente (`.is-front`); apilar seis
+    sombras convierte el borde inferior en una mancha.
 - Efecto **marquee de categorías** (`.category-marquee`, estilo Logo Loop
   de React Bits): carril de píldoras de vidrio sobre el hero en móvil
   (excepción a "sin animaciones infinitas", aprobada por el dueño). Es un

@@ -7,7 +7,7 @@ import {
   Sparkles,
   Wrench
 } from "lucide-react";
-import { CategoryCard } from "@/components/CategoryCard";
+import { CategoryShowcase } from "@/components/CategoryShowcase";
 import { CompatHero } from "@/components/CompatHero";
 import { HeroShell } from "@/components/HeroShell";
 import { HomeShowcase } from "@/components/HomeShowcase";
@@ -82,11 +82,7 @@ export default async function Home() {
             Ver todas <ArrowRight size={18} />
           </Link>
         </div>
-        <div className="category-grid">
-          {mainCategories.slice(0, 6).map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))}
-        </div>
+        <CategoryShowcase categories={mainCategories.slice(0, 6)} />
       </section>
 
       {ownBrandProducts.length > 0 && (
