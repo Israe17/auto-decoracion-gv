@@ -6649,62 +6649,10 @@ textarea {
   width: 16px;
 }
 
-/* Un solo producto de linea propia se presenta como pieza editorial,
-   no como una tarjeta pequena perdida en la cuadricula. */
-.section--own-brand .product-grid:has(> .product-card:only-child) {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.section--own-brand .product-card:only-child {
-  grid-template-columns: minmax(420px, 0.86fr) minmax(0, 1.14fr);
-  grid-template-rows: minmax(480px, auto);
-}
-
-.section--own-brand .product-card:only-child .product-card__image {
-  aspect-ratio: auto;
-  min-height: 480px;
-}
-
-.section--own-brand .product-card:only-child .product-card__body {
-  align-content: center;
-  gap: 20px;
-  padding: clamp(36px, 5vw, 64px);
-}
-
-.section--own-brand .product-card:only-child .product-card__meta {
-  justify-content: flex-start;
-}
-
-.section--own-brand .product-card:only-child h3 {
-  font-size: clamp(28px, 3vw, 38px);
-  letter-spacing: -0.025em;
-  min-height: 0;
-}
-
-.section--own-brand .product-card:only-child .price-row strong {
-  font-size: 32px;
-}
-
-.section--own-brand .product-card:only-child .product-actions {
-  max-width: 520px;
-}
-
-.section--own-brand .product-card:only-child .product-actions .button {
-  min-height: 48px;
-}
-
 @media (min-width: 721px) and (max-width: 980px) {
   .product-grid,
   .product-grid--catalog {
     grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-
-  .section--own-brand .product-card:only-child {
-    grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
-  }
-
-  .section--own-brand .product-card:only-child .product-card__body {
-    padding: 34px;
   }
 }
 
@@ -6786,34 +6734,6 @@ textarea {
 
   .product-card .product-actions .button svg {
     display: none;
-  }
-
-  .section--own-brand .product-grid:has(> .product-card:only-child) {
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  .section--own-brand .product-card:only-child {
-    grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto 1fr;
-  }
-
-  .section--own-brand .product-card:only-child .product-card__image {
-    aspect-ratio: 1;
-    min-height: 0;
-  }
-
-  .section--own-brand .product-card:only-child .product-card__body {
-    gap: 12px;
-    padding: 18px;
-  }
-
-  .section--own-brand .product-card:only-child h3 {
-    font-size: 22px;
-    min-height: 0;
-  }
-
-  .section--own-brand .product-card:only-child .price-row strong {
-    font-size: 24px;
   }
 }
 
