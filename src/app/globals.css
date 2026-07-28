@@ -7348,6 +7348,20 @@ select::-ms-expand {
   max-width: 430px;
 }
 
+/* El enlace no debe estirarse en la rejilla (su fondo de hover cubriria
+   toda la columna); el margen negativo compensa su padding para que el
+   texto quede alineado con el parrafo. */
+.wtl__body .text-link {
+  justify-self: start;
+  margin-left: -12px;
+}
+
+.wtl__entry--left .wtl__body .text-link {
+  justify-self: end;
+  margin-left: 0;
+  margin-right: -12px;
+}
+
 .wtl__body h3 {
   font-size: 20px;
   font-weight: var(--font-heavy);
@@ -7448,6 +7462,13 @@ select::-ms-expand {
     margin: 0 0 0 70px;
     max-width: none;
     text-align: left;
+  }
+
+  /* En columna todo va a la izquierda, tambien el enlace. */
+  .wtl__entry--left .wtl__body .text-link {
+    justify-self: start;
+    margin-left: -12px;
+    margin-right: 0;
   }
 
   .wtl__entry--cta {
