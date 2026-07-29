@@ -3,7 +3,6 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { Clock3, PackageCheck, PackageX } from "lucide-react";
 import gsap from "gsap";
 import { formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
@@ -13,11 +12,10 @@ export function ProductCard({ product }: { product: Product }) {
   const cardRef = useRef<HTMLElement>(null);
   const status =
     product.status === "available"
-      ? { label: "Disponible", className: "available", Icon: PackageCheck }
+      ? { label: "Disponible", className: "available" }
       : product.status === "sold_out"
-        ? { label: "Agotado", className: "sold-out", Icon: PackageX }
-        : { label: "Bajo pedido", className: "on-request", Icon: Clock3 };
-  const StatusIcon = status.Icon;
+        ? { label: "Agotado", className: "sold-out" }
+        : { label: "Bajo pedido", className: "on-request" };
 
   useEffect(() => {
     const card = cardRef.current;
@@ -56,7 +54,7 @@ export function ProductCard({ product }: { product: Product }) {
           </span>
         )}
         <span className={`stock-row stock-row--${status.className}`}>
-          <StatusIcon size={15} />
+          <span className="stock-row__dot" aria-hidden="true" />
           {status.label}
         </span>
         <Image

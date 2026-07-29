@@ -4,15 +4,10 @@ import { notFound } from "next/navigation";
 import {
   ArrowLeft,
   ArrowRight,
-  BadgeCheck,
   CheckCircle2,
-  Clock3,
   MessageCircle,
-  PackageCheck,
-  PackageX,
   ShieldCheck,
   Sparkles,
-  Tag,
   Truck,
   Wrench
 } from "lucide-react";
@@ -98,13 +93,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         ? " product-status--on-request"
         : " product-status--sold-out";
 
-  const StatusIcon =
-    product.status === "available"
-      ? PackageCheck
-      : product.status === "on_request"
-        ? Clock3
-        : PackageX;
-
   const discount =
     product.oldPrice && product.price
       ? Math.round((1 - product.price / product.oldPrice) * 100)
@@ -174,20 +162,13 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
           <div className="product-info">
             <div className="product-info__topline">
-              <span className="eyebrow">
-                <Tag size={14} aria-hidden="true" />
-                {product.categoryName}
-              </span>
+              <span className="eyebrow">{product.categoryName}</span>
               {product.brandName && (
                 <span className="product-status product-status--own-brand">
-                  <BadgeCheck size={14} aria-hidden="true" />
                   {product.isOwnBrand ? "G&V System" : product.brandName}
                 </span>
               )}
-              <span className={`product-status${statusClass}`}>
-                <StatusIcon size={14} aria-hidden="true" />
-                {statusLabel}
-              </span>
+              <span className={`product-status${statusClass}`}>{statusLabel}</span>
             </div>
 
             <h1>{product.name}</h1>
