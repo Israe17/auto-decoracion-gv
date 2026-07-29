@@ -6901,7 +6901,7 @@ html.lenis body {
 }
 
 .sliding-cards {
-  height: min(58vh, 300px);
+  height: min(66vh, 340px);
   /* la pila se apila sobre si misma: el z-index de las tarjetas no debe
      escaparse al resto de la pagina */
   isolation: isolate;
@@ -6965,7 +6965,10 @@ html.lenis body {
   flex-wrap: wrap;
   gap: 7px;
   justify-content: center;
-  margin-top: 22px;
+  /* Las tarjetas de atras asoman ~10px por debajo del contenedor, asi que
+     este margen NO es la separacion que se ve: hay que descontarles esos
+     10px. Con 22px la gente los veia pegados a la tarjeta. */
+  margin-top: 44px;
 }
 
 .sliding-cards__dot {
@@ -6986,7 +6989,7 @@ html.lenis body {
 .sliding-cards__hint {
   color: var(--muted);
   font-size: 13px;
-  margin: 10px 0 0;
+  margin: 18px 0 0;
   text-align: center;
 }
 
