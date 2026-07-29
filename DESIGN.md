@@ -135,10 +135,22 @@ Móvil (iPhone-first):
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
   se ajusta al contenido y nunca usa espacios flexibles que separen el título
   del precio o las acciones.
-- Chips (`product-tags`, banco de etiquetas): pill 999px con fondo tenue del
-  color y **sombra suave de elevación** en reposo; al hover suben `-1px` con
-  sombra mayor. El chip/etiqueta **activo** va en rojo con **sombra de color**
-  (`rgba(230,33,53,.32)`).
+- **Sistema de labels**: ninguna etiqueta decorativa se resuelve como una
+  píldora genérica. Hay tres familias con tipografía compartida (11px,
+  `--font-semibold`, uppercase, tracking `0.055em`) y altura base de 32px:
+  1. **Metadato/editorial** (categoría, marca, tags y datos de ficha): placa
+     clara de radio 8-10px, borde hairline y riel vertical de color al lado
+     izquierdo. Los encabezados de sección usan la misma placa con el icono
+     dentro de un tile rojo-naranja.
+  2. **Promoción** (Destacado, Oferta, descuento): bandera cálida en la esquina
+     superior izquierda, con punta hacia el centro de la foto; nunca pill.
+  3. **Estado semántico**: en tarjetas es un listón enfrentado en la esquina
+     superior derecha; en ficha es una placa clara con riel verde, ámbar o
+     gris. Promoción y estado comparten altura, peso y tracking.
+  Los chips que son **controles** (banco de etiquetas y selector de vehículo)
+  sí conservan la forma pill 999px para distinguir interacción de información;
+  al hover suben `-1px` y el estado activo usa degradado rojo con sombra de
+  color (`rgba(230,33,53,.32)`).
 - **Vitrina de línea propia** (portada, `.own-brand-showcase`, referencia
   del dueño estilo tienda de accesorios): **panel promocional** con el
   degradado cálido a la izquierda — eyebrow píldora, titular corto, una
@@ -155,13 +167,13 @@ Móvil (iPhone-first):
   scroll horizontal real con `scroll-snap`, tarjetas de ~250-270px,
   scrollbar fina que se tiñe de rojo al hover. Se desliza en touch y con
   rueda/arrastre en escritorio.
-- Insignias de tarjeta (`badge`): pill con **degradado cálido** — "Destacado"
+- Insignias de tarjeta (`badge`): bandera con **degradado cálido** — "Destacado"
   rojo → naranja; "Oferta" ámbar → naranja (texto oscuro) para distinguirse.
-  Van sobre la esquina superior izquierda de la imagen.
-- Listones de estado ("Disponible/Bajo pedido/Agotado"): listón con forma de
-  etiqueta sobre la esquina superior derecha, con **degradado** a juego
-  (verde para disponible, ámbar para bajo pedido, gris para agotado) y sombra
-  de color suave. Frente al badge de oferta/destacado.
+  Va sobre la esquina superior izquierda y apunta hacia el centro de la foto.
+- Listones de estado ("Disponible/Bajo pedido/Agotado"): bandera enfrentada
+  sobre la esquina superior derecha, con **degradado** a juego (verde para
+  disponible, ámbar para bajo pedido, gris para agotado), sombra de color
+  suave y las mismas dimensiones del badge opuesto.
 - **Dashboard del admin** (`.admin-stats` + `.admin-dash`): fila de KPIs
   con ícono rojo y rejilla `auto-fit` (nunca dejar tarjetas huérfanas en
   una fila sola), y debajo tres paneles: **Requiere atención** (avisos
@@ -175,13 +187,14 @@ Móvil (iPhone-first):
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
-  `--red-dark` junto al tachado y chip verde "Ahorra ₡X"); badge de
-  descuento "−N%" en píldora sobre la foto; acciones lado a lado 1.5:1
-  (primario dominante); meta-información como chips suaves en una fila.
+  `--red-dark` junto al tachado y placa verde "Ahorra ₡X"); bandera de
+  descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
+  dominante); meta-información como placas suaves con icono en una fila.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
-- **Encabezados de sección de la portada** (`.section-head`): **píldora
-  con ícono** (uppercase, letter-spacing, fondo `--soft`) y **titular
+- **Encabezados de sección de la portada** (`.section-head`): **placa editorial
+  con ícono en tile de marca** (uppercase, letter-spacing, fondo blanco, riel
+  rojo lateral) y **titular
   fuerte** con la palabra final en **cursiva subrayada con el degradado de
   marca** (`em::after`). SOLO el timeline del taller va **centrado**
   (decisión del dueño); las demás secciones usan la variante
