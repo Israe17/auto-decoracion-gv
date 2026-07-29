@@ -5,11 +5,11 @@ Todo cambio visual del sitio debe respetar este documento. Los tokens
 viven en `src/app/globals.css` (`:root`); si un valor cambia, actualizar
 ambos archivos.
 
-**Referencia visual de la marca**: dirección editorial SaaS tipo Apollo:
-superficies claras y aireadas, canvas neutro plano, tarjetas blancas,
-tipografía protagonista, componentes sobrios de radio corto, casi sin
-efectos decorativos y un solo acento fuerte (el rojo G&V). Las fotos son
-protagonistas; la interfaz no compite con ellas.
+**Referencia visual de la marca**: superficies claras y aireadas, canvas
+neutro plano, tarjetas blancas y componentes elevados que repiten el lenguaje
+del nodo del timeline: degradado cálido, radio generoso, icono blanco y sombra
+de color suave. Las fotos siguen siendo protagonistas; la profundidad se
+concentra en acciones y labels.
 
 ## 1. Color
 
@@ -31,13 +31,15 @@ Tokens:
 Reglas:
 - **Degradado cálido de marca** (rojo → naranja,
   `linear-gradient(135deg, var(--red), #ff6b42)`, a juego con el logo): es
-  la norma de los acentos de ACCIÓN — **botones primarios** (`button--primary`,
-  `quote-link`; hover profundiza a `--red-dark → #ff5a2c`), chips activos
-  (banco de etiquetas), estados
+  la norma de los acentos de ACCIÓN y de los LABELS — **botones primarios**
+  (`button--primary`, `quote-link`; hover profundiza a
+  `--red-dark → #ff5a2c`), etiquetas de categoría/marca, insignias,
+  chips activos (banco de etiquetas), estados
   hover/activo de flechas, puntos de carrusel, controles del admin y el
   **título del acordeón de categorías** junto al slider de promociones.
-  Las etiquetas informativas son planas: rojo, verde, amarillo o gris sin
-  degradado. NO usar degradados oscuros (negro → rojo) en
+  Los estados verdes usan `var(--green) → #0bbf88`, los ámbar
+  `#ffc72c → #ff9e2c` y los neutros gris medio → gris oscuro. Cada variante
+  lleva sombra suave del mismo color. NO usar degradados oscuros (negro → rojo) en
   botones: probado y descartado por el dueño. La franja del topbar mantiene
   su degradado propio (negro → rojo) como banda informativa, y las demás
   superficies grandes (banda CTA, bandeja de cotización) siguen planas.
@@ -77,7 +79,7 @@ Reglas:
 - Padding de tarjetas: 22-30px según jerarquía; el aire es parte del estilo.
 - Gaps internos: 14-20px; listas compactas 10-12px.
 - Radios: **botones píldora 999px**; controles tipo chip 999px; labels
-  informativos 6px; tarjetas 20-28px; inputs 12px.
+  informativos 9-11px; tarjetas 20-28px; inputs 12px.
 - Sombras SIEMPRE suaves y difusas (tokens `--shadow-sm/md/lg`); nunca
   sombras duras u oscuras.
 - Para tarjetas de **foto oscura sobre fondo claro** (las de categoría) los
@@ -135,19 +137,20 @@ Móvil (iPhone-first):
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
   se ajusta al contenido y nunca usa espacios flexibles que separen el título
   del precio o las acciones.
-- **Sistema de labels, dirección Apollo**: tipografía primero, decoración
-  mínima. Comparten 10-11px, `--font-semibold`, uppercase y tracking amplio.
-  Prohibido usar puntas, `clip-path`, degradados, glows, rieles de color,
-  iconos dentro de tiles o sombras en labels.
-  1. **Metadato/editorial** (categoría y marca): texto plano sin contenedor;
-     se separa con espacio o un hairline.
-  2. **Promoción y estado sobre foto**: tabs planos de radio 6px, pegados a
-     los bordes izquierdo/derecho. Destacado rojo, oferta amarilla,
-     disponible verde, bajo pedido amarillo y agotado gris.
-  3. **Estado dentro de contenido**: superficie plana muy tenue, radio 6px y
-     un punto semántico de 6px. Sin sombra y sin iconos decorativos.
-  4. **Encabezado de sección**: overline sin caja; una línea roja corta antes
-     del texto sustituye la píldora y el icono.
+- **Sistema de labels elevado**: comparte con los botones el degradado, radio
+  redondeado y sombra de color. Tipografía de 10-11px, `--font-semibold`,
+  uppercase y tracking moderado. Prohibido mezclar labels planos con otros
+  elevados dentro del mismo contexto, o introducir puntas/`clip-path`.
+  1. **Categoría, marca y tags**: degradado cálido rojo → coral, texto/icono
+     blanco, radio 9-11px y sombra roja suave.
+  2. **Promoción y estado sobre foto**: labels flotantes redondeados en las
+     esquinas. Destacado usa marca, oferta ámbar, disponible verde, bajo
+     pedido ámbar y agotado gris; todos comparten altura y profundidad.
+  3. **Estado dentro de contenido**: el mismo componente elevado con icono y
+     variante semántica; no se cambia a una píldora plana.
+  4. **Encabezado de sección (excepción aprobada)**: conserva el overline sin
+     caja — raya roja corta + texto uppercase— porque el dueño lo aprobó
+     expresamente. No convertirlo en label elevado.
   Los chips que son **controles** (banco de etiquetas y selector de vehículo)
   sí conservan la forma pill 999px para distinguir interacción de información;
   al hover suben `-1px` y el estado activo usa degradado rojo con sombra de
@@ -168,12 +171,12 @@ Móvil (iPhone-first):
   scroll horizontal real con `scroll-snap`, tarjetas de ~250-270px,
   scrollbar fina que se tiñe de rojo al hover. Se desliza en touch y con
   rueda/arrastre en escritorio.
-- Insignias de tarjeta (`badge`): tab plano — "Destacado" rojo y "Oferta"
-  amarillo con texto oscuro. Se pega al borde superior izquierdo de la foto,
-  sin sombra ni punta.
-- Estados ("Disponible/Bajo pedido/Agotado"): tab plano enfrentado sobre el
-  borde superior derecho, con verde/amarillo/gris y las mismas dimensiones
-  de la insignia opuesta. Lleva un punto mínimo, no un icono.
+- Insignias de tarjeta (`badge`): label flotante redondeado — "Destacado" con
+  degradado de marca y "Oferta" ámbar. Incluye icono en escritorio y sombra
+  de color; sin punta.
+- Estados ("Disponible/Bajo pedido/Agotado"): label flotante enfrentado en la
+  esquina superior derecha, con verde/ámbar/gris, icono y las mismas
+  dimensiones/profundidad de la insignia opuesta.
 - **Dashboard del admin** (`.admin-stats` + `.admin-dash`): fila de KPIs
   con ícono rojo y rejilla `auto-fit` (nunca dejar tarjetas huérfanas en
   una fila sola), y debajo tres paneles: **Requiere atención** (avisos
@@ -187,10 +190,10 @@ Móvil (iPhone-first):
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
-  `--red-dark` junto al tachado y label verde plano "Ahorra ₡X"); badge de
+  `--red-dark` junto al tachado y label verde elevado "Ahorra ₡X"); badge de
   descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
-  dominante); categoría/marca como texto editorial y meta-información sin
-  cajas, separada por hairlines.
+  dominante); categoría/marca como labels de marca y meta-información en
+  piezas blancas con icono degradado, radio y sombra coordinados.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
 - **Encabezados de sección de la portada** (`.section-head`): **overline

@@ -3,6 +3,7 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { BadgePercent, Clock3, PackageCheck, PackageX, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
@@ -12,10 +13,11 @@ export function ProductCard({ product }: { product: Product }) {
   const cardRef = useRef<HTMLElement>(null);
   const status =
     product.status === "available"
-      ? { label: "Disponible", className: "available" }
+      ? { label: "Disponible", className: "available", Icon: PackageCheck }
       : product.status === "sold_out"
-        ? { label: "Agotado", className: "sold-out" }
-        : { label: "Bajo pedido", className: "on-request" };
+        ? { label: "Agotado", className: "sold-out", Icon: PackageX }
+        : { label: "Bajo pedido", className: "on-request", Icon: Clock3 };
+  const StatusIcon = status.Icon;
 
   useEffect(() => {
     const card = cardRef.current;
@@ -50,11 +52,16 @@ export function ProductCard({ product }: { product: Product }) {
       <Link href={`/productos/${product.slug}`} className="product-card__image">
         {(product.oldPrice || product.featured) && (
           <span className={`badge badge--${product.oldPrice ? "offer" : "featured"}`}>
+            {product.oldPrice ? (
+              <BadgePercent size={14} aria-hidden="true" />
+            ) : (
+              <Sparkles size={14} aria-hidden="true" />
+            )}
             {product.oldPrice ? "Oferta" : "Destacado"}
           </span>
         )}
         <span className={`stock-row stock-row--${status.className}`}>
-          <span className="stock-row__dot" aria-hidden="true" />
+          <StatusIcon size={14} aria-hidden="true" />
           {status.label}
         </span>
         <Image
