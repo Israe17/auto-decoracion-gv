@@ -1,4 +1,4 @@
-import { firebaseEnabled, getFirebaseServices } from "./firebase";
+import { getSupabase } from "./supabase";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
@@ -11,10 +11,8 @@ export async function uploadAdminImage(file: File, folder: string): Promise<stri
     throw new Error("La imagen no puede pesar mas de 8 MB.");
   }
 
-  const services = getFirebaseServices();
-  const token = firebaseEnabled && services?.auth.currentUser
-    ? await services.auth.currentUser.getIdToken()
-    : "";
+  const { data } = (await getSupabase()?.auth.getSession()) ?? { data: null };
+  const token = data?.session?.access_token ?? "";
 
   const controller = new AbortController();
   const timeout = window.setTimeout(() => controller.abort(), 45_000);

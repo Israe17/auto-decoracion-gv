@@ -1,7 +1,7 @@
 # Auto Decoracion G&V
 
 Catalogo en Next.js para productos automotrices con cotizacion por WhatsApp,
-compatibilidad por vehiculo y admin preparado para Firebase.
+compatibilidad por vehiculo y admin sobre Supabase.
 
 ## Comandos
 
@@ -12,35 +12,31 @@ npm run dev
 
 Luego abrir `http://localhost:3000`.
 
-## Firebase
+## Supabase
 
-La app funciona sin Firebase usando datos de ejemplo (y el admin guarda en
-localStorage como demo). Con Firebase configurado:
+La app funciona sin Supabase usando datos de ejemplo (y el admin guarda en
+localStorage como demo). Con Supabase configurado:
 
-- El catalogo publico lee productos y categorias desde Firestore.
-- El admin (`/admin`) pide login con email y contrasena, y guarda en Firestore.
+- El catalogo publico lee productos y categorias desde Postgres.
+- El admin (`/admin`) pide login con email y contrasena, y guarda en Postgres.
 - Si la base esta vacia, el admin ofrece importar el catalogo de ejemplo.
 
 Pasos para configurarlo:
 
-1. Entrar a Firebase Console y crear un proyecto.
-2. Activar Authentication con proveedor Email/Password.
-3. En Authentication > Users, crear el usuario administrador (email y contrasena).
-4. Crear Firestore Database y publicar las reglas de `firestore.rules`
-   (Firestore Database > Rules).
-5. Crear Cloud Storage y publicar las reglas de `storage.rules` (Storage > Rules).
-6. En Project settings, crear una app Web y copiar las credenciales.
-7. Crear un archivo `.env.local` basado en `.env.example`.
+1. Crear un proyecto en supabase.com.
+2. Aplicar la migracion de `supabase/migrations/` (SQL Editor o Supabase CLI).
+   Crea las cinco tablas con RLS: lectura publica y escritura solo para una
+   sesion autenticada.
+3. En Authentication > Users, crear el usuario administrador del negocio.
+4. En Project settings > API, copiar la URL y la clave `anon`.
+5. Crear un archivo `.env.local` basado en `.env.example`.
 
 ```bash
-NEXT_PUBLIC_FIREBASE_API_KEY=...
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
-NEXT_PUBLIC_FIREBASE_APP_ID=...
-NEXT_PUBLIC_WHATSAPP_NUMBER=50600000000
+NEXT_PUBLIC_SUPABASE_URL=https://<ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=...
 ```
+
+Las imagenes del catalogo van a Cloudinary, no a Supabase Storage.
 
 ## Modelo de producto
 

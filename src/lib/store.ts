@@ -1,14 +1,6 @@
-import {
-  collection,
-  deleteDoc,
-  doc,
-  getDocs,
-  setDoc,
-  writeBatch
-} from "firebase/firestore";
 import { Brand, Category, Product, Promo, VehicleModel } from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
-import { firebaseEnabled, getFirebaseServices } from "./firebase";
+import { requireSupabase, supabaseEnabled } from "./supabase";
 import { getFeaturedStatus } from "./featured";
 
 const PRODUCTS = "products";
@@ -24,7 +16,7 @@ const localKeys = {
   promos: "gv-admin-promos",
   brands: "gv-admin-brands"
 };
-const LOCAL_MIGRATION_DONE = "gv-admin-firebase-migrated";
+const LOCAL_MIGRATION_DONE = "gv-admin-supabase-migrated";
 
 export const seedBrands: Brand[] = [];
 
@@ -74,20 +66,29 @@ export const seedVehicles: VehicleModel[] = [
   { id: "jeep-wrangler", make: "Jeep", model: "Wrangler", fromYear: 2007, toYear: 2018 }
 ];
 
-function requireDb() {
-  const services = getFirebaseServices();
-  if (!services) throw new Error("Firebase no esta configurado.");
-  return services.db;
-}
-
-// Firestore rechaza valores undefined; el round-trip por JSON los elimina.
+// `undefined` no es JSON valido; el round-trip lo elimina antes de guardar.
 function clean<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
+// Cada tabla guarda el documento completo en `data` (jsonb), asi que leer
+// una tabla es traer esa columna y devolverla tal cual.
 async function listCollection<T>(name: string): Promise<T[]> {
-  const snapshot = await getDocs(collection(requireDb(), name));
-  return snapshot.docs.map((item) => item.data() as T);
+  const { data, error } = await requireSupabase().from(name).select("data");
+  if (error) throw new Error(error.message);
+  return (data ?? []).map((row) => row.data as T);
+}
+
+async function guardar<T extends { id: string }>(tabla: string, fila: T) {
+  const { error } = await requireSupabase()
+    .from(tabla)
+    .upsert({ id: fila.id, data: clean(fila) });
+  if (error) throw new Error(error.message);
+}
+
+async function borrar(tabla: string, id: string) {
+  const { error } = await requireSupabase().from(tabla).delete().eq("id", id);
+  if (error) throw new Error(error.message);
 }
 
 function sortProducts(products: Product[]) {
@@ -106,7 +107,7 @@ function sortProducts(products: Product[]) {
   );
 }
 
-// --- Catalogo publico: Firestore si esta configurado, datos de ejemplo si no ---
+// --- Catalogo publico: Supabase si esta configurado, datos de ejemplo si no ---
 
 function sortVehicles(vehicles: VehicleModel[]) {
   return [...vehicles].sort(
@@ -126,7 +127,7 @@ export async function fetchPublicCatalog(): Promise<{
   vehicles: VehicleModel[];
   promos: Promo[];
 }> {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     return {
       products: seedProducts,
       categories: seedCategories,
@@ -146,12 +147,12 @@ export async function fetchPublicCatalog(): Promise<{
       products: sortProducts(products),
       categories,
       vehicles: sortVehicles(vehicles),
-      // Sin promociones propias en Firestore, mostramos las de ejemplo
+      // Sin promociones propias en Supabase, mostramos las de ejemplo
       // para que el hero luzca completo sin depender de sincronizar.
       promos: sortPromos(promos.length ? promos : seedPromos)
     };
   } catch (error) {
-    console.error("No se pudo leer el catalogo desde Firestore.", error);
+    console.error("No se pudo leer el catalogo desde Supabase.", error);
     return {
       products: seedProducts,
       categories: seedCategories,
@@ -161,7 +162,7 @@ export async function fetchPublicCatalog(): Promise<{
   }
 }
 
-// --- Admin: Firestore si esta configurado, localStorage en modo demo ---
+// --- Admin: Supabase si esta configurado, localStorage en modo demo ---
 
 function readLocal<T>(key: string, fallback: T): T {
   if (typeof window === "undefined") return fallback;
@@ -194,24 +195,27 @@ export function hasLocalAdminData() {
   return Object.values(localKeys).some((key) => localStorage.getItem(key) !== null);
 }
 
-export async function migrateLocalAdminDataToFirebase() {
-  if (!firebaseEnabled) throw new Error("Firebase no esta configurado.");
+async function guardarLote<T extends { id: string }>(tabla: string, filas: T[]) {
+  if (!filas.length) return;
+  const { error } = await requireSupabase()
+    .from(tabla)
+    .upsert(filas.map((fila) => ({ id: fila.id, data: clean(fila) })));
+  if (error) throw new Error(error.message);
+}
+
+export async function migrateLocalAdminDataToSupabase() {
+  if (!supabaseEnabled) throw new Error("Supabase no esta configurado.");
 
   const products = readLocal(localKeys.products, seedProducts);
   const categories = readLocal(localKeys.categories, seedCategories);
   const vehicles = readLocal(localKeys.vehicles, seedVehicles);
   const promos = readLocal(localKeys.promos, seedPromos);
   const brands = readLocal(localKeys.brands, seedBrands);
-  const db = requireDb();
-  const batch = writeBatch(db);
-
-  products.forEach((product) => batch.set(doc(db, PRODUCTS, product.id), clean(product)));
-  categories.forEach((category) => batch.set(doc(db, CATEGORIES, category.id), clean(category)));
-  vehicles.forEach((vehicle) => batch.set(doc(db, VEHICLES, vehicle.id), clean(vehicle)));
-  promos.forEach((promo) => batch.set(doc(db, PROMOS, promo.id), clean(promo)));
-  brands.forEach((brand) => batch.set(doc(db, BRANDS, brand.id), clean(brand)));
-
-  await batch.commit();
+  await guardarLote(PRODUCTS, products);
+  await guardarLote(CATEGORIES, categories);
+  await guardarLote(VEHICLES, vehicles);
+  await guardarLote(PROMOS, promos);
+  await guardarLote(BRANDS, brands);
   localStorage.setItem(LOCAL_MIGRATION_DONE, "1");
 
   return {
@@ -230,7 +234,7 @@ export async function fetchAdminData(): Promise<{
   promos: Promo[];
   brands: Brand[];
 }> {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     return {
       products: readLocal(localKeys.products, seedProducts),
       categories: readLocal(localKeys.categories, seedCategories),
@@ -258,95 +262,88 @@ export async function fetchAdminData(): Promise<{
 }
 
 export async function upsertProduct(product: Product) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localUpsert(localKeys.products, seedProducts, product);
     return;
   }
-  await setDoc(doc(requireDb(), PRODUCTS, product.id), clean(product));
+  await guardar(PRODUCTS, product);
 }
 
 export async function removeProduct(id: string) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localRemove(localKeys.products, seedProducts, id);
     return;
   }
-  await deleteDoc(doc(requireDb(), PRODUCTS, id));
+  await borrar(PRODUCTS, id);
 }
 
 export async function upsertCategory(category: Category) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localUpsert(localKeys.categories, seedCategories, category);
     return;
   }
-  await setDoc(doc(requireDb(), CATEGORIES, category.id), clean(category));
+  await guardar(CATEGORIES, category);
 }
 
 export async function removeCategory(id: string) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localRemove(localKeys.categories, seedCategories, id);
     return;
   }
-  await deleteDoc(doc(requireDb(), CATEGORIES, id));
+  await borrar(CATEGORIES, id);
 }
 
 export async function upsertVehicle(vehicle: VehicleModel) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localUpsert(localKeys.vehicles, seedVehicles, vehicle);
     return;
   }
-  await setDoc(doc(requireDb(), VEHICLES, vehicle.id), clean(vehicle));
+  await guardar(VEHICLES, vehicle);
 }
 
 export async function removeVehicle(id: string) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localRemove(localKeys.vehicles, seedVehicles, id);
     return;
   }
-  await deleteDoc(doc(requireDb(), VEHICLES, id));
+  await borrar(VEHICLES, id);
 }
 
 export async function upsertPromo(promo: Promo) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localUpsert(localKeys.promos, seedPromos, promo);
     return;
   }
-  await setDoc(doc(requireDb(), PROMOS, promo.id), clean(promo));
+  await guardar(PROMOS, promo);
 }
 
 export async function removePromo(id: string) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localRemove(localKeys.promos, seedPromos, id);
     return;
   }
-  await deleteDoc(doc(requireDb(), PROMOS, id));
+  await borrar(PROMOS, id);
 }
 
 export async function upsertBrand(brand: Brand) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localUpsert(localKeys.brands, seedBrands, brand);
     return;
   }
-  await setDoc(doc(requireDb(), BRANDS, brand.id), clean(brand));
+  await guardar(BRANDS, brand);
 }
 
 export async function removeBrand(id: string) {
-  if (!firebaseEnabled) {
+  if (!supabaseEnabled) {
     localRemove(localKeys.brands, seedBrands, id);
     return;
   }
-  await deleteDoc(doc(requireDb(), BRANDS, id));
+  await borrar(BRANDS, id);
 }
 
 export async function importSeedCatalog() {
-  const db = requireDb();
-  const batch = writeBatch(db);
-
-  seedProducts.forEach((product) => batch.set(doc(db, PRODUCTS, product.id), clean(product)));
-  seedCategories.forEach((category) =>
-    batch.set(doc(db, CATEGORIES, category.id), clean(category))
-  );
-  seedVehicles.forEach((vehicle) => batch.set(doc(db, VEHICLES, vehicle.id), clean(vehicle)));
-  seedPromos.forEach((promo) => batch.set(doc(db, PROMOS, promo.id), clean(promo)));
-
-  await batch.commit();
+  await guardarLote(PRODUCTS, seedProducts);
+  await guardarLote(CATEGORIES, seedCategories);
+  await guardarLote(VEHICLES, seedVehicles);
+  await guardarLote(PROMOS, seedPromos);
 }
