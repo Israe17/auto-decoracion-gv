@@ -11,6 +11,30 @@ import {
 import { LoadingOverlay } from "@/components/LoadingOverlay";
 import { firebaseEnabled, getFirebaseServices } from "@/lib/firebase";
 
+// Todas las fallas de acceso mostraban "correo o contraseña incorrectos".
+// Eso esconde causas muy distintas: la mas traicionera es el bloqueo
+// temporal por intentos repetidos, porque quien lo sufre sigue probando
+// la contraseña correcta y el sitio le insiste en que esta mal.
+function mensajeDeError(fallo: unknown) {
+  const codigo = typeof fallo === "object" && fallo && "code" in fallo ? String(fallo.code) : "";
+
+  switch (codigo) {
+    case "auth/too-many-requests":
+      return "Demasiados intentos fallidos: Firebase bloqueó el acceso por unos minutos. Espere y vuelva a intentar.";
+    case "auth/user-disabled":
+      return "Esta cuenta está desactivada. Actívela desde la consola de Firebase.";
+    case "auth/network-request-failed":
+      return "No se pudo conectar. Revise su conexión a internet.";
+    case "auth/invalid-email":
+      return "El correo no tiene un formato válido.";
+    case "auth/invalid-api-key":
+    case "auth/configuration-not-found":
+      return "La configuración del sitio no es válida. Avise al desarrollador.";
+    default:
+      return "Correo o contraseña incorrectos, o el usuario no está autorizado.";
+  }
+}
+
 export function AdminGate({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [checking, setChecking] = useState(firebaseEnabled);
@@ -40,8 +64,8 @@ export function AdminGate({ children }: { children: ReactNode }) {
     setError("");
     try {
       await signInWithEmailAndPassword(services.auth, email, password);
-    } catch {
-      setError("Correo o contraseña incorrectos, o el usuario no está autorizado.");
+    } catch (fallo) {
+      setError(mensajeDeError(fallo));
     } finally {
       setSubmitting(false);
     }
