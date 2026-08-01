@@ -6,6 +6,7 @@ import {
   BadgeCheck,
   Car,
   Edit3,
+  Download,
   Eye,
   FolderTree,
   Megaphone,
@@ -337,6 +338,30 @@ export default function AdminPage() {
       actionLabel: "Sincronizar",
       onConfirm: handleImportSeed
     });
+  }
+
+  // Descarga TODO el catalogo tal como esta en Firestore, en un solo JSON.
+  // Es la unica via para sacar los datos sin credenciales de servicio: el
+  // navegador del admin ya tiene permiso de lectura, el exterior no.
+  function exportarDatos() {
+    const contenido = {
+      exportadoEl: new Date().toISOString(),
+      origen: "firestore",
+      products,
+      categories,
+      vehicles,
+      promos,
+      brands
+    };
+    const blob = new Blob([JSON.stringify(contenido, null, 2)], {
+      type: "application/json"
+    });
+    const url = URL.createObjectURL(blob);
+    const enlace = document.createElement("a");
+    enlace.href = url;
+    enlace.download = `auto-decoracion-gv-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+    enlace.click();
+    URL.revokeObjectURL(url);
   }
 
   function confirmLocalMigration() {
@@ -760,6 +785,18 @@ export default function AdminPage() {
             <i aria-hidden="true" />
             {firebaseEnabled ? "Firebase" : "Local demo"}
           </span>
+          {!loading && (products.length > 0 || categories.length > 0) && (
+            <button
+              className="admin-mode__sync"
+              type="button"
+              onClick={exportarDatos}
+              title="Descarga todo el catalogo en un archivo JSON de respaldo"
+            >
+              <Download size={13} />
+              Exportar respaldo
+            </button>
+          )}
+
           {firebaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
             <button
               className="admin-mode__sync"
