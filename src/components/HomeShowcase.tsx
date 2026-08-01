@@ -8,11 +8,9 @@ import {
   ChevronDown,
   ChevronLeft,
   ChevronRight,
-  MessageCircle,
   PackageSearch
 } from "lucide-react";
 import { topCategories } from "@/lib/catalog";
-import { generalWhatsAppUrl } from "@/lib/whatsapp";
 import { Category, Product, Promo } from "@/types";
 import { BlurText } from "./BlurText";
 
@@ -293,14 +291,6 @@ export function HomeShowcase({
                   {active.ctaLabel} <ArrowRight size={18} />
                 </Link>
               ))}
-            <a
-              className="button button--ghost"
-              href={generalWhatsAppUrl()}
-              target="_blank"
-              rel="noopener"
-            >
-              <MessageCircle size={18} /> Cotizar por WhatsApp
-            </a>
           </div>
         </div>
 
