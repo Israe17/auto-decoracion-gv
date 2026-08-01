@@ -16,7 +16,6 @@ import { BlurText } from "./BlurText";
 
 type Slide = {
   id: string;
-  eyebrow: string;
   title: string;
   description?: string;
   image: string;
@@ -57,7 +56,6 @@ export function HomeShowcase({
       .slice(0, 5)
       .map((promo) => ({
         id: promo.id,
-        eyebrow: "Auto Decoración G&V",
         title: promo.title,
         description: promo.subtitle,
         image: promo.image,
@@ -73,9 +71,6 @@ export function HomeShowcase({
     const rest = withImage.filter((category) => !categoryCounts[category.slug]);
     const categorySlides = [...withProducts, ...rest].slice(0, 5).map((category) => ({
       id: category.id,
-      eyebrow: categoryCounts[category.slug]
-        ? `${categoryCounts[category.slug]} producto(s) en línea`
-        : "Línea de catálogo",
       title: category.name,
       description: category.description,
       image: category.image,
@@ -271,7 +266,13 @@ export function HomeShowcase({
         </div>
 
         <div className="home-carousel__content">
-          <span className="home-carousel__eyebrow">{active.eyebrow}</span>
+          {/* Firma visual de la marca: tres flechas amarillas que avanzan
+              en secuencia (pedido del dueno: animacion en vez de texto). */}
+          <span className="home-carousel__pulso" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
           <BlurText as="h1" text={active.title} key={active.id} />
           {active.description && <p>{active.description}</p>}
 

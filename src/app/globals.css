@@ -6896,57 +6896,48 @@ textarea {
 }
 
 /* Eyebrow del carrusel del inicio (etiqueta sobre el titular) */
-/* Brillo dorado que barre la marca (ShinyText de React Bits, portado a
-   CSS puro en el amarillo de G&V). Animacion infinita PERO pedida por el
-   dueno para este texto en concreto: es la firma de la marca sobre la
-   foto, no un adorno suelto. Lenta (5s) y con reposo entre pasadas para
-   que acompane sin gritar. El texto base sigue siendo el amarillo pleno,
-   pintado por background-clip: si el clip no existe (navegador viejo),
-   el fallback de `color` lo deja identico a como estaba. */
-.home-carousel__eyebrow {
-  animation: eyebrow-brillo 5s linear infinite;
-  background-image: linear-gradient(
-    120deg,
-    var(--yellow) 42%,
-    #fff3c4 50%,
-    var(--yellow) 58%
-  );
-  background-clip: text;
-  -webkit-background-clip: text;
-  background-size: 240% 100%;
-  color: transparent;
-  display: inline-block;
-  font-size: 13px;
-  font-weight: var(--font-heavy);
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
+/* Pulso de avance: tres flechas amarillas que se encienden en secuencia,
+   como las senales de giro secuenciales de un vehiculo. Reemplaza al
+   eyebrow de texto a pedido del dueno (queria una animacion amarilla en
+   ese lugar, no la marca escrita). Infinita por decision del dueno; con
+   reduced-motion quedan las tres flechas encendidas, estaticas. */
+.home-carousel__pulso {
+  display: inline-flex;
+  gap: 7px;
 }
 
-@keyframes eyebrow-brillo {
-  0% {
-    background-position: 120% 0;
-  }
-  55% {
-    background-position: -120% 0;
-  }
+.home-carousel__pulso i {
+  animation: pulso-avance 1.5s ease-in-out infinite;
+  background: var(--yellow);
+  clip-path: polygon(0 0, 55% 0, 100% 50%, 55% 100%, 0 100%, 45% 50%);
+  height: 16px;
+  opacity: 0.25;
+  width: 13px;
+}
+
+.home-carousel__pulso i:nth-child(2) {
+  animation-delay: 0.18s;
+}
+
+.home-carousel__pulso i:nth-child(3) {
+  animation-delay: 0.36s;
+}
+
+@keyframes pulso-avance {
+  0%,
+  60%,
   100% {
-    background-position: -120% 0;
+    opacity: 0.25;
   }
-}
-
-@supports not (background-clip: text) {
-  .home-carousel__eyebrow {
-    animation: none;
-    background: none;
-    color: var(--yellow);
+  25% {
+    opacity: 1;
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-carousel__eyebrow {
+  .home-carousel__pulso i {
     animation: none;
-    background: none;
-    color: var(--yellow);
+    opacity: 1;
   }
 }
 
