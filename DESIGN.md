@@ -237,7 +237,9 @@ Móvil (iPhone-first):
   escena del logo (`CompatHero`), entre Línea propia y Destacados.
 - Carrusel de promociones (debajo del hero): foto horizontal a todo lo
   ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
-  — eyebrow, titular grande, subtítulo y botones. Toma las promociones de
+  — eyebrow, titular grande, subtítulo y UN solo botón (el primario rojo
+  con el CTA de la promo; el de WhatsApp se quitó a pedido del dueño — el
+  flotante ya cubre esa acción). Toma las promociones de
   admin > Promociones; sin promociones activas cae a las líneas de
   catálogo. Fotos horizontales ambientales (taller/vehículos/servicios),
   NUNCA los afiches cuadrados de producto. Fotos de ejemplo en
