@@ -15,26 +15,25 @@ function configuredRootFolder() {
     .replace(/^\/+|\/+$/g, "") || "auto-decoracion-gv";
 }
 
+// La firma de subida a Cloudinary solo se entrega a una sesion valida.
+// Se valida contra Supabase en vez de confiar en el token: un JWT se puede
+// fabricar, pero solo Supabase sabe si la sesion sigue viva.
 async function isAuthorized(request: Request) {
-  const firebaseApiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY;
-  if (!firebaseApiKey) return process.env.NODE_ENV === "development";
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  if (!url || !anonKey) return process.env.NODE_ENV === "development";
 
   const authorization = request.headers.get("authorization") || "";
   const token = authorization.startsWith("Bearer ") ? authorization.slice(7) : "";
   if (!token) return false;
 
-  const response = await fetch(
-    `https://identitytoolkit.googleapis.com/v1/accounts:lookup?key=${encodeURIComponent(firebaseApiKey)}`,
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ idToken: token }),
-      cache: "no-store"
-    }
-  );
+  const response = await fetch(`${url}/auth/v1/user`, {
+    headers: { apikey: anonKey, Authorization: `Bearer ${token}` },
+    cache: "no-store"
+  });
   if (!response.ok) return false;
-  const result = (await response.json()) as { users?: unknown[] };
-  return Boolean(result.users?.length);
+  const result = (await response.json()) as { id?: string };
+  return Boolean(result.id);
 }
 
 export async function POST(request: Request) {

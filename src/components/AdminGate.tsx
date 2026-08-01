@@ -2,54 +2,57 @@
 
 import { FormEvent, ReactNode, useEffect, useState } from "react";
 import { LogIn, LogOut, ShieldCheck } from "lucide-react";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  signOut,
-  User
-} from "firebase/auth";
+import type { User } from "@supabase/supabase-js";
 import { LoadingOverlay } from "@/components/LoadingOverlay";
-import { firebaseEnabled, getFirebaseServices } from "@/lib/firebase";
+import { getSupabase, supabaseEnabled } from "@/lib/supabase";
 
 // Todas las fallas de acceso mostraban "correo o contraseña incorrectos".
 // Eso esconde causas muy distintas: la mas traicionera es el bloqueo
 // temporal por intentos repetidos, porque quien lo sufre sigue probando
-// la contraseña correcta y el sitio le insiste en que esta mal.
-function mensajeDeError(fallo: unknown) {
-  const codigo = typeof fallo === "object" && fallo && "code" in fallo ? String(fallo.code) : "";
-
-  switch (codigo) {
-    case "auth/too-many-requests":
-      return "Demasiados intentos fallidos: Firebase bloqueó el acceso por unos minutos. Espere y vuelva a intentar.";
-    case "auth/user-disabled":
-      return "Esta cuenta está desactivada. Actívela desde la consola de Firebase.";
-    case "auth/network-request-failed":
-      return "No se pudo conectar. Revise su conexión a internet.";
-    case "auth/invalid-email":
+// la contraseña correcta y el sitio le insiste en que esta mal. Los
+// codigos son los de Supabase Auth (AuthApiError.code).
+function mensajeDeError(fallo: { code?: string; status?: number; message?: string }) {
+  switch (fallo.code) {
+    case "over_request_rate_limit":
+      return "Demasiados intentos: el acceso quedó bloqueado por unos minutos. Espere y vuelva a intentar.";
+    case "email_not_confirmed":
+      return "El correo del administrador aún no está confirmado en Supabase.";
+    case "user_banned":
+      return "Esta cuenta está suspendida. Revísela en el panel de Supabase.";
+    case "validation_failed":
       return "El correo no tiene un formato válido.";
-    case "auth/invalid-api-key":
-    case "auth/configuration-not-found":
-      return "La configuración del sitio no es válida. Avise al desarrollador.";
     default:
+      if (fallo.status && fallo.status >= 500) {
+        return "No se pudo conectar con el servidor. Intente de nuevo en un momento.";
+      }
       return "Correo o contraseña incorrectos, o el usuario no está autorizado.";
   }
 }
 
 export function AdminGate({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [checking, setChecking] = useState(firebaseEnabled);
+  const [checking, setChecking] = useState(supabaseEnabled);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!firebaseEnabled) return;
-    const services = getFirebaseServices();
-    if (!services) return;
+    const cliente = getSupabase();
+    if (!cliente) return;
 
-    return onAuthStateChanged(services.auth, (current) => {
-      setUser(current);
+    // `onAuthStateChange` no dispara con la sesion ya guardada, asi que
+    // primero se pregunta por ella; si no, el panel se quedaria en
+    // "Verificando sesion" al recargar con sesion abierta.
+    cliente.auth.getSession().then(({ data }) => {
+      setUser(data.session?.user ?? null);
       setChecking(false);
     });
+
+    const { data: sub } = cliente.auth.onAuthStateChange((_evento, sesion) => {
+      setUser(sesion?.user ?? null);
+      setChecking(false);
+    });
+
+    return () => sub.subscription.unsubscribe();
   }, []);
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -57,22 +60,18 @@ export function AdminGate({ children }: { children: ReactNode }) {
     const form = new FormData(event.currentTarget);
     const email = String(form.get("email") || "").trim();
     const password = String(form.get("password") || "");
-    const services = getFirebaseServices();
-    if (!services) return;
+    const cliente = getSupabase();
+    if (!cliente) return;
 
     setSubmitting(true);
     setError("");
-    try {
-      await signInWithEmailAndPassword(services.auth, email, password);
-    } catch (fallo) {
-      setError(mensajeDeError(fallo));
-    } finally {
-      setSubmitting(false);
-    }
+    const { error: fallo } = await cliente.auth.signInWithPassword({ email, password });
+    if (fallo) setError(mensajeDeError(fallo));
+    setSubmitting(false);
   }
 
-  // Sin Firebase la app corre en modo demo local y el panel queda abierto.
-  if (!firebaseEnabled) return <>{children}</>;
+  // Sin Supabase la app corre en modo demo local y el panel queda abierto.
+  if (!supabaseEnabled) return <>{children}</>;
 
   // El overlay se mantiene SIEMPRE montado y solo cambia `show`: si se
   // desmontara al terminar la verificacion, su animacion de salida (la
@@ -128,8 +127,7 @@ export function AdminGate({ children }: { children: ReactNode }) {
               type="button"
               aria-label="Cerrar sesión"
               onClick={() => {
-                const services = getFirebaseServices();
-                if (services) signOut(services.auth);
+                getSupabase()?.auth.signOut();
               }}
             >
               <LogOut size={16} /> Cerrar sesión

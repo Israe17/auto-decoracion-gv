@@ -21,7 +21,7 @@ import {
   X
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
-import { firebaseEnabled } from "@/lib/firebase";
+import { supabaseEnabled } from "@/lib/supabase";
 import {
   getFeaturedStatus,
   isProductFeaturedActive,
@@ -41,7 +41,7 @@ import {
   fetchAdminData,
   hasLocalAdminData,
   importSeedCatalog,
-  migrateLocalAdminDataToFirebase,
+  migrateLocalAdminDataToSupabase,
   removeBrand,
   removeCategory,
   removeProduct,
@@ -158,7 +158,7 @@ export default function AdminPage() {
   useEffect(() => {
     let active = true;
 
-    setLocalMigrationAvailable(firebaseEnabled && hasLocalAdminData());
+    setLocalMigrationAvailable(supabaseEnabled && hasLocalAdminData());
 
     fetchAdminData()
       .then((data) => {
@@ -366,9 +366,9 @@ export default function AdminPage() {
 
   function confirmLocalMigration() {
     setConfirmState({
-      title: "Migrar datos locales a Firebase",
-      body: "Se copiaran a Firebase los productos, categorias, modelos, promociones y marcas guardados en este navegador. Los datos locales se conservaran como respaldo.",
-      actionLabel: "Migrar a Firebase",
+      title: "Migrar datos locales a Supabase",
+      body: "Se copiaran a Supabase los productos, categorias, modelos, promociones y marcas guardados en este navegador. Los datos locales se conservaran como respaldo.",
+      actionLabel: "Migrar a Supabase",
       onConfirm: handleLocalMigration
     });
   }
@@ -376,7 +376,7 @@ export default function AdminPage() {
   async function handleLocalMigration() {
     setMigratingLocal(true);
     try {
-      const migrated = await migrateLocalAdminDataToFirebase();
+      const migrated = await migrateLocalAdminDataToSupabase();
       const data = await fetchAdminData();
       setProducts(data.products);
       setCategories(data.categories);
@@ -775,15 +775,15 @@ export default function AdminPage() {
         </div>
         <div className="admin-heading__meta">
           <span
-            className={`admin-mode${firebaseEnabled ? " admin-mode--live" : ""}`}
+            className={`admin-mode${supabaseEnabled ? " admin-mode--live" : ""}`}
             title={
-              firebaseEnabled
+              supabaseEnabled
                 ? "Los cambios se publican en el sitio"
                 : "Los cambios se guardan solo en este navegador"
             }
           >
             <i aria-hidden="true" />
-            {firebaseEnabled ? "Firebase" : "Local demo"}
+            {supabaseEnabled ? "Supabase" : "Local demo"}
           </span>
           {!loading && (products.length > 0 || categories.length > 0) && (
             <button
@@ -797,7 +797,7 @@ export default function AdminPage() {
             </button>
           )}
 
-          {firebaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
+          {supabaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
             <button
               className="admin-mode__sync"
               type="button"
@@ -812,15 +812,15 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {!firebaseEnabled && (
+      {!supabaseEnabled && (
         <div className="notice">
           <ShieldAlert size={20} />
-          Los cambios se guardan en este navegador. Luego conectamos Firebase para publicarlos en
+          Los cambios se guardan en este navegador. Luego conectamos Supabase para publicarlos en
           todos los dispositivos.
         </div>
       )}
 
-      {firebaseEnabled && localMigrationAvailable && (
+      {supabaseEnabled && localMigrationAvailable && (
         <div className="notice">
           <ShieldAlert size={20} />
           <span>Hay datos del modo Local demo guardados en este navegador.</span>
@@ -830,12 +830,12 @@ export default function AdminPage() {
             disabled={migratingLocal}
             onClick={confirmLocalMigration}
           >
-            {migratingLocal ? "Migrando..." : "Migrar datos locales a Firebase"}
+            {migratingLocal ? "Migrando..." : "Migrar datos locales a Supabase"}
           </button>
         </div>
       )}
 
-      {firebaseEnabled && !loading && !products.length && !categories.length && (
+      {supabaseEnabled && !loading && !products.length && !categories.length && (
         <div className="notice">
           <ShieldAlert size={20} />
           <span>La base de datos esta vacia. Puede importar el catalogo de ejemplo para empezar.</span>
