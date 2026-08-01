@@ -2522,13 +2522,18 @@ input[type="checkbox"] {
   margin-top: 4px;
 }
 
+/* Flechas y puntos comparten el vidrio translucido que llevaba el boton
+   fantasma del carrusel: sobre la foto se leen como controles de la
+   escena y no como parches blancos pegados encima. */
 .home-carousel__arrow {
   align-items: center;
-  background: rgba(255, 255, 255, 0.95);
-  border: 0;
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 16px;
   box-shadow: var(--shadow-sm);
-  color: var(--ink);
+  color: white;
+  outline: 1px solid rgba(255, 255, 255, 0.28);
   cursor: pointer;
   display: flex;
   height: 48px;
@@ -2561,8 +2566,11 @@ input[type="checkbox"] {
 
 .home-carousel__dots {
   align-items: center;
-  background: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.24);
   border-radius: 999px;
+  outline: 1px solid rgba(255, 255, 255, 0.28);
   bottom: 22px;
   display: flex;
   gap: 7px;
@@ -2573,7 +2581,7 @@ input[type="checkbox"] {
 }
 
 .home-carousel__dots button {
-  background: #c8d0da;
+  background: rgba(255, 255, 255, 0.45);
   border: 0;
   border-radius: 999px;
   cursor: pointer;

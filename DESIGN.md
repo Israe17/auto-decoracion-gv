@@ -239,7 +239,10 @@ Móvil (iPhone-first):
   ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
   — eyebrow, titular grande, subtítulo y UN solo botón (el primario rojo
   con el CTA de la promo; el de WhatsApp se quitó a pedido del dueño — el
-  flotante ya cubre esa acción). Toma las promociones de
+  flotante ya cubre esa acción). Flechas y puntos van en el mismo vidrio
+  translúcido que usaba ese botón (`rgba(255,255,255,.12)` + blur y borde
+  claro): son controles de la escena, no parches blancos sobre la foto.
+  El hover de la flecha conserva el degradado cálido. Toma las promociones de
   admin > Promociones; sin promociones activas cae a las líneas de
   catálogo. Fotos horizontales ambientales (taller/vehículos/servicios),
   NUNCA los afiches cuadrados de producto. Fotos de ejemplo en
