@@ -239,7 +239,10 @@ Móvil (iPhone-first):
   ancho (`cover`) con un degradado oscuro a la izquierda y el texto encima
   — eyebrow, titular grande, subtítulo y UN solo botón (el primario rojo
   con el CTA de la promo; el de WhatsApp se quitó a pedido del dueño — el
-  flotante ya cubre esa acción). Flechas y puntos van en el mismo vidrio
+  flotante ya cubre esa acción). El eyebrow de la marca lleva un barrido
+  de brillo dorado (ShinyText portado a CSS, 5s con reposo entre pasadas)
+  — animación infinita como excepción pedida por el dueño para este texto;
+  se apaga con reduced-motion. Flechas y puntos van en el mismo vidrio
   translúcido que usaba ese botón (`rgba(255,255,255,.12)` + blur y borde
   claro): son controles de la escena, no parches blancos sobre la foto.
   El hover de la flecha conserva el degradado cálido. Toma las promociones de
