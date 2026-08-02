@@ -2028,6 +2028,7 @@ function ProductDialog({
           label="Imagenes del producto"
           defaultValue={product.images}
           folder="products"
+          tarjeta={{ nombre: product.name, categoria: product.categoryName }}
         />
 
         </div>
