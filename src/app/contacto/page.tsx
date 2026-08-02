@@ -3,6 +3,7 @@ import { Clock, HelpCircle, MapPin, MessageCircle, Store } from "lucide-react";
 import { ContactForm } from "@/components/ContactForm";
 import { Faq } from "@/components/Faq";
 import { business } from "@/lib/business";
+import { fetchPublicCatalog } from "@/lib/store";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export const metadata: Metadata = {
@@ -11,7 +12,11 @@ export const metadata: Metadata = {
     "Visítenos en Liberia, Guanacaste, escríbanos por WhatsApp o cuéntenos qué producto anda buscando y se lo conseguimos."
 };
 
-export default function ContactPage() {
+export const revalidate = 60;
+
+export default async function ContactPage() {
+  const { vehicles } = await fetchPublicCatalog();
+
   return (
     <>
       <section className="page-hero">
@@ -79,7 +84,7 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <ContactForm />
+          <ContactForm vehicles={vehicles} />
         </div>
       </section>
 
