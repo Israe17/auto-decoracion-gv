@@ -196,6 +196,10 @@ Móvil (iPhone-first):
   `object-position` y se sube el recorte: el sitio no guarda ninguna
   posición. Varias fotos se encuadran una por una en cola ("Foto 2 de 5").
   Avisos: "calza exacto" y "más pequeña que lo recomendado".
+  En productos el marco va **vestido con el card real** (mismas clases de
+  `ProductCard`, sin enlaces): categoría, nombre y precio leídos EN VIVO
+  del propio formulario, así el dueño acomoda la foto viendo la tarjeta
+  tal como saldrá en la tienda.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.

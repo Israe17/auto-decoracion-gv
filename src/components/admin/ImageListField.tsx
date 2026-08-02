@@ -1,7 +1,8 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useEffect, useId, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useId, useRef, useState } from "react";
 import { ImageUp, Loader2, Trash2 } from "lucide-react";
+import { formatCRC } from "@/lib/catalog";
 import { uploadAdminImage } from "@/lib/storage";
 import {
   Borrador,
@@ -16,7 +17,8 @@ export function ImageListField({
   defaultValue,
   folder,
   ancho = 1100,
-  alto = 1000
+  alto = 1000,
+  tarjeta
 }: {
   name: string;
   label: string;
@@ -25,8 +27,13 @@ export function ImageListField({
   /** Medida del recuadro donde viven estas imagenes en el sitio. */
   ancho?: number;
   alto?: number;
+  /** Datos base para la vista previa del card (se completan con lo que
+      ya este escrito en el formulario al abrir el editor). */
+  tarjeta?: { nombre?: string; categoria?: string };
 }) {
   const inputId = useId();
+  const raizRef = useRef<HTMLDivElement>(null);
+  const [vista, setVista] = useState<{ nombre?: string; categoria?: string; precio?: string }>();
   const [urls, setUrls] = useState<string[]>(defaultValue.filter(Boolean));
   // Al soltar varias fotos se encuadran UNA POR UNA: la primera entra al
   // editor y las demas esperan en cola.
@@ -43,6 +50,24 @@ export function ImageListField({
       if (url) URL.revokeObjectURL(url);
     };
   }, [borrador?.url]);
+
+  // Lee lo que el dueno YA escribio en este mismo formulario (nombre,
+  // precio, modo de venta) para que la vista previa del card muestre su
+  // producto y no un generico.
+  function leerFormulario() {
+    if (!tarjeta) return;
+    const form = raizRef.current?.closest("form");
+    const valor = (campo: string) =>
+      (form?.elements.namedItem(campo) as HTMLInputElement | null)?.value?.trim() || "";
+    const precioCrudo = Number(valor("price"));
+    const modo = valor("saleMode");
+    setVista({
+      nombre: valor("name") || tarjeta.nombre,
+      categoria: tarjeta.categoria,
+      precio:
+        modo !== "quote_only" && precioCrudo > 0 ? formatCRC(precioCrudo) : "Consultar precio"
+    });
+  }
 
   async function abrirSiguiente(pendientes: File[]) {
     const [siguiente, ...resto] = pendientes;
@@ -69,6 +94,7 @@ export function ImageListField({
     }
     setError(null);
     setTotal(imagenes.length);
+    leerFormulario();
     abrirSiguiente(imagenes);
   }
 
@@ -95,7 +121,7 @@ export function ImageListField({
   const posicion = total - cola.length;
 
   return (
-    <div className="image-field">
+    <div className="image-field" ref={raizRef}>
       <span className="image-field__label">{label}</span>
 
       <div
@@ -140,6 +166,7 @@ export function ImageListField({
             alto={alto}
             ocupado={uploading}
             progreso={total > 1 ? `Foto ${posicion} de ${total}` : undefined}
+            tarjeta={tarjeta ? vista ?? tarjeta : undefined}
             onCambiar={setBorrador}
             onConfirmar={confirmarRecorte}
             onCancelar={() => abrirSiguiente(cola)}

@@ -71,6 +71,7 @@ export function EditorDeEncuadre({
   alto,
   ocupado,
   progreso,
+  tarjeta,
   onCambiar,
   onConfirmar,
   onCancelar
@@ -81,6 +82,9 @@ export function EditorDeEncuadre({
   ocupado: boolean;
   /** "Foto 2 de 5" cuando hay una cola de imagenes. */
   progreso?: string;
+  /** Con esto el marco se viste de tarjeta de producto REAL (mismas
+      clases del sitio) y la foto se acomoda viendo el card completo. */
+  tarjeta?: { nombre?: string; categoria?: string; precio?: string };
   onCambiar: (borrador: Borrador) => void;
   onConfirmar: () => void;
   onCancelar: () => void;
@@ -124,31 +128,56 @@ export function EditorDeEncuadre({
   const chica = borrador.ancho < ancho || borrador.alto < alto;
   const calzaExacto = Math.abs(borrador.ancho / borrador.alto - ancho / alto) < 0.02;
 
+  const marco = (
+    <div
+      ref={marcoRef}
+      className={`image-editor__marco${tarjeta ? " product-card__image" : ""}`}
+      style={{ aspectRatio: `${ancho} / ${alto}` }}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={onPointerUp}
+      onPointerCancel={onPointerUp}
+    >
+      <img
+        src={borrador.url}
+        alt=""
+        draggable={false}
+        style={{ objectPosition: `${borrador.x}% ${borrador.y}%` }}
+      />
+      {!calzaExacto && (
+        <span className="image-editor__pista">
+          <Move size={14} /> Arrastre para acomodar
+        </span>
+      )}
+    </div>
+  );
+
   return (
     <div className="image-editor">
       {progreso && <span className="image-editor__progreso">{progreso}</span>}
 
-      <div
-        ref={marcoRef}
-        className="image-editor__marco"
-        style={{ aspectRatio: `${ancho} / ${alto}` }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-      >
-        <img
-          src={borrador.url}
-          alt=""
-          draggable={false}
-          style={{ objectPosition: `${borrador.x}% ${borrador.y}%` }}
-        />
-        {!calzaExacto && (
-          <span className="image-editor__pista">
-            <Move size={14} /> Arrastre para acomodar
-          </span>
-        )}
-      </div>
+      {tarjeta ? (
+        // Vista previa del card real: mismas clases que ProductCard, sin
+        // enlaces. Lo que se acomoda aqui es lo que se vera en la tienda.
+        <div className="image-editor__tarjeta">
+          <article className="product-card image-editor__card">
+            {marco}
+            <div className="product-card__body">
+              <div className="product-card__meta">
+                <span className="product-card__category">
+                  {tarjeta.categoria || "Categoría"}
+                </span>
+              </div>
+              <h3 className="image-editor__nombre">{tarjeta.nombre || "Nombre del producto"}</h3>
+              <div className="price-row">
+                <strong>{tarjeta.precio || "Consultar precio"}</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+      ) : (
+        marco
+      )}
 
       <div className="image-editor__datos">
         <span>

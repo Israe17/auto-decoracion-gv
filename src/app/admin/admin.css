@@ -801,6 +801,40 @@
   font-weight: 600;
 }
 
+/* Vista previa del card real: la tarjeta mide lo mismo que en la
+   cuadricula de la tienda para que el encuadre no enganne. */
+.image-editor__tarjeta {
+  display: flex;
+  justify-content: center;
+}
+
+.image-editor__card {
+  max-width: 300px;
+  pointer-events: none;
+  width: 100%;
+}
+
+/* el marco si recibe el arrastre aunque el resto del card sea inerte */
+.image-editor__card .image-editor__marco {
+  pointer-events: auto;
+}
+
+.image-editor__card .product-card__body {
+  padding: 14px 16px 18px;
+}
+
+.image-editor__nombre {
+  color: var(--ink);
+  font-size: 16px;
+  font-weight: var(--font-bold);
+  line-height: 1.25;
+  margin: 6px 0;
+}
+
+.image-editor__card .price-row strong {
+  color: var(--red-dark);
+}
+
 .image-editor__acciones {
   display: flex;
   gap: 10px;
