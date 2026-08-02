@@ -1080,6 +1080,8 @@ export default function AdminPage() {
               <ImageUploadField
                 name="promoImage"
                 label="Imagen (banner)"
+                ancho={1600}
+                alto={720}
                 defaultValue={editingPromo?.image}
                 required
                 folder="promos"
@@ -1247,6 +1249,8 @@ export default function AdminPage() {
               <ImageUploadField
                 name="categoryImage"
                 label="Imagen"
+                ancho={1200}
+                alto={720}
                 defaultValue={editingCategory?.image}
                 folder="categories"
               />
@@ -1336,6 +1340,8 @@ export default function AdminPage() {
                 <ImageUploadField
                   name="brandLogo"
                   label="Logo de la marca (opcional)"
+                  ancho={600}
+                  alto={600}
                   defaultValue={editingBrand?.logo}
                   folder="brands"
                 />
@@ -2350,6 +2356,8 @@ function PromoDialog({
             <ImageUploadField
               name="promoImage"
               label="Imagen (banner)"
+              ancho={1600}
+              alto={720}
               defaultValue={promo?.image}
               required
               folder="promos"
@@ -2447,6 +2455,8 @@ function BrandDialog({
             <ImageUploadField
               name="brandLogo"
               label="Logo de la marca (opcional)"
+              ancho={600}
+              alto={600}
               defaultValue={brand?.logo}
               folder="brands"
             />
@@ -2486,6 +2496,8 @@ function CategoryDialog({
             <ImageUploadField
               name="categoryImage"
               label="Imagen"
+              ancho={1200}
+              alto={720}
               defaultValue={category?.image}
               folder="categories"
             />

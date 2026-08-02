@@ -1,44 +1,88 @@
 "use client";
 
-import { ChangeEvent, DragEvent, useId, useState } from "react";
+import { ChangeEvent, DragEvent, useEffect, useId, useState } from "react";
 import { ImageUp, Loader2, Trash2 } from "lucide-react";
 import { uploadAdminImage } from "@/lib/storage";
+import {
+  Borrador,
+  EditorDeEncuadre,
+  cargarBorrador,
+  recortarBorrador
+} from "@/components/admin/EncuadreImagen";
 
 export function ImageListField({
   name,
   label,
   defaultValue,
-  folder
+  folder,
+  ancho = 1100,
+  alto = 1000
 }: {
   name: string;
   label: string;
   defaultValue: string[];
   folder: string;
+  /** Medida del recuadro donde viven estas imagenes en el sitio. */
+  ancho?: number;
+  alto?: number;
 }) {
   const inputId = useId();
   const [urls, setUrls] = useState<string[]>(defaultValue.filter(Boolean));
+  // Al soltar varias fotos se encuadran UNA POR UNA: la primera entra al
+  // editor y las demas esperan en cola.
+  const [cola, setCola] = useState<File[]>([]);
+  const [borrador, setBorrador] = useState<Borrador | null>(null);
+  const [total, setTotal] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
 
-  async function handleFiles(files: FileList | null) {
+  useEffect(() => {
+    const url = borrador?.url;
+    return () => {
+      if (url) URL.revokeObjectURL(url);
+    };
+  }, [borrador?.url]);
+
+  async function abrirSiguiente(pendientes: File[]) {
+    const [siguiente, ...resto] = pendientes;
+    setCola(resto);
+    if (!siguiente) {
+      setBorrador(null);
+      setTotal(0);
+      return;
+    }
+    try {
+      setBorrador(await cargarBorrador(siguiente));
+    } catch {
+      setError("No se pudo leer una de las imagenes.");
+      abrirSiguiente(resto);
+    }
+  }
+
+  function handleFiles(files: FileList | null) {
     if (!files || !files.length) return;
-    const images = Array.from(files).filter((file) => file.type.startsWith("image/"));
-    if (!images.length) {
+    const imagenes = Array.from(files).filter((file) => file.type.startsWith("image/"));
+    if (!imagenes.length) {
       setError("Los archivos deben ser imagenes.");
       return;
     }
     setError(null);
+    setTotal(imagenes.length);
+    abrirSiguiente(imagenes);
+  }
+
+  async function confirmarRecorte() {
+    if (!borrador) return;
     setUploading(true);
+    setError(null);
     try {
-      const uploaded = await Promise.all(images.map((file) => uploadAdminImage(file, folder)));
-      setUrls((current) => [...current, ...uploaded]);
-    } catch (error) {
-      setError(
-        error instanceof Error
-          ? error.message
-          : "No se pudieron subir una o mas imagenes. Intente de nuevo."
-      );
+      const recorte = await recortarBorrador(borrador, ancho, alto);
+      const url = await uploadAdminImage(recorte, folder);
+      setUrls((current) => [...current, url]);
+      abrirSiguiente(cola);
+    } catch (fallo) {
+      setError(fallo instanceof Error ? fallo.message : "No se pudo subir la imagen. Intente de nuevo.");
     } finally {
       setUploading(false);
     }
@@ -47,6 +91,8 @@ export function ImageListField({
   function removeAt(index: number) {
     setUrls((current) => current.filter((_, i) => i !== index));
   }
+
+  const posicion = total - cola.length;
 
   return (
     <div className="image-field">
@@ -67,7 +113,7 @@ export function ImageListField({
           handleFiles(event.dataTransfer.files);
         }}
       >
-        {urls.length > 0 && (
+        {urls.length > 0 && !borrador && (
           <div className="image-upload__thumbs">
             {urls.map((url, index) => (
               <div key={`${url}-${index}`} className="image-upload__preview-card image-upload__preview-card--sm">
@@ -87,13 +133,27 @@ export function ImageListField({
           </div>
         )}
 
-        <label htmlFor={inputId} className="image-upload__dropzone image-upload__dropzone--compact">
-          <span className="image-upload__icon">
-            <ImageUp size={20} />
-          </span>
-          <strong>Arrastre imágenes aquí</strong>
-          <span className="image-upload__hint">o haga clic para elegir archivos</span>
-        </label>
+        {borrador ? (
+          <EditorDeEncuadre
+            borrador={borrador}
+            ancho={ancho}
+            alto={alto}
+            ocupado={uploading}
+            progreso={total > 1 ? `Foto ${posicion} de ${total}` : undefined}
+            onCambiar={setBorrador}
+            onConfirmar={confirmarRecorte}
+            onCancelar={() => abrirSiguiente(cola)}
+          />
+        ) : (
+          <label htmlFor={inputId} className="image-upload__dropzone image-upload__dropzone--compact">
+            <span className="image-upload__icon">
+              <ImageUp size={20} />
+            </span>
+            <strong>Arrastre imágenes aquí</strong>
+            <span className="image-upload__hint">o haga clic para elegir archivos</span>
+            <span className="image-upload__medida">Recuadro: {ancho}×{alto} px</span>
+          </label>
+        )}
 
         {uploading && (
           <div className="image-upload__loading">
