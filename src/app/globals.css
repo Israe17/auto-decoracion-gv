@@ -4030,6 +4030,11 @@ body {
   border-radius: 18px;
   display: grid;
   grid-template-columns: minmax(155px, 0.62fr) minmax(0, 1fr);
+  /* SIN esto el hero desaparece: la foto usa height 100% y, al medir la
+     fila auto del contenedor, ese porcentaje no resuelve — la fila
+     colapsa a 2px (los bordes) y overflow:hidden se traga la foto, el
+     nombre y la descripcion. El minimo corta el ciclo. */
+  min-height: 208px;
   min-width: 0;
   overflow: hidden;
 }
@@ -4078,6 +4083,8 @@ body {
 
 .admin-detail-hero--icon {
   grid-template-columns: 118px minmax(0, 1fr);
+  /* su imagen es fija (86px), no hay ciclo que cortar */
+  min-height: 120px;
 }
 
 .admin-detail-hero--icon > img {
