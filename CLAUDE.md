@@ -41,7 +41,10 @@ Tailwind). Nunca pegar el código tal cual: adaptarlo SIEMPRE a DESIGN.md
   `supabase/migrations/`. Cada tabla guarda el documento completo en `data`
   (jsonb) con su `id` de texto, igual que el proyecto de Uñas Dalay: los
   tipos de `src/types.ts` no cambian y la migracion no puede introducir
-  errores de mapeo de columnas.
+  errores de mapeo de columnas. Excepción de políticas: `contact_requests`
+  (solicitudes del formulario de contacto) permite al anónimo SOLO
+  insertar; leer y borrar exige sesión — contiene nombres y teléfonos de
+  clientes y nunca debe tener lectura pública.
 - Las imagenes NO estan en Supabase Storage: se suben a Cloudinary desde
   `src/lib/storage.ts`, y `/api/admin/images` firma la subida despues de
   validar la sesion contra Supabase.

@@ -11,6 +11,8 @@ import {
   Eye,
   FolderTree,
   Megaphone,
+  MessageCircle,
+  Phone,
   Plus,
   RefreshCw,
   Save,
@@ -23,7 +25,7 @@ import {
   X
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
-import { productShareWhatsAppUrl } from "@/lib/whatsapp";
+import { clientWhatsAppUrl, productShareWhatsAppUrl } from "@/lib/whatsapp";
 import { supabaseEnabled } from "@/lib/supabase";
 import {
   getFeaturedStatus,
@@ -47,6 +49,7 @@ import {
   migrateLocalAdminDataToSupabase,
   removeBrand,
   removeCategory,
+  removeContactRequest,
   removeProduct,
   removePromo,
   removeVehicle,
@@ -59,6 +62,7 @@ import {
 import {
   Brand,
   Category,
+  ContactRequest,
   Product,
   Promo,
   SaleMode,
@@ -66,7 +70,14 @@ import {
   VehicleModel
 } from "@/types";
 
-type AdminTab = "products" | "offers" | "promos" | "vehicles" | "categories" | "brands";
+type AdminTab =
+  | "products"
+  | "offers"
+  | "promos"
+  | "vehicles"
+  | "categories"
+  | "brands"
+  | "requests";
 
 type ConfirmState = {
   title: string;
@@ -82,7 +93,8 @@ type AdminDetail =
   | { kind: "promo"; item: Promo }
   | { kind: "vehicle"; item: VehicleModel }
   | { kind: "category"; item: Category }
-  | { kind: "brand"; item: Brand };
+  | { kind: "brand"; item: Brand }
+  | { kind: "request"; item: ContactRequest };
 
 function makeSlug(value: string) {
   return value
@@ -121,6 +133,18 @@ function productHasPublicPrice(product: Product) {
   return product.saleMode === "price_quote" && typeof product.price === "number";
 }
 
+function requestDateLabel(request: ContactRequest) {
+  const fecha = new Date(request.createdAt);
+  if (Number.isNaN(fecha.getTime())) return "Fecha desconocida";
+  return fecha.toLocaleDateString("es-CR", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit"
+  });
+}
+
 function featuredStatusLabel(product: Product) {
   const status = getFeaturedStatus(product);
   const until = product.featuredUntil ? ` hasta ${product.featuredUntil}` : "";
@@ -152,6 +176,7 @@ export default function AdminPage() {
   const [promos, setPromos] = useState<Promo[]>([]);
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
+  const [requests, setRequests] = useState<ContactRequest[]>([]);
   // El detalle es una PILA: navegar a una relacion apila y el boton
   // "Volver" del header regresa al detalle anterior sin cerrar el modal.
   const [detailStack, setDetailStack] = useState<AdminDetail[]>([]);
@@ -179,6 +204,7 @@ export default function AdminPage() {
         setBrands(data.brands);
         setVehicles(data.vehicles);
         setPromos(data.promos);
+        setRequests(data.requests);
       })
       .catch((error) => {
         console.error(error);
@@ -648,6 +674,24 @@ export default function AdminPage() {
     }
   }
 
+  function confirmDeleteRequest(request: ContactRequest) {
+    setConfirmState({
+      title: "Eliminar solicitud",
+      body: `Se eliminara la solicitud de "${request.name}". Si aun no le respondio, considere contactarle primero.`,
+      actionLabel: "Eliminar solicitud",
+      tone: "danger",
+      onConfirm: async () => {
+        try {
+          await removeContactRequest(request.id);
+          setRequests((prev) => prev.filter((item) => item.id !== request.id));
+          setMessage("Solicitud eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    });
+  }
+
   function confirmDeleteVehicle(vehicle: VehicleModel) {
     const linked = productCountByVehicle[vehicle.id] || 0;
     setConfirmState({
@@ -755,7 +799,8 @@ export default function AdminPage() {
     ["promos", "Promociones"],
     ["vehicles", "Modelos de autos"],
     ["categories", "Categorias"],
-    ["brands", "Marcas"]
+    ["brands", "Marcas"],
+    ["requests", "Solicitudes"]
   ];
 
   const sectionIcons: Record<AdminTab, ReactNode> = {
@@ -764,7 +809,8 @@ export default function AdminPage() {
     promos: <Megaphone size={20} />,
     vehicles: <Car size={20} />,
     categories: <FolderTree size={20} />,
-    brands: <BadgeCheck size={20} />
+    brands: <BadgeCheck size={20} />,
+    requests: <MessageCircle size={20} />
   };
 
   const speedDialActions: SpeedDialAction[] = tabs.map(([id, label]) => ({
@@ -1381,6 +1427,24 @@ export default function AdminPage() {
                   setBrandDialogOpen(true);
                 },
                 onDelete: () => confirmDeleteBrand(brand)
+              }))}
+            />
+          </div>
+        </AdminPanelReveal>
+      )}
+
+      {!loading && activeTab === "requests" && (
+        <AdminPanelReveal tab="requests">
+          <div className="admin-workspace admin-workspace--simple">
+            <AdminSimpleList
+              title="Solicitudes de clientes"
+              empty="Todavia no hay solicitudes. Cada vez que un cliente llene el formulario de contacto, quedara guardada aqui con su nombre, telefono y vehiculo."
+              items={requests.map((request) => ({
+                id: request.id,
+                title: request.vehicle ? `${request.name} · ${request.vehicle}` : request.name,
+                meta: `${requestDateLabel(request)} · ${request.message}`,
+                onView: () => setDetail({ kind: "request", item: request }),
+                onDelete: () => confirmDeleteRequest(request)
               }))}
             />
           </div>
@@ -2652,7 +2716,8 @@ function AdminSimpleList({
     meta: string;
     image?: string;
     onView: () => void;
-    onEdit: () => void;
+    /** Omitir cuando el elemento no se edita (ej. solicitudes de clientes). */
+    onEdit?: () => void;
     onDelete: () => void;
   }>;
 }) {
@@ -2686,9 +2751,11 @@ function AdminSimpleList({
                 <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={item.onView}>
                   <Eye size={16} />
                 </button>
-                <button type="button" aria-label="Editar" onClick={item.onEdit}>
-                  <Edit3 size={16} />
-                </button>
+                {item.onEdit && (
+                  <button type="button" aria-label="Editar" onClick={item.onEdit}>
+                    <Edit3 size={16} />
+                  </button>
+                )}
                 <button type="button" aria-label="Eliminar" onClick={item.onDelete}>
                   <Trash2 size={16} />
                 </button>
@@ -2815,7 +2882,9 @@ function AdminDetailDialog({
             ? "Detalle del modelo"
             : detail.kind === "brand"
               ? "Detalle de la marca"
-              : "Detalle de la categoria";
+              : detail.kind === "request"
+                ? "Detalle de la solicitud"
+                : "Detalle de la categoria";
 
   const detailBody = (() => {
     if (detail.kind === "product") {
@@ -3220,6 +3289,43 @@ function AdminDetailDialog({
             <button className="button button--primary" type="button" onClick={() => onEditBrand(brand)}>
               <Edit3 size={18} /> Editar marca
             </button>
+          </div>
+        </>
+      );
+    }
+
+    if (detail.kind === "request") {
+      const request = detail.item;
+      const replyUrl = request.phone ? clientWhatsAppUrl(request.phone, request.name) : "";
+
+      return (
+        <>
+          <div className="admin-detail-hero admin-detail-hero--icon">
+            <span className="admin-detail-vehicle-icon"><MessageCircle size={36} /></span>
+            <div>
+              <span className="admin-detail-kicker">Solicitud de cliente</span>
+              <h2>{request.name}</h2>
+              <p>{requestDateLabel(request)}</p>
+            </div>
+          </div>
+
+          <div className="admin-detail-facts">
+            <div><span>Telefono</span><strong>{request.phone || "No dejo telefono"}</strong></div>
+            <div><span>Vehiculo</span><strong>{request.vehicle || "No indicado"}</strong></div>
+          </div>
+
+          <section className="admin-detail-section">
+            <h3>Lo que busca</h3>
+            <p>{request.message}</p>
+          </section>
+
+          <div className="admin-detail-actions">
+            {request.phone && (
+              <a className="button button--primary" href={replyUrl} target="_blank" rel="noopener">
+                <Phone size={18} /> Responder por WhatsApp
+              </a>
+            )}
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
           </div>
         </>
       );

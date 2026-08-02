@@ -87,3 +87,15 @@ export type QuoteItem = {
   quantity: number;
   slug: string;
 };
+
+// Solicitud del formulario "¿No encontró lo que busca?": ademas de abrir
+// WhatsApp, se guarda para que el negocio tenga su base de clientes.
+export type ContactRequest = {
+  id: string;
+  name: string;
+  phone?: string;
+  vehicle?: string;
+  message: string;
+  // ISO al momento de enviar; el admin la muestra en hora local.
+  createdAt: string;
+};

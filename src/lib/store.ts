@@ -1,4 +1,4 @@
-import { Brand, Category, Product, Promo, VehicleModel } from "@/types";
+import { Brand, Category, ContactRequest, Product, Promo, VehicleModel } from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
 import { requireSupabase, supabaseEnabled } from "./supabase";
 import { getFeaturedStatus } from "./featured";
@@ -8,13 +8,15 @@ const CATEGORIES = "categories";
 const VEHICLES = "vehicles";
 const PROMOS = "promos";
 const BRANDS = "brands";
+const CONTACT_REQUESTS = "contact_requests";
 
 const localKeys = {
   products: "gv-admin-products",
   categories: "gv-admin-categories",
   vehicles: "gv-admin-vehicles",
   promos: "gv-admin-promos",
-  brands: "gv-admin-brands"
+  brands: "gv-admin-brands",
+  requests: "gv-contact-requests"
 };
 const LOCAL_MIGRATION_DONE = "gv-admin-supabase-migrated";
 
@@ -162,6 +164,41 @@ export async function fetchPublicCatalog(): Promise<{
   }
 }
 
+// --- Solicitudes del formulario de contacto -------------------------------
+
+function sortRequests(requests: ContactRequest[]) {
+  return [...requests].sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+}
+
+// La deja el VISITANTE (sin sesion): insert plano, nunca upsert — la
+// politica RLS del anonimo solo permite insertar, no leer ni actualizar.
+// Falla en silencio: el mensaje de WhatsApp es lo primero y no se bloquea.
+export async function saveContactRequest(request: ContactRequest) {
+  if (!supabaseEnabled) {
+    localUpsert(localKeys.requests, [] as ContactRequest[], request);
+    return;
+  }
+  const { error } = await requireSupabase()
+    .from(CONTACT_REQUESTS)
+    .insert({ id: request.id, data: clean(request) });
+  if (error) throw new Error(error.message);
+}
+
+export async function fetchContactRequests(): Promise<ContactRequest[]> {
+  if (!supabaseEnabled) {
+    return sortRequests(readLocal(localKeys.requests, [] as ContactRequest[]));
+  }
+  return sortRequests(await listCollection<ContactRequest>(CONTACT_REQUESTS));
+}
+
+export async function removeContactRequest(id: string) {
+  if (!supabaseEnabled) {
+    localRemove(localKeys.requests, [] as ContactRequest[], id);
+    return;
+  }
+  await borrar(CONTACT_REQUESTS, id);
+}
+
 // --- Admin: Supabase si esta configurado, localStorage en modo demo ---
 
 function readLocal<T>(key: string, fallback: T): T {
@@ -233,6 +270,7 @@ export async function fetchAdminData(): Promise<{
   vehicles: VehicleModel[];
   promos: Promo[];
   brands: Brand[];
+  requests: ContactRequest[];
 }> {
   if (!supabaseEnabled) {
     return {
@@ -240,16 +278,18 @@ export async function fetchAdminData(): Promise<{
       categories: readLocal(localKeys.categories, seedCategories),
       vehicles: readLocal(localKeys.vehicles, seedVehicles),
       promos: sortPromos(readLocal(localKeys.promos, seedPromos)),
-      brands: readLocal(localKeys.brands, seedBrands)
+      brands: readLocal(localKeys.brands, seedBrands),
+      requests: await fetchContactRequests()
     };
   }
 
-  const [products, categories, vehicles, promos, brands] = await Promise.all([
+  const [products, categories, vehicles, promos, brands, requests] = await Promise.all([
     listCollection<Product>(PRODUCTS),
     listCollection<Category>(CATEGORIES),
     listCollection<VehicleModel>(VEHICLES),
     listCollection<Promo>(PROMOS),
-    listCollection<Brand>(BRANDS)
+    listCollection<Brand>(BRANDS),
+    fetchContactRequests()
   ]);
 
   return {
@@ -257,7 +297,8 @@ export async function fetchAdminData(): Promise<{
     categories,
     vehicles,
     promos: sortPromos(promos),
-    brands: [...brands].sort((a, b) => a.name.localeCompare(b.name))
+    brands: [...brands].sort((a, b) => a.name.localeCompare(b.name)),
+    requests
   };
 }
 
