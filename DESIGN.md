@@ -273,12 +273,12 @@ Móvil (iPhone-first):
 ### Ficha de producto en móvil (patrón Airbnb)
 
 En ≤640px la ficha abre con la **foto a sangre completa** (sin marco ni
-radios), el volver flota encima en un círculo de vidrio, la **hoja de
-contenido se monta sobre la foto** con esquinas redondeadas, y el precio
-queda en una **barra fija inferior** con la acción de cotizar (respeta
-`env(safe-area-inset-bottom)`). En esa ficha los flotantes de WhatsApp e
-Instagram se ocultan: la barra ES la acción de WhatsApp y duplicarla es
-ruido. La galería es una pista `scroll-snap` con contador "1/N"; en
+radios), el volver flota encima en un círculo de vidrio y la **hoja de
+contenido se monta sobre la foto** con esquinas redondeadas. La barra
+fija inferior de precio se probó y **el dueño la descartó** — no volver
+a proponerla; los flotantes de WhatsApp e Instagram quedan visibles como
+en el resto del sitio. La galería es una pista `scroll-snap` con
+contador "1/N"; en
 escritorio conserva el marco redondeado y las miniaturas funcionan como
 control (tocar una desplaza la pista).
 

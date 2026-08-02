@@ -975,10 +975,7 @@ img {
   width: 100%;
 }
 
-/* Barra fija inferior (solo movil): precio siempre visible + cotizar */
-.product-cta-bar {
-  display: none;
-}
+
 
 .product-info {
   align-self: start;
@@ -1347,57 +1344,6 @@ img {
   }
 
   .product-gallery__thumbs {
-    display: none;
-  }
-
-  /* barra fija inferior; deja hueco el flotante de WhatsApp, que en esta
-     ficha queda redundante (la barra ES la accion de WhatsApp) */
-  .product-cta-bar {
-    align-items: center;
-    background: rgba(255, 255, 255, 0.96);
-    backdrop-filter: blur(10px);
-    border-top: 1px solid var(--line);
-    bottom: 0;
-    display: flex;
-    gap: 14px;
-    justify-content: space-between;
-    left: 0;
-    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
-    position: fixed;
-    right: 0;
-    z-index: 45;
-  }
-
-  .product-cta-bar > div {
-    display: grid;
-    gap: 1px;
-    min-width: 0;
-  }
-
-  .product-cta-bar strong {
-    color: var(--red-dark);
-    font-size: 20px;
-    line-height: 1.1;
-  }
-
-  .product-cta-bar span {
-    color: var(--muted);
-    font-size: 12.5px;
-  }
-
-  .product-cta-bar .button {
-    flex: none;
-    min-height: 46px;
-    padding: 0 20px;
-  }
-
-  /* el contenido no debe morir debajo de la barra */
-  .product-detail-content {
-    padding-bottom: 110px;
-  }
-
-  body:has(.product-cta-bar) .wa-float,
-  body:has(.product-cta-bar) .instagram-float {
     display: none;
   }
 

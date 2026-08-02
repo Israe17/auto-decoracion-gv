@@ -207,26 +207,6 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           </div>
         </div>
-
-        {/* Barra fija inferior en movil (patron Airbnb): el precio y la
-            accion siempre a mano mientras se lee la ficha. En escritorio
-            no existe: alli el panel lateral ya es fijo. */}
-        <div className="product-cta-bar">
-          <div>
-            <strong>
-              {product.saleMode === "price_quote" ? formatCRC(product.price) : "Consultar precio"}
-            </strong>
-            <span>{statusLabel}</span>
-          </div>
-          <a
-            className="button button--primary"
-            href={productWhatsAppUrl(product)}
-            target="_blank"
-            rel="noopener"
-          >
-            <MessageCircle size={17} /> Cotizar
-          </a>
-        </div>
       </section>
 
       <section className="section product-detail-content">
