@@ -203,6 +203,26 @@ Móvil (iPhone-first):
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
+- **Detalle del admin** (`AdminDetailDialog`): el estado es una **pila** —
+  navegar a una relación apila y el botón "Volver" del header (flecha,
+  misma caja que la X) regresa al detalle anterior; editar limpia la pila.
+  En producto: precio héroe (`del` + actual en `--red-dark`), chip de
+  estado con la variante semántica del sistema de labels
+  (`--available`/`--on_request`/`--sold_out`), etiquetas como chips
+  pequeños, y bloque "Oferta y vitrina" (ahorro, estado del destacado con
+  fechas, prioridad) SOLO cuando hay datos reales — nada duplicado con el
+  hero. Acciones: Editar (primario) / **Compartir por WhatsApp**
+  (`productShareWhatsAppUrl` en `whatsapp.ts`: `wa.me/?text=` SIN número —
+  el dueño elige el contacto; distinto de cotizar, que escribe AL negocio)
+  / Ver en el sitio (`/productos/slug`, pestaña nueva) / Cerrar; en móvil
+  rejilla 2×2 sticky. Los modelos compatibles muestran el rango DECLARADO
+  por el producto, no el rango genérico del catálogo.
+  Trampa pagada dos veces: `.admin-detail` NO puede ser grid — como fila
+  de grid, la altura intrínseca del hero (grid anidado con foto a
+  `height: 100%`) se mide mal en Chromium y el hero queda clavado en su
+  `min-height` recortando el contenido. La receta que funciona: columna
+  **flex** con `flex-shrink: 0` en los hijos + `height: fit-content` en el
+  hero.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y label verde elevado "Ahorra ₡X"); badge de
   descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario

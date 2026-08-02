@@ -3,6 +3,7 @@
 import { Children, FormEvent, ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
+  ArrowLeft,
   BadgeCheck,
   Car,
   Edit3,
@@ -14,6 +15,7 @@ import {
   RefreshCw,
   Save,
   Search,
+  Share2,
   ShieldAlert,
   Star,
   Tags,
@@ -21,6 +23,7 @@ import {
   X
 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
+import { productShareWhatsAppUrl } from "@/lib/whatsapp";
 import { supabaseEnabled } from "@/lib/supabase";
 import {
   getFeaturedStatus,
@@ -149,7 +152,15 @@ export default function AdminPage() {
   const [promos, setPromos] = useState<Promo[]>([]);
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
-  const [detail, setDetail] = useState<AdminDetail | null>(null);
+  // El detalle es una PILA: navegar a una relacion apila y el boton
+  // "Volver" del header regresa al detalle anterior sin cerrar el modal.
+  const [detailStack, setDetailStack] = useState<AdminDetail[]>([]);
+  const detail = detailStack[detailStack.length - 1] ?? null;
+  // Conserva la firma vieja: abrir desde una lista resetea la pila y
+  // null la vacia (los onEdit* limpian la pila al pasar al formulario).
+  const setDetail = (next: AdminDetail | null) => setDetailStack(next ? [next] : []);
+  const pushDetail = (next: AdminDetail) => setDetailStack((stack) => [...stack, next]);
+  const popDetail = () => setDetailStack((stack) => stack.slice(0, -1));
   const [confirmState, setConfirmState] = useState<ConfirmState | null>(null);
   const [query, setQuery] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("all");
@@ -1450,7 +1461,8 @@ export default function AdminPage() {
           promos={promos}
           brands={brands}
           onClose={() => setDetail(null)}
-          onSelect={setDetail}
+          onBack={detailStack.length > 1 ? popDetail : undefined}
+          onSelect={pushDetail}
           onEditProduct={(product) => {
             setDetail(null);
             setProductDialog(product);
@@ -2726,7 +2738,7 @@ function AdminDetailRelation({
   return (
     <button className="admin-detail-relation" type="button" onClick={onClick}>
       {image ? <img src={image} alt="" /> : <span className="admin-row-icon" aria-hidden="true" />}
-      <span>
+      <span className="admin-detail-relation__body">
         <strong>{title}</strong>
         <small>{meta}</small>
       </span>
@@ -2748,7 +2760,12 @@ function AdminDetailSection({
 
   return (
     <section className="admin-detail-section">
-      <h3>{title}</h3>
+      <h3>
+        {title}
+        {relations.length > 0 && (
+          <span className="admin-detail-section__count">{relations.length}</span>
+        )}
+      </h3>
       {relations.length ? <div className="admin-detail-relations">{relations}</div> : <p>{empty}</p>}
     </section>
   );
@@ -2762,6 +2779,7 @@ function AdminDetailDialog({
   promos,
   brands,
   onClose,
+  onBack,
   onSelect,
   onEditProduct,
   onEditOffer,
@@ -2777,6 +2795,7 @@ function AdminDetailDialog({
   promos: Promo[];
   brands: Brand[];
   onClose: () => void;
+  onBack?: () => void;
   onSelect: (detail: AdminDetail) => void;
   onEditProduct: (product: Product) => void;
   onEditOffer: (product: Product) => void;
@@ -2806,9 +2825,18 @@ function AdminDetailDialog({
       const relatedProducts = products
         .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
         .slice(0, 4);
-      const relatedVehicles = product.vehicles
-        .map((row) => vehicles.find((item) => matchesVehicle({ ...product, vehicles: [row] }, item)))
-        .filter((item): item is VehicleModel => Boolean(item));
+      // Conserva la fila declarada por el producto (row) para mostrar SU
+      // rango de anos, no el rango generico del modelo en el catalogo.
+      const relatedVehicles = product.vehicles.flatMap((row) => {
+        const vehicle = vehicles.find((item) =>
+          matchesVehicle({ ...product, vehicles: [row] }, item)
+        );
+        return vehicle ? [{ vehicle, row }] : [];
+      });
+      const offer =
+        typeof product.price === "number" && product.oldPrice
+          ? { before: product.oldPrice, saving: product.oldPrice - product.price }
+          : null;
 
       return (
         <>
@@ -2817,12 +2845,13 @@ function AdminDetailDialog({
             <div>
               <span className="admin-detail-kicker">Producto</span>
               <h2>{product.name}</h2>
+              <div className="admin-detail-price">
+                {offer && <del>{formatCRC(offer.before)}</del>}
+                <strong>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</strong>
+              </div>
               <p>{product.description || "Sin descripcion registrada."}</p>
               <div className="admin-detail-chips">
-                <span>{productStatusLabel(product)}</span>
-                <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
-                {product.oldPrice && <span>Oferta activa</span>}
-                {product.featured && <span>{featuredStatusLabel(product)}</span>}
+                <span className={`admin-detail-chip--${product.status}`}>{productStatusLabel(product)}</span>
               </div>
             </div>
           </div>
@@ -2831,8 +2860,36 @@ function AdminDetailDialog({
             <div><span>Categoria</span><strong>{product.categoryName}</strong></div>
             <div><span>Marca</span><strong>{product.isOwnBrand ? "G&V System (linea propia)" : product.brandName || "Sin marca"}</strong></div>
             <div><span>Compatibilidad</span><strong>{product.compatibilityMode === "universal" ? "Universal" : "Especifica"}</strong></div>
-            <div><span>Etiquetas</span><strong>{product.tags.length ? product.tags.join(", ") : "Sin etiquetas"}</strong></div>
+            <div>
+              <span>Etiquetas</span>
+              {product.tags.length ? (
+                <span className="admin-detail-tags">
+                  {product.tags.map((tag) => (
+                    <em key={tag}>{tag}</em>
+                  ))}
+                </span>
+              ) : (
+                <strong>Sin etiquetas</strong>
+              )}
+            </div>
           </div>
+
+          {(offer || product.featured) && (
+            <section className="admin-detail-section">
+              <h3>Oferta y vitrina</h3>
+              <div className="admin-detail-facts">
+                {offer && offer.saving > 0 && (
+                  <div><span>Ahorro</span><strong>{formatCRC(offer.saving)}</strong></div>
+                )}
+                {product.featured && (
+                  <div><span>Destacado</span><strong>{featuredStatusLabel(product)}</strong></div>
+                )}
+                {product.featured && typeof product.featuredOrder === "number" && (
+                  <div><span>Prioridad en portada</span><strong>{product.featuredOrder}</strong></div>
+                )}
+              </div>
+            </section>
+          )}
 
           <AdminDetailSection title="Categoria relacionada" empty="La categoria no esta registrada.">
             {category && (
@@ -2856,11 +2913,11 @@ function AdminDetailDialog({
           </AdminDetailSection>
 
           <AdminDetailSection title="Modelos compatibles" empty="Este producto es universal o no tiene modelos vinculados.">
-            {relatedVehicles.map((vehicle) => (
+            {relatedVehicles.map(({ vehicle, row }) => (
               <AdminDetailRelation
                 key={vehicle.id}
                 title={`${vehicle.make} ${vehicle.model}`}
-                meta={vehicleRange(vehicle)}
+                meta={`Compatible ${vehicleRange(row)}`}
                 onClick={() => onSelect({ kind: "vehicle", item: vehicle })}
               />
             ))}
@@ -2878,11 +2935,27 @@ function AdminDetailDialog({
             ))}
           </AdminDetailSection>
 
-          <div className="admin-detail-actions">
-            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
+          <div className="admin-detail-actions admin-detail-actions--product">
             <button className="button button--primary" type="button" onClick={() => onEditProduct(product)}>
               <Edit3 size={18} /> Editar producto
             </button>
+            <a
+              className="button button--secondary"
+              href={productShareWhatsAppUrl(product)}
+              target="_blank"
+              rel="noopener"
+            >
+              <Share2 size={18} /> Compartir por WhatsApp
+            </a>
+            <a
+              className="button button--secondary"
+              href={`/productos/${product.slug}`}
+              target="_blank"
+              rel="noopener"
+            >
+              <Eye size={18} /> Ver en el sitio
+            </a>
+            <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
           </div>
         </>
       );
@@ -2958,7 +3031,7 @@ function AdminDetailDialog({
 
       return (
         <>
-          <div className="admin-detail-hero admin-detail-hero--promo">
+          <div className="admin-detail-hero">
             <img src={promo.image} alt={promo.title} />
             <div>
               <span className="admin-detail-kicker">Promocion del inicio</span>
@@ -3238,7 +3311,7 @@ function AdminDetailDialog({
   })();
 
   return (
-    <AdminDialog title={detailTitle} onClose={onClose}>
+    <AdminDialog title={detailTitle} onClose={onClose} onBack={onBack}>
       <div className="admin-detail" data-lenis-prevent>{detailBody}</div>
     </AdminDialog>
   );
@@ -3247,11 +3320,14 @@ function AdminDetailDialog({
 function AdminDialog({
   title,
   children,
-  onClose
+  onClose,
+  onBack
 }: {
   title: string;
   children: ReactNode;
   onClose: () => void;
+  /** Presente solo cuando hay un detalle anterior al cual regresar. */
+  onBack?: () => void;
 }) {
   const closeRef = useRef<HTMLButtonElement>(null);
 
@@ -3283,6 +3359,11 @@ function AdminDialog({
         data-lenis-prevent
       >
         <div className="admin-dialog__header">
+          {onBack && (
+            <button type="button" className="admin-dialog__back" aria-label="Volver" onClick={onBack}>
+              <ArrowLeft size={18} />
+            </button>
+          )}
           <strong id="admin-dialog-title">{title}</strong>
           <button ref={closeRef} type="button" aria-label="Cerrar" onClick={onClose}>
             <X size={18} />

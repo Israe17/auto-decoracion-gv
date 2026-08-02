@@ -1,5 +1,6 @@
 import { Product, QuoteItem } from "@/types";
 import { formatCRC } from "./catalog";
+import { siteUrl } from "./seo";
 
 const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "50600000000";
 
@@ -80,6 +81,25 @@ export function productWhatsAppUrl(product: Product, origin = "") {
     .join("\n");
 
   return `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+}
+
+// Compartir la ficha con un tercero: wa.me SIN numero de destino (el que
+// comparte elige el contacto). Distinto de productWhatsAppUrl, que cotiza
+// escribiendo AL negocio.
+export function productShareWhatsAppUrl(product: Product) {
+  const publicPrice =
+    product.saleMode === "price_quote" && typeof product.price === "number"
+      ? `Precio: ${formatCRC(product.price)}`
+      : "";
+  const message = [
+    `Mire este producto de Auto Decoracion G&V: ${product.name}`,
+    publicPrice,
+    `${siteUrl}/productos/${product.slug}`
+  ]
+    .filter(Boolean)
+    .join("\n");
+
+  return `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
 
 export function quoteWhatsAppUrl(items: QuoteItem[]) {
