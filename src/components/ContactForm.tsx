@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { CustomSelect } from "@/components/CustomSelect";
+import { saveContactRequest } from "@/lib/store";
 import { contactWhatsAppUrl } from "@/lib/whatsapp";
 import { VehicleModel } from "@/types";
 
@@ -57,14 +58,23 @@ export function ContactForm({ vehicles = [] }: { vehicles?: VehicleModel[] }) {
       (yearIsCustom ? customYear : year).trim()
     ].filter(Boolean);
 
-    const url = contactWhatsAppUrl({
+    const data = {
       name: String(form.get("name") || "").trim(),
       phone: String(form.get("phone") || "").trim(),
       vehicle: vehicleParts.join(" "),
       message: String(form.get("message") || "").trim()
-    });
+    };
 
-    window.open(url, "_blank", "noopener");
+    // La solicitud queda guardada para el negocio (base de clientes),
+    // pero WhatsApp se abre de inmediato: si el guardado falla, el
+    // mensaje igual llega por el canal principal.
+    saveContactRequest({
+      id: `solicitud-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      ...data,
+      createdAt: new Date().toISOString()
+    }).catch(() => {});
+
+    window.open(contactWhatsAppUrl(data), "_blank", "noopener");
   }
 
   return (

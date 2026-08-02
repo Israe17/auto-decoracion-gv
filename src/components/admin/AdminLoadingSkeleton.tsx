@@ -4,7 +4,14 @@ import { ReactNode, useEffect, useRef } from "react";
 import gsap from "gsap";
 import { BlurText } from "@/components/BlurText";
 
-type AdminLoadingTab = "products" | "offers" | "promos" | "vehicles" | "categories" | "brands";
+type AdminLoadingTab =
+  | "products"
+  | "offers"
+  | "promos"
+  | "vehicles"
+  | "categories"
+  | "brands"
+  | "requests";
 
 function LoadingBlock({ className = "" }: { className?: string }) {
   return <span className={`admin-skeleton__pulse ${className}`.trim()} aria-hidden="true" />;
@@ -119,7 +126,9 @@ export function AdminCollectionSkeleton({ tab }: { tab: AdminLoadingTab }) {
             ? "Modelos registrados"
             : tab === "categories"
               ? "Categorias registradas"
-              : "Marcas registradas";
+              : tab === "requests"
+                ? "Solicitudes de clientes"
+                : "Marcas registradas";
 
   return (
     <div className="admin-skeleton admin-skeleton--panel" ref={ref} aria-busy="true" aria-live="polite">

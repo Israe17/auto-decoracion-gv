@@ -83,6 +83,17 @@ export function productWhatsAppUrl(product: Product, origin = "") {
   return `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
 }
 
+// Responder AL CLIENTE que dejo una solicitud en el formulario de
+// contacto: el destino es su telefono, no el del negocio. Numeros de
+// Costa Rica de 8 digitos reciben el prefijo 506.
+export function clientWhatsAppUrl(phone: string, name?: string) {
+  const digits = phone.replace(/\D/g, "");
+  if (!digits) return "";
+  const full = digits.length === 8 ? `506${digits}` : digits;
+  const message = `Hola${name ? ` ${name}` : ""}, le escribimos de Auto Decoracion G&V sobre su solicitud.`;
+  return `https://wa.me/${full}?text=${encodeURIComponent(message)}`;
+}
+
 // Compartir la ficha con un tercero: wa.me SIN numero de destino (el que
 // comparte elige el contacto). Distinto de productWhatsAppUrl, que cotiza
 // escribiendo AL negocio.

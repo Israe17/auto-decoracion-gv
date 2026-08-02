@@ -217,6 +217,10 @@ Móvil (iPhone-first):
   / Ver en el sitio (`/productos/slug`, pestaña nueva) / Cerrar; en móvil
   rejilla 2×2 sticky. Los modelos compatibles muestran el rango DECLARADO
   por el producto, no el rango genérico del catálogo.
+  La rama "Solicitud de cliente" usa el hero de ícono, muestra teléfono /
+  vehículo / mensaje completo y su primario es **Responder por WhatsApp**
+  (`clientWhatsAppUrl`: escribe AL CLIENTE, prefijo 506 a números de 8
+  dígitos).
   Trampa pagada dos veces: `.admin-detail` NO puede ser grid — como fila
   de grid, la altura intrínseca del hero (grid anidado con foto a
   `height: 100%`) se mide mal en Chromium y el hero queda clavado en su
