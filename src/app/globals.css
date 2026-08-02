@@ -4060,6 +4060,7 @@ body {
   align-items: center;
   border-bottom: 1px solid #e7edf4;
   display: flex;
+  gap: 12px;
   justify-content: space-between;
   padding: 18px 20px;
   position: relative;
@@ -4070,6 +4071,8 @@ body {
   color: #121821;
   font-size: 19px;
   font-weight: var(--font-semibold);
+  /* Empuja la X a la derecha aunque haya boton Volver antes del titulo. */
+  margin-right: auto;
 }
 
 .admin-dialog__header button {
@@ -4103,7 +4106,12 @@ body {
 
 .admin-detail {
   -webkit-overflow-scrolling: touch;
-  display: grid;
+  /* Columna flex, NO grid: como fila de grid, la altura intrinseca del
+     hero (grid anidado) se mide mal en Chromium y la fila queda corta,
+     encimando el hero con los datos. En flex cada bloque usa su altura
+     real. shrink 0 evita que el scroll los aplaste. */
+  display: flex;
+  flex-direction: column;
   gap: 18px;
   max-height: calc(86vh - 78px);
   min-height: 0;
@@ -4113,6 +4121,10 @@ body {
   padding: 22px;
   scroll-padding: 20px 0 96px;
   touch-action: pan-y;
+}
+
+.admin-detail > * {
+  flex-shrink: 0;
 }
 
 .admin-detail-hero {
@@ -4125,7 +4137,9 @@ body {
   /* SIN esto el hero desaparece: la foto usa height 100% y, al medir la
      fila auto del contenedor, ese porcentaje no resuelve — la fila
      colapsa a 2px (los bordes) y overflow:hidden se traga la foto, el
-     nombre y la descripcion. El minimo corta el ciclo. */
+     nombre y la descripcion. El minimo corta el ciclo. fit-content evita
+     el recorte cuando el texto pide mas que el minimo. */
+  height: fit-content;
   min-height: 208px;
   min-width: 0;
   overflow: hidden;
@@ -4154,11 +4168,6 @@ body {
   text-transform: uppercase;
 }
 
-.product-card__brand {
-  align-self: start;
-  width: fit-content;
-}
-
 .admin-detail-hero h2 {
   color: #121821;
   font-size: 24px;
@@ -4167,10 +4176,34 @@ body {
 }
 
 .admin-detail-hero p {
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   color: #5d6a7c;
+  display: -webkit-box;
   font-size: 14px;
   line-height: 1.45;
   margin: 0;
+  overflow: hidden;
+}
+
+/* Precio heroe del detalle: pieza propia, no un chip mas. */
+.admin-detail-price {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.admin-detail-price del {
+  color: #718096;
+  font-size: 14px;
+}
+
+.admin-detail-price strong {
+  color: var(--red-dark);
+  font-size: 21px;
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
 }
 
 .admin-detail-hero--icon {
@@ -4218,10 +4251,29 @@ body {
   padding: 5px 9px;
 }
 
+/* Variantes semanticas del chip de estado: mismos pares del sistema de
+   labels publico (.product-status--*). */
+.admin-detail-chips .admin-detail-chip--available {
+  background: var(--label-green-gradient);
+  box-shadow: var(--label-green-shadow);
+}
+
+.admin-detail-chips .admin-detail-chip--on_request {
+  background: var(--label-amber-gradient);
+  box-shadow: var(--label-amber-shadow);
+  color: #7a5000;
+}
+
+.admin-detail-chips .admin-detail-chip--sold_out {
+  background: var(--label-neutral-gradient);
+  box-shadow: 0 8px 18px rgba(17, 21, 28, 0.2);
+}
+
 .admin-detail-facts {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  /* auto-fit: 4 datos llenan 2x2 o 4x1 segun el ancho, sin huerfanos */
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
 .admin-detail-facts > div {
@@ -4250,16 +4302,48 @@ body {
   overflow-wrap: anywhere;
 }
 
+.admin-detail-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.admin-detail-tags em {
+  background: var(--label-brand-gradient);
+  border-radius: 9px;
+  box-shadow: 0 6px 14px rgba(230, 33, 53, 0.2);
+  color: white;
+  font-size: 10px;
+  font-style: normal;
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.05em;
+  padding: 4px 8px;
+  text-transform: uppercase;
+}
+
 .admin-detail-section {
   display: grid;
   gap: 9px;
 }
 
 .admin-detail-section h3 {
+  align-items: center;
   color: #263244;
+  display: flex;
   font-size: 15px;
   font-weight: var(--font-semibold);
+  gap: 8px;
   margin: 0;
+}
+
+.admin-detail-section__count {
+  background: #eef2f7;
+  border-radius: 999px;
+  color: #6d798b;
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  line-height: 1;
+  padding: 4px 8px;
 }
 
 .admin-detail-section > p {
@@ -4300,6 +4384,13 @@ body {
   color: var(--red);
 }
 
+.admin-detail-relation:focus-visible {
+  background: #fff6f7;
+  color: var(--red);
+  outline: 2px solid var(--red);
+  outline-offset: -2px;
+}
+
 .admin-detail-relation img,
 .admin-detail-relation .admin-row-icon {
   border-radius: 10px;
@@ -4315,7 +4406,7 @@ body {
   width: 14px;
 }
 
-.admin-detail-relation > span:nth-child(2) {
+.admin-detail-relation__body {
   display: grid;
   gap: 2px;
   min-width: 0;
@@ -4337,6 +4428,7 @@ body {
   background: #ffffff;
   border-top: 1px solid #e7edf4;
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   justify-content: flex-end;
   margin-top: 2px;
@@ -4929,6 +5021,12 @@ body {
   .admin-detail-actions .button {
     flex: 1;
     min-width: 0;
+  }
+
+  /* Con 4 acciones la fila sticky se aplasta a 390px: rejilla 2x2. */
+  .admin-detail-actions--product {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .admin-dialog-actions {
@@ -6752,6 +6850,7 @@ textarea {
 .product-card__category,
 .product-card__brand {
   align-items: center;
+  align-self: start;
   background: var(--label-brand-gradient);
   border: 0;
   border-radius: 9px;
@@ -6768,6 +6867,7 @@ textarea {
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
+  width: fit-content;
 }
 
 .product-card__category {
