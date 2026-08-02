@@ -189,6 +189,91 @@ export const categories: Category[] = [
 
 export const products: Product[] = [
   {
+    id: "gv-led-d1",
+    slug: "gv-system-led-d1-conversion-xenon",
+    name: "GV System LED D1 - conversión xenón a LED",
+    categorySlug: "kit-de-leds",
+    categoryName: "Kit de LEDs",
+    saleMode: "quote_only",
+    status: "available",
+    compatibilityMode: "universal",
+    vehicles: [],
+    images: ["/products/gv-system-d1-logo-izquierda.png"],
+    description:
+      "Kit de dos bombillos LED GV System D1 con cuerpo metálico, disipador de aluminio, refrigeración activa y conector integrado. Diseñado para aplicaciones de la familia D1. Antes de comprar se debe confirmar si la base es D1S o D1R, el tipo de alimentación, el uso con balastro original, CANBUS y el espacio disponible dentro del faro.",
+    tags: ["LED", "D1 probable", "Conversión xenón", "Kit de 2", "Instalación profesional"],
+    brandName: "G&V System",
+    isOwnBrand: true
+  },
+  {
+    id: "gv-led-disipador-naranja",
+    slug: "gv-system-led-disipador-naranja",
+    name: "GV System LED - disipador naranja",
+    categorySlug: "kit-de-leds",
+    categoryName: "Kit de LEDs",
+    saleMode: "quote_only",
+    status: "available",
+    compatibilityMode: "universal",
+    vehicles: [],
+    images: ["/products/gv-system-kit-naranja-logo-izquierda.png"],
+    description:
+      "Kit de dos bombillos LED GV System con disipadores cilíndricos de aluminio naranja, emisores compactos, cableado trenzado y módulos de conexión. La geometría se asemeja a una base H7, pero debe verificarse físicamente el código, el collar, el adaptador requerido, CANBUS y la profundidad del faro antes de instalar.",
+    tags: ["LED", "H7 probable", "Disipador naranja", "Kit de 2", "Cable trenzado"],
+    brandName: "G&V System",
+    isOwnBrand: true
+  },
+  {
+    id: "gv-led-aro-rojo-gris",
+    slug: "gv-system-led-aro-rojo-disipador-gris",
+    name: "GV System LED - aro rojo y disipador gris",
+    categorySlug: "kit-de-leds",
+    categoryName: "Kit de LEDs",
+    saleMode: "quote_only",
+    status: "available",
+    compatibilityMode: "universal",
+    vehicles: [],
+    images: ["/products/gv-system-kit-gris-logo-izquierda.png"],
+    description:
+      "Kit de dos bombillos LED GV System con aros de sellado rojos, disipadores grises, cableado trenzado y módulos controladores externos. Su geometría sugiere una base HB3/9005 o HB4/9006; ambas son parecidas, por lo que se deben confirmar las pestañas, el conector y el código exacto antes de vender o instalar.",
+    tags: ["LED", "9005/9006 probable", "Aro sellado", "Controlador externo", "Kit de 2"],
+    brandName: "G&V System",
+    isOwnBrand: true
+  },
+  {
+    id: "gv-led-h4",
+    slug: "gv-system-led-h4-luz-baja-alta",
+    name: "GV System H4 LED - luz baja y alta",
+    categorySlug: "kit-de-leds",
+    categoryName: "Kit de LEDs",
+    saleMode: "quote_only",
+    status: "available",
+    compatibilityMode: "universal",
+    vehicles: [],
+    images: ["/products/gv-system-kit-h4-logo-izquierda.png"],
+    description:
+      "Kit de dos bombillos LED GV System H4 de doble función, con conectores de tres terminales para luz baja y alta en una misma unidad. Incluye disipadores metálicos, módulos controladores y cableado trenzado. La base H4 está confirmada visualmente; se debe verificar el año, la versión, la polaridad, el espacio del faro y la posible necesidad de CANBUS.",
+    tags: ["LED", "H4 confirmada", "Luz baja y alta", "Kit de 2", "Controlador externo"],
+    brandName: "G&V System",
+    isOwnBrand: true
+  },
+  {
+    id: "gv-led-aro-azul",
+    slug: "gv-system-led-aro-azul-conector-sellado",
+    name: "GV System LED - aro azul y conector sellado",
+    categorySlug: "kit-de-leds",
+    categoryName: "Kit de LEDs",
+    saleMode: "quote_only",
+    status: "available",
+    compatibilityMode: "universal",
+    vehicles: [],
+    images: ["/products/gv-system-kit-azul-logo-izquierda.png"],
+    description:
+      "Kit de dos bombillos LED GV System con aros azules, conectores automotrices sellados, módulos controladores, cableado trenzado y disipadores metálicos. El conector corresponde probablemente a la familia H8/H9/H11; se debe confirmar el código exacto, la llave, la polaridad, CANBUS y el espacio disponible antes de instalar.",
+    tags: ["LED", "H8/H9/H11 probable", "Conector sellado", "Aro azul", "Kit de 2"],
+    brandName: "G&V System",
+    isOwnBrand: true
+  },
+  {
     id: "p-001",
     slug: "barra-led-20-pulgadas",
     name: "Barra LED 20 pulgadas",
