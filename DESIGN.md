@@ -270,6 +270,22 @@ Móvil (iPhone-first):
 - Modales: SIEMPRE montados con `createPortal(…, document.body)`; backdrop
   `rgba(15,23,42,.48)` a viewport completo.
 
+### Ficha de producto en móvil (patrón Airbnb)
+
+En ≤640px la ficha abre con la **foto a sangre completa** (sin marco ni
+radios), el volver flota encima en un círculo de vidrio, la **hoja de
+contenido se monta sobre la foto** con esquinas redondeadas, y el precio
+queda en una **barra fija inferior** con la acción de cotizar (respeta
+`env(safe-area-inset-bottom)`). En esa ficha los flotantes de WhatsApp e
+Instagram se ocultan: la barra ES la acción de WhatsApp y duplicarla es
+ruido. La galería es una pista `scroll-snap` con contador "1/N"; en
+escritorio conserva el marco redondeado y las miniaturas funcionan como
+control (tocar una desplaza la pista).
+
+OJO: `.product-detail-hero` tiene capas de CSS posteriores que también
+lo estilan en 640px — al tocar la ficha móvil, buscar TODAS las reglas
+(`grep "product-detail-hero {"`) o la capa de abajo pisa el layout.
+
 ## 6. Motion
 
 - Motor de animación de scroll: **GSAP** vía `src/components/ScrollFx.tsx`
