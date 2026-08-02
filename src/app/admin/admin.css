@@ -835,6 +835,64 @@
   color: var(--red-dark);
 }
 
+/* Insignia de portada sobre la primera miniatura */
+.image-upload__portada {
+  align-items: center;
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  border-radius: 999px;
+  box-shadow: 0 4px 12px rgba(230, 33, 53, 0.35);
+  color: #fff;
+  display: inline-flex;
+  font-size: 10px;
+  font-weight: var(--font-semibold);
+  gap: 4px;
+  left: 8px;
+  letter-spacing: 0.05em;
+  padding: 4px 9px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 8px;
+  z-index: 2;
+}
+
+.image-upload__portada-pista {
+  color: var(--muted);
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* Via avanzada plegada: pegar URLs a mano es la excepcion, no el flujo */
+.image-field__avanzado summary {
+  align-items: center;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  font-size: 12.5px;
+  font-weight: 600;
+  gap: 6px;
+  list-style: none;
+  padding: 4px 2px;
+  transition: color 160ms ease;
+  user-select: none;
+  width: fit-content;
+}
+
+.image-field__avanzado summary::-webkit-details-marker {
+  display: none;
+}
+
+.image-field__avanzado summary:hover {
+  color: var(--red-dark);
+}
+
+.image-field__avanzado[open] summary {
+  color: var(--ink);
+}
+
+.image-field__avanzado .image-field__url {
+  margin-top: 6px;
+}
+
 .image-editor__acciones {
   display: flex;
   gap: 10px;

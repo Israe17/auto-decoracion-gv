@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useEffect, useId, useState } from "react";
-import { ImageUp, Loader2, Trash2 } from "lucide-react";
+import { ImageUp, Link2, Loader2, Trash2 } from "lucide-react";
 import { uploadAdminImage } from "@/lib/storage";
 import {
   Borrador,
@@ -148,14 +148,21 @@ export function ImageUploadField({
         />
       </div>
 
-      <input
-        className="image-field__url"
-        name={name}
-        value={value}
-        required={required}
-        onChange={(event) => setValue(event.target.value)}
-        placeholder="o pegue una URL de imagen"
-      />
+      {/* Via avanzada plegada. El input sigue montado siempre: el
+          formulario lee este campo al guardar. */}
+      <details className="image-field__avanzado">
+        <summary>
+          <Link2 size={13} /> Pegar URL de imagen
+        </summary>
+        <input
+          className="image-field__url"
+          name={name}
+          value={value}
+          required={required}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder="https://..."
+        />
+      </details>
       {error && <span className="image-upload__error">{error}</span>}
     </div>
   );

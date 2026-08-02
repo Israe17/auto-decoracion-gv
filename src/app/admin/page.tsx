@@ -2025,7 +2025,6 @@ function ProductDialog({
         <div>
         <ImageListField
           name="images"
-          label="Imagenes del producto"
           defaultValue={product.images}
           folder="products"
           tarjeta={{ nombre: product.name, categoria: product.categoryName }}

@@ -1,7 +1,7 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useEffect, useId, useRef, useState } from "react";
-import { ImageUp, Loader2, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, ImageUp, Link2, Loader2, Star, Trash2 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
 import { uploadAdminImage } from "@/lib/storage";
 import {
@@ -21,7 +21,8 @@ export function ImageListField({
   tarjeta
 }: {
   name: string;
-  label: string;
+  /** Omitir cuando el encabezado del paso ya dice lo mismo. */
+  label?: string;
   defaultValue: string[];
   folder: string;
   /** Medida del recuadro donde viven estas imagenes en el sitio. */
@@ -118,11 +119,22 @@ export function ImageListField({
     setUrls((current) => current.filter((_, i) => i !== index));
   }
 
+  // La PRIMERA foto es la portada de la tarjeta: reordenar importa.
+  function mover(index: number, delta: number) {
+    setUrls((current) => {
+      const destino = index + delta;
+      if (destino < 0 || destino >= current.length) return current;
+      const copia = [...current];
+      [copia[index], copia[destino]] = [copia[destino], copia[index]];
+      return copia;
+    });
+  }
+
   const posicion = total - cola.length;
 
   return (
     <div className="image-field" ref={raizRef}>
-      <span className="image-field__label">{label}</span>
+      {label && <span className="image-field__label">{label}</span>}
 
       <div
         className={`image-upload image-upload--list${dragging ? " image-upload--dragging" : ""}${
@@ -144,7 +156,22 @@ export function ImageListField({
             {urls.map((url, index) => (
               <div key={`${url}-${index}`} className="image-upload__preview-card image-upload__preview-card--sm">
                 <img src={url} alt="" className="image-upload__preview" />
+                {index === 0 && (
+                  <span className="image-upload__portada">
+                    <Star size={11} /> Portada
+                  </span>
+                )}
                 <div className="image-upload__overlay">
+                  {index > 0 && (
+                    <button
+                      type="button"
+                      className="image-upload__overlay-btn"
+                      onClick={() => mover(index, -1)}
+                      aria-label="Mover antes"
+                    >
+                      <ArrowLeft size={15} />
+                    </button>
+                  )}
                   <button
                     type="button"
                     className="image-upload__overlay-btn image-upload__overlay-btn--danger"
@@ -153,6 +180,16 @@ export function ImageListField({
                   >
                     <Trash2 size={16} />
                   </button>
+                  {index < urls.length - 1 && (
+                    <button
+                      type="button"
+                      className="image-upload__overlay-btn"
+                      onClick={() => mover(index, 1)}
+                      aria-label="Mover despues"
+                    >
+                      <ArrowRight size={15} />
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
@@ -179,6 +216,7 @@ export function ImageListField({
             <strong>Arrastre imágenes aquí</strong>
             <span className="image-upload__hint">o haga clic para elegir archivos</span>
             <span className="image-upload__medida">Recuadro: {ancho}×{alto} px</span>
+            <span className="image-upload__portada-pista">La primera foto será la portada de la tarjeta.</span>
           </label>
         )}
 
@@ -202,14 +240,19 @@ export function ImageListField({
         />
       </div>
 
-      <textarea
-        className="image-field__url"
-        name={name}
-        rows={2}
-        value={urls.join("\n")}
-        onChange={(event) => setUrls(event.target.value.split("\n"))}
-        placeholder="o pegue una URL por linea"
-      />
+      <details className="image-field__avanzado">
+        <summary>
+          <Link2 size={13} /> Pegar URLs de imagen
+        </summary>
+        <textarea
+          className="image-field__url"
+          name={name}
+          rows={2}
+          value={urls.join("\n")}
+          onChange={(event) => setUrls(event.target.value.split("\n"))}
+          placeholder="una URL por línea"
+        />
+      </details>
       {error && <span className="image-upload__error">{error}</span>}
     </div>
   );
