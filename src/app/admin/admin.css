@@ -691,6 +691,133 @@
   font-size: 12.5px;
 }
 
+/* La medida del recuadro se anuncia ANTES de elegir la foto: asi el
+   dueno sabe que tamano buscar en vez de descubrirlo subiendo. */
+.image-upload__medida {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+  padding: 4px 10px;
+}
+
+.image-upload--dragging .image-upload__icon {
+  animation: icono-invita 700ms ease infinite alternate;
+}
+
+@keyframes icono-invita {
+  from {
+    transform: scale(1.05) translateY(-1px);
+  }
+  to {
+    transform: scale(1.16) translateY(-5px);
+  }
+}
+
+/* ===== Editor de encuadre =====
+   La foto se muestra dentro del marco con la proporcion REAL del sitio y
+   se arrastra para acomodarla. Lo que se ve es lo que se sube. */
+.image-editor {
+  animation: fadeUp 260ms ease both;
+  display: grid;
+  gap: 12px;
+}
+
+.image-editor__progreso {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.image-editor__marco {
+  border-radius: 16px;
+  box-shadow:
+    0 0 0 2px var(--red),
+    var(--shadow-md);
+  cursor: grab;
+  overflow: hidden;
+  position: relative;
+  /* el gesto es del editor, no de la pagina */
+  touch-action: none;
+  user-select: none;
+}
+
+.image-editor__marco:active {
+  cursor: grabbing;
+}
+
+.image-editor__marco img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  width: 100%;
+}
+
+.image-editor__pista {
+  align-items: center;
+  background: rgba(17, 21, 28, 0.62);
+  backdrop-filter: blur(6px);
+  border-radius: 999px;
+  bottom: 10px;
+  color: white;
+  display: inline-flex;
+  font-size: 12px;
+  font-weight: 600;
+  gap: 6px;
+  left: 50%;
+  padding: 6px 12px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+}
+
+.image-editor__datos {
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  gap: 6px 16px;
+}
+
+.image-editor__datos strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.image-editor__ok {
+  color: var(--green);
+  font-weight: 600;
+}
+
+.image-editor__aviso {
+  color: #b45309;
+  font-weight: 600;
+}
+
+.image-editor__acciones {
+  display: flex;
+  gap: 10px;
+}
+
+.image-editor__boton {
+  font-size: 13.5px;
+  min-height: 40px;
+  padding: 0 16px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .image-upload--dragging .image-upload__icon {
+    animation: none;
+  }
+}
+
 .image-upload__preview-card {
   animation: fadeUp 280ms ease both;
   aspect-ratio: 1.6;

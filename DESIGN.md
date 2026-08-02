@@ -186,6 +186,16 @@ Móvil (iPhone-first):
   **Accesos rápidos** y **Catálogo por categoría** (barras con el
   degradado de marca). PROHIBIDO inventar métricas: si el dato no existe
   en el catálogo, no se muestra.
+- **Editor de encuadre de imágenes del admin** (`EncuadreImagen.tsx`,
+  compartido por `ImageUploadField` e `ImageListField`): el dropzone
+  anuncia la medida del recuadro ANTES de elegir la foto; al elegirla se
+  muestra dentro de un marco con la proporción REAL del sitio (promos
+  1600×720, categorías 1200×720, marcas 600×600, productos 1100×1000 —
+  el `aspect-ratio: 1.1` de la tarjeta) y se arrastra para acomodarla.
+  Al confirmar se recorta en canvas con la MISMA matemática que
+  `object-position` y se sube el recorte: el sitio no guarda ninguna
+  posición. Varias fotos se encuadran una por una en cola ("Foto 2 de 5").
+  Avisos: "calza exacto" y "más pequeña que lo recomendado".
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
