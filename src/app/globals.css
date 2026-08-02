@@ -874,7 +874,10 @@ img {
   gap: 14px;
 }
 
-.product-gallery__main {
+/* Galeria de la ficha, patron Airbnb: una pista deslizable con
+   scroll-snap. En escritorio conserva el marco redondeado y las
+   miniaturas como control; en movil va a sangre completa. */
+.product-fotos {
   background: linear-gradient(135deg, #eef2f6, #f8fafc);
   border: 1px solid rgba(226, 231, 238, 0.9);
   border-radius: 28px;
@@ -884,15 +887,57 @@ img {
   position: relative;
 }
 
-.product-gallery__main img {
+.product-fotos__pista {
+  display: flex;
+  height: 100%;
+  inset: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  position: absolute;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+}
+
+.product-fotos__pista::-webkit-scrollbar {
+  display: none;
+}
+
+.product-fotos__foto {
+  flex: 0 0 100%;
+  position: relative;
+  scroll-snap-align: start;
+}
+
+.product-fotos__foto img {
   height: 100%;
   object-fit: cover;
-  transition: transform 520ms ease;
   width: 100%;
 }
 
-.product-gallery__main:hover img {
-  transform: scale(1.04);
+/* contador "1 / N" como el de Airbnb */
+.product-fotos__contador {
+  background: rgba(17, 21, 28, 0.66);
+  backdrop-filter: blur(6px);
+  border-radius: 10px;
+  bottom: 14px;
+  color: white;
+  font-size: 12.5px;
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.04em;
+  padding: 5px 10px;
+  position: absolute;
+  right: 14px;
+  z-index: 2;
+}
+
+/* volver flotante sobre la foto: solo tiene sentido en movil, en
+   escritorio ya existe el enlace de texto */
+.product-fotos__volver {
+  display: none;
+}
+
+.product-fotos .badge--discount {
+  z-index: 2;
 }
 
 .product-gallery__thumbs {
@@ -900,22 +945,39 @@ img {
   gap: 12px;
 }
 
-.product-gallery__thumbs span {
+.product-gallery__thumbs button {
   background: white;
   border: 1px solid var(--line);
   border-radius: 16px;
   box-shadow: var(--shadow-sm);
+  cursor: pointer;
   display: block;
   height: 86px;
   overflow: hidden;
+  padding: 0;
   position: relative;
+  transition: border-color 180ms ease, transform 180ms ease;
   width: 110px;
+}
+
+.product-gallery__thumbs button:hover {
+  transform: translateY(-2px);
+}
+
+.product-gallery__thumbs button.is-activa {
+  border-color: var(--red);
+  box-shadow: 0 0 0 2px rgba(230, 33, 53, 0.25);
 }
 
 .product-gallery__thumbs img {
   height: 100%;
   object-fit: cover;
   width: 100%;
+}
+
+/* Barra fija inferior (solo movil): precio siempre visible + cotizar */
+.product-cta-bar {
+  display: none;
 }
 
 .product-info {
@@ -1226,27 +1288,117 @@ img {
 }
 
 @media (max-width: 640px) {
+  /* Ficha estilo Airbnb: la foto abre a sangre completa, el volver
+     flota encima en un circulo de vidrio, la hoja de contenido se monta
+     sobre la foto con esquinas redondeadas y el precio queda fijo abajo
+     con la accion de cotizar. */
   .product-detail-hero {
-    padding: 24px 18px 10px;
+    padding: 0 0 10px;
   }
 
-  .product-gallery__main,
-  .product-info,
+  .product-detail-hero .product-detail__back {
+    display: none;
+  }
+
+  .product-fotos {
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    min-height: 46vh;
+  }
+
+  .product-fotos__volver {
+    align-items: center;
+    backdrop-filter: blur(8px);
+    background: rgba(255, 255, 255, 0.82);
+    border-radius: 999px;
+    box-shadow: var(--shadow-sm);
+    color: var(--ink);
+    display: inline-flex;
+    height: 42px;
+    justify-content: center;
+    left: 14px;
+    position: absolute;
+    top: calc(14px + env(safe-area-inset-top));
+    width: 42px;
+    z-index: 3;
+  }
+
+  .product-fotos .badge--discount {
+    left: auto;
+    right: 14px;
+  }
+
+  /* la hoja se monta sobre la foto, como la tarjeta de Airbnb */
+  .product-info {
+    border-radius: 26px 26px 20px 20px;
+    margin: -30px 14px 0;
+    padding: 22px 20px;
+    position: relative;
+    z-index: 2;
+  }
+
   .product-detail-card {
     border-radius: 20px;
   }
 
-  .product-gallery__main {
-    min-height: 320px;
+  .product-gallery {
+    gap: 0;
   }
 
   .product-gallery__thumbs {
-    overflow-x: auto;
-    padding-bottom: 4px;
+    display: none;
   }
 
-  .product-info {
-    padding: 20px;
+  /* barra fija inferior; deja hueco el flotante de WhatsApp, que en esta
+     ficha queda redundante (la barra ES la accion de WhatsApp) */
+  .product-cta-bar {
+    align-items: center;
+    background: rgba(255, 255, 255, 0.96);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid var(--line);
+    bottom: 0;
+    display: flex;
+    gap: 14px;
+    justify-content: space-between;
+    left: 0;
+    padding: 10px 16px calc(10px + env(safe-area-inset-bottom));
+    position: fixed;
+    right: 0;
+    z-index: 45;
+  }
+
+  .product-cta-bar > div {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+  }
+
+  .product-cta-bar strong {
+    color: var(--red-dark);
+    font-size: 20px;
+    line-height: 1.1;
+  }
+
+  .product-cta-bar span {
+    color: var(--muted);
+    font-size: 12.5px;
+  }
+
+  .product-cta-bar .button {
+    flex: none;
+    min-height: 46px;
+    padding: 0 20px;
+  }
+
+  /* el contenido no debe morir debajo de la barra */
+  .product-detail-content {
+    padding-bottom: 110px;
+  }
+
+  body:has(.product-cta-bar) .wa-float,
+  body:has(.product-cta-bar) .instagram-float {
+    display: none;
   }
 
   .product-info__price-card strong {
@@ -2768,20 +2920,14 @@ input[type="checkbox"] {
 }
 
 @media (max-width: 640px) {
+  /* la ficha movil es estilo Airbnb (capa anterior): foto a sangre y
+     hoja montada; esta capa solo ajusta la tipografia */
   .product-detail-hero {
-    padding: 22px 18px 8px;
-  }
-
-  .product-detail-hero .product-gallery__main {
-    height: 300px;
-  }
-
-  .product-detail-hero .product-info {
-    padding: 18px;
+    padding: 0 0 8px;
   }
 
   .product-detail-hero .product-info h1 {
-    font-size: 30px;
+    font-size: 28px;
   }
 }
 

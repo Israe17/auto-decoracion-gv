@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
@@ -22,6 +21,7 @@ import { fetchPublicCatalog } from "@/lib/store";
 import { productWhatsAppUrl } from "@/lib/whatsapp";
 import { siteUrl } from "@/lib/seo";
 import { ProductActions } from "@/components/ProductActions";
+import { ProductPhotos } from "@/components/ProductPhotos";
 import { ProductCard } from "@/components/ProductCard";
 
 const availabilityMap = {
@@ -150,27 +150,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Link>
 
         <div className="product-detail__grid">
-          <div className="product-gallery">
-            <div className="product-gallery__main">
-              {discount > 0 && <span className="badge badge--discount">−{discount}%</span>}
-              <Image
-                src={product.images[0]}
-                alt={product.name}
-                fill
-                sizes="(max-width: 980px) 100vw, 55vw"
-                priority
-              />
-            </div>
-            {product.images.length > 1 && (
-              <div className="product-gallery__thumbs" aria-label="Imagenes del producto">
-                {product.images.map((image, index) => (
-                  <span key={`${image}-${index}`}>
-                    <Image src={image} alt={`${product.name} ${index + 1}`} fill sizes="110px" />
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
+          <ProductPhotos images={product.images} name={product.name} discount={discount} />
 
           <div className="product-info">
             <div className="product-info__topline">
@@ -226,6 +206,26 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               </span>
             </div>
           </div>
+        </div>
+
+        {/* Barra fija inferior en movil (patron Airbnb): el precio y la
+            accion siempre a mano mientras se lee la ficha. En escritorio
+            no existe: alli el panel lateral ya es fijo. */}
+        <div className="product-cta-bar">
+          <div>
+            <strong>
+              {product.saleMode === "price_quote" ? formatCRC(product.price) : "Consultar precio"}
+            </strong>
+            <span>{statusLabel}</span>
+          </div>
+          <a
+            className="button button--primary"
+            href={productWhatsAppUrl(product)}
+            target="_blank"
+            rel="noopener"
+          >
+            <MessageCircle size={17} /> Cotizar
+          </a>
         </div>
       </section>
 
