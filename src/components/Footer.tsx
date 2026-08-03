@@ -27,6 +27,9 @@ export function Footer() {
         <Link href="/catalogo">
           Catálogo <ArrowRight size={15} />
         </Link>
+        <Link href="/galeria">
+          Galería de trabajos <ArrowRight size={15} />
+        </Link>
         <Link href="/#servicios">
           Servicios <ArrowRight size={15} />
         </Link>

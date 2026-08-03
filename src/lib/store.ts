@@ -1,4 +1,12 @@
-import { Brand, Category, ContactRequest, Product, Promo, VehicleModel } from "@/types";
+import {
+  Brand,
+  Category,
+  ContactRequest,
+  GalleryItem,
+  Product,
+  Promo,
+  VehicleModel
+} from "@/types";
 import { categories as seedCategories, products as seedProducts } from "./catalog";
 import { requireSupabase, supabaseEnabled } from "./supabase";
 import { getFeaturedStatus } from "./featured";
@@ -9,6 +17,7 @@ const VEHICLES = "vehicles";
 const PROMOS = "promos";
 const BRANDS = "brands";
 const CONTACT_REQUESTS = "contact_requests";
+const GALLERY = "gallery";
 
 const localKeys = {
   products: "gv-admin-products",
@@ -16,7 +25,8 @@ const localKeys = {
   vehicles: "gv-admin-vehicles",
   promos: "gv-admin-promos",
   brands: "gv-admin-brands",
-  requests: "gv-contact-requests"
+  requests: "gv-contact-requests",
+  gallery: "gv-admin-gallery"
 };
 const LOCAL_MIGRATION_DONE = "gv-admin-supabase-migrated";
 
@@ -218,6 +228,45 @@ export async function fetchPublicCatalog(): Promise<{
   }
 }
 
+// --- Galeria de trabajos del taller ---------------------------------------
+
+function sortGallery(items: GalleryItem[]) {
+  return [...items].sort(
+    (a, b) =>
+      (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER) ||
+      (b.createdAt || "").localeCompare(a.createdAt || "")
+  );
+}
+
+export async function fetchGallery(): Promise<GalleryItem[]> {
+  if (!supabaseEnabled) {
+    return sortGallery(readLocal(localKeys.gallery, [] as GalleryItem[]));
+  }
+
+  try {
+    return sortGallery(await listCollection<GalleryItem>(GALLERY));
+  } catch (error) {
+    console.error("No se pudo leer la galeria.", error);
+    return [];
+  }
+}
+
+export async function upsertGalleryItem(item: GalleryItem) {
+  if (!supabaseEnabled) {
+    localUpsert(localKeys.gallery, [] as GalleryItem[], item);
+    return item;
+  }
+  return guardar(GALLERY, item);
+}
+
+export async function removeGalleryItem(id: string) {
+  if (!supabaseEnabled) {
+    localRemove(localKeys.gallery, [] as GalleryItem[], id);
+    return;
+  }
+  await borrar(GALLERY, id);
+}
+
 // --- Solicitudes del formulario de contacto -------------------------------
 
 function sortRequests(requests: ContactRequest[]) {
@@ -330,6 +379,7 @@ export async function fetchAdminData(): Promise<{
   promos: Promo[];
   brands: Brand[];
   requests: ContactRequest[];
+  gallery: GalleryItem[];
 }> {
   if (!supabaseEnabled) {
     return {
@@ -338,17 +388,19 @@ export async function fetchAdminData(): Promise<{
       vehicles: readLocal(localKeys.vehicles, seedVehicles),
       promos: sortPromos(readLocal(localKeys.promos, seedPromos)),
       brands: readLocal(localKeys.brands, seedBrands),
-      requests: await fetchContactRequests()
+      requests: await fetchContactRequests(),
+      gallery: await fetchGallery()
     };
   }
 
-  const [products, categories, vehicles, promos, brands, requests] = await Promise.all([
+  const [products, categories, vehicles, promos, brands, requests, gallery] = await Promise.all([
     listCollection<Product>(PRODUCTS),
     listCollection<Category>(CATEGORIES),
     listCollection<VehicleModel>(VEHICLES),
     listCollection<Promo>(PROMOS),
     listCollection<Brand>(BRANDS),
-    fetchContactRequests()
+    fetchContactRequests(),
+    fetchGallery()
   ]);
 
   return {
@@ -357,7 +409,8 @@ export async function fetchAdminData(): Promise<{
     vehicles,
     promos: sortPromos(promos),
     brands: [...brands].sort((a, b) => a.name.localeCompare(b.name)),
-    requests
+    requests,
+    gallery
   };
 }
 

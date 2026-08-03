@@ -251,6 +251,17 @@ Móvil (iPhone-first):
   toque/Escape — pensado para cargar varios productos seguidos. Sustituye
   al aviso de esquina, que el dueño descartó. Nunca se muestra antes de
   que la base confirme la escritura.
+- **Galería de trabajos** (`/galeria`, `GalleryMasonry`): mosaico tipo Masonry
+  portado de React Bits (variante JS+CSS) y adaptado — clases propias
+  (`.galeria-mosaico`, `.galeria-pieza`; las del original, `.list` /
+  `.item-wrapper`, chocarían con el resto del CSS), **alturas por proporción**
+  y no por píxeles fijos, `next/image` con `fill` + `sizes` (fotos pesadas del
+  taller optimizadas) y sin animación con `prefers-reduced-motion`. Las piezas
+  se posicionan con GSAP; el CSS solo las viste (radio, `--shadow-card`,
+  pie con degradado). El dueño elige la **forma** al subir (vertical /
+  cuadrada / horizontal): esa forma define el recuadro del recorte en el admin
+  Y la altura de la pieza en el mosaico, así la galería queda pareja sin
+  pedirle medidas.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.

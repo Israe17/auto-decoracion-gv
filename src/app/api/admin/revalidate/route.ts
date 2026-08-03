@@ -33,6 +33,7 @@ export async function POST(request: Request) {
   revalidatePath("/catalogo");
   revalidatePath("/categoria/[slug]", "page");
   revalidatePath("/productos/[slug]", "page");
+  revalidatePath("/galeria");
   revalidatePath("/contacto");
   revalidatePath("/sitemap.xml");
 

@@ -11,6 +11,7 @@ type AdminLoadingTab =
   | "vehicles"
   | "categories"
   | "brands"
+  | "gallery"
   | "requests";
 
 function LoadingBlock({ className = "" }: { className?: string }) {
@@ -128,7 +129,9 @@ export function AdminCollectionSkeleton({ tab }: { tab: AdminLoadingTab }) {
               ? "Categorias registradas"
               : tab === "requests"
                 ? "Solicitudes de clientes"
-                : "Marcas registradas";
+                : tab === "gallery"
+                  ? "Galería de trabajos"
+                  : "Marcas registradas";
 
   return (
     <div className="admin-skeleton admin-skeleton--panel" ref={ref} aria-busy="true" aria-live="polite">

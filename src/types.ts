@@ -102,3 +102,18 @@ export type ContactRequest = {
   // ISO al momento de enviar; el admin la muestra en hora local.
   createdAt: string;
 };
+
+// Foto de un trabajo del taller para la galeria publica. La forma decide
+// el recorte al subirla y la altura de la pieza en el mosaico.
+export type GalleryShape = "vertical" | "cuadrada" | "horizontal";
+
+export type GalleryItem = {
+  id: string;
+  image: string;
+  title?: string;
+  description?: string;
+  shape: GalleryShape;
+  // Un numero menor se muestra primero.
+  order?: number;
+  createdAt?: string;
+};

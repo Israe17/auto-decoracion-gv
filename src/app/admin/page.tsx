@@ -10,6 +10,7 @@ import {
   Download,
   Eye,
   FolderTree,
+  Images,
   Megaphone,
   MessageCircle,
   Phone,
@@ -51,11 +52,13 @@ import {
   removeBrand,
   removeCategory,
   removeContactRequest,
+  removeGalleryItem,
   removeProduct,
   removePromo,
   removeVehicle,
   upsertCategory,
   upsertBrand,
+  upsertGalleryItem,
   upsertProduct,
   upsertPromo,
   upsertVehicle
@@ -64,6 +67,8 @@ import {
   Brand,
   Category,
   ContactRequest,
+  GalleryItem,
+  GalleryShape,
   Product,
   Promo,
   SaleMode,
@@ -78,6 +83,7 @@ type AdminTab =
   | "vehicles"
   | "categories"
   | "brands"
+  | "gallery"
   | "requests";
 
 type ConfirmState = {
@@ -174,6 +180,9 @@ export default function AdminPage() {
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [requests, setRequests] = useState<ContactRequest[]>([]);
+  const [gallery, setGallery] = useState<GalleryItem[]>([]);
+  const [editingGallery, setEditingGallery] = useState<GalleryItem | null>(null);
+  const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
   // El detalle es una PILA: navegar a una relacion apila y el boton
   // "Volver" del header regresa al detalle anterior sin cerrar el modal.
   const [detailStack, setDetailStack] = useState<AdminDetail[]>([]);
@@ -208,6 +217,7 @@ export default function AdminPage() {
         setVehicles(data.vehicles);
         setPromos(data.promos);
         setRequests(data.requests);
+        setGallery(data.gallery);
       })
       .catch((error) => {
         console.error(error);
@@ -717,6 +727,62 @@ export default function AdminPage() {
     });
   }
 
+  async function handleGallerySubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formElement = event.currentTarget;
+    const form = new FormData(formElement);
+    const orden = Number(form.get("galleryOrder"));
+    const item: GalleryItem = {
+      id: editingGallery?.id || `galeria-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+      image: String(form.get("galleryImage") || "").trim(),
+      title: String(form.get("galleryTitle") || "").trim() || undefined,
+      description: String(form.get("galleryDescription") || "").trim() || undefined,
+      shape: (String(form.get("galleryShape") || "vertical") as GalleryShape),
+      order: Number.isFinite(orden) && orden > 0 ? orden : undefined,
+      createdAt: editingGallery?.createdAt || new Date().toISOString()
+    };
+
+    if (!item.image) {
+      setMessage("Suba la foto del trabajo antes de guardar.");
+      return;
+    }
+
+    const exists = gallery.some((entry) => entry.id === item.id);
+
+    try {
+      const guardado = await upsertGalleryItem(item);
+      setGallery((current) =>
+        exists
+          ? current.map((entry) => (entry.id === item.id ? guardado : entry))
+          : [...current, guardado]
+      );
+      showSuccess(exists ? "Foto actualizada." : "Foto agregada a la galería.");
+      setEditingGallery(null);
+      setGalleryDialogOpen(false);
+      formElement.reset();
+    } catch (error) {
+      reportError(error);
+    }
+  }
+
+  function confirmDeleteGallery(item: GalleryItem) {
+    setConfirmState({
+      title: "Quitar foto de la galería",
+      body: `La foto${item.title ? ` "${item.title}"` : ""} dejará de aparecer en la página de galería.`,
+      actionLabel: "Quitar foto",
+      tone: "danger",
+      onConfirm: async () => {
+        try {
+          await removeGalleryItem(item.id);
+          setGallery((current) => current.filter((entry) => entry.id !== item.id));
+          showSuccess("Foto eliminada.");
+        } catch (error) {
+          reportError(error);
+        }
+      }
+    });
+  }
+
   async function handleBrandSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formElement = event.currentTarget;
@@ -804,6 +870,7 @@ export default function AdminPage() {
     ["vehicles", "Modelos de autos"],
     ["categories", "Categorias"],
     ["brands", "Marcas"],
+    ["gallery", "Galería"],
     ["requests", "Solicitudes"]
   ];
 
@@ -814,6 +881,7 @@ export default function AdminPage() {
     vehicles: <Car size={20} />,
     categories: <FolderTree size={20} />,
     brands: <BadgeCheck size={20} />,
+    gallery: <Images size={20} />,
     requests: <MessageCircle size={20} />
   };
 
@@ -1444,6 +1512,36 @@ export default function AdminPage() {
         </AdminPanelReveal>
       )}
 
+      {!loading && activeTab === "gallery" && (
+        <AdminPanelReveal tab="gallery">
+          <div className="admin-workspace admin-workspace--simple">
+            <AdminSimpleList
+              title="Galería de trabajos"
+              empty="Todavía no hay fotos. Suba trabajos terminados del taller: es lo que más convence al cliente."
+              createLabel="Nueva foto"
+              onCreate={() => {
+                setEditingGallery(null);
+                setGalleryDialogOpen(true);
+              }}
+              items={gallery.map((item) => ({
+                id: item.id,
+                title: item.title || "Trabajo del taller",
+                meta: `${item.shape}${item.order ? ` · orden ${item.order}` : ""}${
+                  item.description ? ` · ${item.description}` : ""
+                }`,
+                image: item.image,
+                onView: () => window.open("/galeria", "_blank", "noopener"),
+                onEdit: () => {
+                  setEditingGallery(item);
+                  setGalleryDialogOpen(true);
+                },
+                onDelete: () => confirmDeleteGallery(item)
+              }))}
+            />
+          </div>
+        </AdminPanelReveal>
+      )}
+
       {!loading && activeTab === "requests" && (
         <AdminPanelReveal tab="requests">
           <div className="admin-workspace admin-workspace--simple">
@@ -1460,6 +1558,17 @@ export default function AdminPage() {
             />
           </div>
         </AdminPanelReveal>
+      )}
+
+      {galleryDialogOpen && (
+        <GalleryDialog
+          item={editingGallery}
+          onClose={() => {
+            setGalleryDialogOpen(false);
+            setEditingGallery(null);
+          }}
+          onSubmit={handleGallerySubmit}
+        />
       )}
 
       {productDialog && (
@@ -2507,6 +2616,94 @@ function VehicleDialog({
             <label>
               Hasta
               <input name="toYear" type="number" defaultValue={vehicle?.toYear} />
+            </label>
+          </div>
+        </AdminStepper>
+      </form>
+    </AdminDialog>
+  );
+}
+
+function GalleryDialog({
+  item,
+  onClose,
+  onSubmit
+}: {
+  item: GalleryItem | null;
+  onClose: () => void;
+  onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  // La forma decide el recuadro del recorte Y la altura de la pieza en el
+  // mosaico, asi la galeria queda pareja sin pedirle medidas al dueno.
+  const [shape, setShape] = useState<GalleryShape>(item?.shape || "vertical");
+  const medidas: Record<GalleryShape, { ancho: number; alto: number }> = {
+    vertical: { ancho: 900, alto: 1200 },
+    cuadrada: { ancho: 1000, alto: 1000 },
+    horizontal: { ancho: 1200, alto: 860 }
+  };
+
+  return (
+    <AdminDialog title={item ? "Editar foto" : "Nueva foto de la galería"} onClose={onClose}>
+      <form
+        key={item?.id || "new-gallery"}
+        className="admin-form admin-dialog-form"
+        noValidate
+        onSubmit={onSubmit}
+      >
+        <AdminStepper steps={["Foto", "Detalles"]} submitLabel="Guardar foto">
+          <div>
+            <label>
+              Forma en el mosaico
+              <CustomSelect
+                ariaLabel="Forma en el mosaico"
+                name="galleryShape"
+                options={[
+                  { label: "Vertical (recomendada)", value: "vertical" },
+                  { label: "Cuadrada", value: "cuadrada" },
+                  { label: "Horizontal", value: "horizontal" }
+                ]}
+                value={shape}
+                onChange={(valor) => setShape(valor as GalleryShape)}
+              />
+            </label>
+            <ImageUploadField
+              key={shape}
+              name="galleryImage"
+              label="Foto del trabajo"
+              required
+              ancho={medidas[shape].ancho}
+              alto={medidas[shape].alto}
+              defaultValue={item?.image}
+              folder="gallery"
+            />
+          </div>
+          <div>
+            <label>
+              Título (opcional)
+              <input
+                name="galleryTitle"
+                defaultValue={item?.title}
+                placeholder="Ej: Polarizado en Hilux 2022"
+              />
+            </label>
+            <label>
+              Descripción (opcional)
+              <textarea
+                name="galleryDescription"
+                rows={3}
+                defaultValue={item?.description}
+                placeholder="Ej: Lámina de seguridad y estribos instalados en el taller."
+              />
+            </label>
+            <label>
+              Orden (opcional)
+              <input
+                name="galleryOrder"
+                type="number"
+                min={1}
+                defaultValue={item?.order}
+                placeholder="1 aparece de primera"
+              />
             </label>
           </div>
         </AdminStepper>
