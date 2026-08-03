@@ -2,7 +2,7 @@ import { requireSupabase } from "./supabase";
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/avif"]);
-const ALLOWED_FOLDERS = new Set(["products", "categories", "promos", "brands"]);
+const ALLOWED_FOLDERS = new Set(["products", "categories", "promos", "brands", "gallery"]);
 const MEDIA_BUCKET = "catalog-media";
 
 export async function uploadAdminImage(file: File, folder: string): Promise<string> {

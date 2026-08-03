@@ -35,6 +35,8 @@ Tailwind). Nunca pegar el código tal cual: adaptarlo SIEMPRE a DESIGN.md
   ejemplo (público) y localStorage (admin demo).
 - `src/lib/whatsapp.ts` — TODOS los enlaces de WhatsApp salen de aquí.
 - `src/lib/business.ts` — dirección, horario y datos del negocio.
+- `src/app/galeria/` — galería pública de trabajos del taller; sus fotos
+  se administran desde la pestaña "Galería" del admin (tabla `gallery`).
 - `src/app/admin/` — panel CRUD (cliente); login en
   `src/components/AdminGate.tsx`.
 - Base de datos: Supabase. El esquema y las politicas RLS viven en

@@ -557,6 +557,19 @@ img {
     url("/hero/catalogo-4x4.jpg") center 58% / cover;
 }
 
+/* Portada de la galeria: la foto del taller instalando, con el mismo
+   velado que el catalogo para que el titulo se lea. */
+.page-hero--gallery {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 13, 17, 0.92) 0%,
+      rgba(10, 13, 17, 0.7) 52%,
+      rgba(10, 13, 17, 0.26) 100%
+    ),
+    url("/hero/vehiculo.jpg") center 46% / cover;
+}
+
 .catalog-layout {
   align-items: start;
   display: grid;
@@ -9181,5 +9194,112 @@ select::-ms-expand {
   .quote-dialog__body .form-grid,
   .quote-dialog__body .form-grid--three {
     grid-template-columns: 1fr;
+  }
+}
+
+/* Galeria de trabajos: mosaico tipo Masonry (React Bits, variante JS+CSS)
+   adaptado al sistema. Las piezas se posicionan por transform desde JS;
+   aqui solo va su vestido. */
+.galeria-mosaico {
+  position: relative;
+  width: 100%;
+}
+
+.galeria-pieza {
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+  left: 0;
+  margin: 0;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  transition: box-shadow 220ms ease;
+  will-change: transform;
+}
+
+.galeria-pieza img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 520ms ease;
+  width: 100%;
+}
+
+/* next/image con fill: su envoltorio no debe recortar el hover. */
+.galeria-pieza > span,
+.galeria-pieza > img {
+  border-radius: inherit;
+}
+
+.galeria-pieza:hover {
+  box-shadow: var(--shadow-card-hover);
+}
+
+.galeria-pieza:hover img {
+  transform: scale(1.05);
+}
+
+.galeria-pieza figcaption {
+  background: linear-gradient(to top, rgba(10, 12, 15, 0.86), transparent);
+  bottom: 0;
+  color: white;
+  display: grid;
+  gap: 3px;
+  left: 0;
+  padding: 34px 16px 15px;
+  position: absolute;
+  right: 0;
+}
+
+.galeria-pieza figcaption strong {
+  font-size: 15px;
+  font-weight: var(--font-bold);
+  line-height: 1.25;
+}
+
+.galeria-pieza figcaption span {
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+/* Sin foto todavia: aviso con el lenguaje de las tarjetas. */
+.notice--empty {
+  align-items: center;
+  display: flex;
+  gap: 16px;
+  padding: 26px 28px;
+}
+
+.notice--empty svg {
+  color: var(--red);
+  flex: none;
+}
+
+.notice--empty strong {
+  color: var(--ink);
+  display: block;
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+.notice--empty p {
+  color: var(--muted);
+  margin: 0;
+}
+
+@media (hover: none) {
+  .galeria-pieza:hover img {
+    transform: none;
+  }
+}
+
+@media (max-width: 640px) {
+  .galeria-pieza {
+    border-radius: 16px;
+  }
+
+  .galeria-pieza figcaption {
+    padding: 28px 13px 12px;
   }
 }

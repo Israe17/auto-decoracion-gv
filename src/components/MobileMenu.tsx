@@ -14,6 +14,7 @@ import { SearchBox } from "./SearchBox";
 
 const links = [
   { href: "/catalogo", label: "Catálogo" },
+  { href: "/galeria", label: "Galería de trabajos" },
   { href: "/#servicios", label: "Servicios" },
   { href: "/contacto", label: "Contacto y ubicación" },
   { href: "/contacto#preguntas-frecuentes", label: "Preguntas frecuentes" },

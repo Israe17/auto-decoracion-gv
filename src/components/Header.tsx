@@ -23,6 +23,7 @@ export function Header() {
         </Link>
         <nav className="nav__links" aria-label="Navegacion principal">
           <Link href="/catalogo">Catálogo</Link>
+          <Link href="/galeria">Galería</Link>
           <Link href="/#servicios">Servicios</Link>
           <Link href="/contacto">Contacto</Link>
         </nav>
