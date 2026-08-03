@@ -213,6 +213,13 @@ Móvil (iPhone-first):
   cotizar sea un solo toque. Diálogo por portal, cierra con Escape o
   toque afuera; en móvil es hoja inferior a ancho completo con
   `env(safe-area-inset-bottom)` e inputs de 16px.
+- **Confirmación de los CRUD del admin** (`AdminSuccessDialog`): al guardar
+  o eliminar, modal CENTRADO sobre fondo velado con check verde que se
+  dibuja, "Cambio guardado" y el detalle ("Producto actualizado."). Se
+  cierra **solo a los 2 s** (barra de progreso a la vista) o antes con un
+  toque/Escape — pensado para cargar varios productos seguidos. Sustituye
+  al aviso de esquina, que el dueño descartó. Nunca se muestra antes de
+  que la base confirme la escritura.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.
