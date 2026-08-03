@@ -8003,7 +8003,9 @@ select::-ms-expand {
   background: var(--soft);
   border: 1px solid var(--line);
   border-radius: 999px;
-  color: var(--red-dark);
+  /* Rojo de marca (el que abre el degradado de los botones), no el rojo
+     oscuro de precios: todo el hero habla el mismo idioma de color. */
+  color: var(--red);
   display: inline-flex;
   font-size: 12.5px;
   font-weight: var(--font-heavy);
@@ -8025,9 +8027,25 @@ select::-ms-expand {
   text-wrap: balance;
 }
 
+/* Mismo acento que los titulos de seccion (cursiva + barra con el
+   degradado de marca). Las palabras van rellenas con ese degradado, el
+   de los botones, en vez del rojo plano que tenian. */
 .hero-cta__title em {
-  color: var(--red-dark);
-  font-style: normal;
+  background: linear-gradient(135deg, var(--red), #ff6b42);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: inline-block;
+  font-style: italic;
+}
+
+.hero-cta__title em::after {
+  background: linear-gradient(90deg, var(--red), #ff6b42);
+  border-radius: 999px;
+  content: "";
+  display: block;
+  height: 6px;
+  margin-top: 8px;
 }
 
 /* Prueba social: fila con separadores finos entre stats. */
@@ -8068,7 +8086,7 @@ select::-ms-expand {
 }
 
 .hero-cta__stat:first-child .hero-cta__stat-value b {
-  color: var(--red-dark);
+  color: var(--red);
 }
 
 .hero-cta__stat-label {
