@@ -330,6 +330,18 @@ lo estilan en 640px — al tocar la ficha móvil, buscar TODAS las reglas
   ScrollTrigger (los reveals siguen funcionando), activo en escritorio y
   táctil (`syncTouch`), con soporte de anclas. CSS de Lenis en
   `globals.css`. Se desactiva con reduced-motion.
+  **Trampa pagada**: con `syncTouch` Lenis escucha `touchmove` en `window`
+  con `passive: false` y lo cancela en cuanto el gesto tiene componente
+  vertical — cualquier scroller anidado (rieles de productos, miniaturas
+  de la ficha, marquee de categorías) queda MUERTO en el celular. La cura
+  es `allowNestedScroll: true` en la config (viene en `false` por
+  defecto); no basta con `data-lenis-prevent`, que además apagaría el
+  scroll suave dentro del bloque.
+- Los carriles horizontales usan `scroll-snap-type: x proximity`, **nunca
+  `mandatory`**: con padding lateral y `scroll-snap-align: start`, el punto
+  de snap de la última tarjeta cae más allá del scroll máximo y el snap
+  obligatorio devuelve al tope los arrastres de vuelta — el riel se siente
+  trabado al llegar al final.
 - `prefers-reduced-motion: reduce` desactiva todas las animaciones.
 - Estados iniciales los pone GSAP (no CSS): sin JavaScript el contenido se
   ve completo.
