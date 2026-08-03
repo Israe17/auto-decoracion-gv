@@ -9200,6 +9200,18 @@ select::-ms-expand {
   }
 }
 
+/* El mosaico cierra su seccion sin los 72px de siempre: la banda de abajo
+   es su remate, no un bloque aparte. */
+.galeria-seccion {
+  padding-bottom: 36px;
+}
+
+/* Cierre de la galeria: banda + enlace al catalogo son UN bloque. Antes
+   vivian en dos secciones distintas y entre ellos quedaban 108px de aire. */
+.galeria-cierre__extra {
+  margin: 22px 0 0;
+}
+
 /* Galeria de trabajos: mosaico tipo Masonry (React Bits, variante JS+CSS)
    adaptado al sistema. Las piezas se posicionan por transform desde JS;
    aqui solo va su vestido. */

@@ -27,7 +27,7 @@ export default async function GalleryPage() {
         </p>
       </section>
 
-      <section className="section section--tight">
+      <section className="section section--tight galeria-seccion">
         {items.length > 0 ? (
           <GalleryMasonry items={items} />
         ) : (
@@ -44,7 +44,7 @@ export default async function GalleryPage() {
         )}
       </section>
 
-      <section className="section section--tight">
+      <section className="section section--tight galeria-cierre">
         <div className="cta-band glare-host">
           <span className="glare" aria-hidden="true" />
           <MessageCircle size={34} />
@@ -64,12 +64,11 @@ export default async function GalleryPage() {
             Cotizar por WhatsApp <ArrowRight size={18} />
           </a>
         </div>
-      </section>
-
-      <section className="section section--tight">
-        <Link className="text-link" href="/catalogo">
-          Ver el catálogo completo <ArrowRight size={18} />
-        </Link>
+        <p className="galeria-cierre__extra">
+          <Link className="text-link" href="/catalogo">
+            Ver el catálogo completo <ArrowRight size={18} />
+          </Link>
+        </p>
       </section>
     </>
   );
