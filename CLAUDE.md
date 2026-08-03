@@ -45,6 +45,10 @@ Tailwind). Nunca pegar el código tal cual: adaptarlo SIEMPRE a DESIGN.md
   (solicitudes del formulario de contacto) permite al anónimo SOLO
   insertar; leer y borrar exige sesión — contiene nombres y teléfonos de
   clientes y nunca debe tener lectura pública.
-- Las imagenes NO estan en Supabase Storage: se suben a Cloudinary desde
-  `src/lib/storage.ts`, y `/api/admin/images` firma la subida despues de
-  validar la sesion contra Supabase.
+- Las imagenes del admin se suben a **Supabase Storage** (bucket
+  `catalog-media`, `src/lib/storage.ts`). Al agregar un origen nuevo de
+  imagenes hay que autorizar su host en `remotePatterns` de
+  `next.config.mjs`: el optimizador de `next/image` rechaza los hosts no
+  listados y las tarjetas salen en blanco en el sitio aunque en el admin
+  (que usa `<img>` normal) se vean bien. El host de Supabase se deriva de
+  `NEXT_PUBLIC_SUPABASE_URL`.
