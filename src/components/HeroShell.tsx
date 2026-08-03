@@ -2,7 +2,7 @@
 
 import { CSSProperties, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ArrowRight, Clock, MapPin, MessageCircle, Zap } from "lucide-react";
+import { ArrowRight, Clock, MapPin, MessageCircle } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 import gsap from "gsap";
 import { business } from "@/lib/business";
@@ -97,10 +97,6 @@ export function HeroShell({
       <span className="hero-cta__aura" aria-hidden="true" />
 
       <div className="hero-cta__card">
-        <span className="hero-cta__badge" data-reveal>
-          <Zap size={15} /> Cotización en minutos por WhatsApp
-        </span>
-
         <h2 className="hero-cta__title" data-reveal style={d(".06s")}>
           Todo para su vehículo, <em>instalado por expertos</em>
         </h2>
