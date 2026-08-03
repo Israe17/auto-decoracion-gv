@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { PackageSearch, SlidersHorizontal, X } from "lucide-react";
+import { PackageSearch, Search, SlidersHorizontal, X } from "lucide-react";
 import { ProductCard } from "@/components/ProductCard";
 import { CustomSelect } from "@/components/CustomSelect";
 import { VehicleFinder, VehicleQuery } from "@/components/VehicleFinder";
@@ -240,15 +240,40 @@ export function CatalogExplorer({
 
       <div>
         <div className="catalog-toolbar">
-          <span>
-            {results.length} producto(s)
-            {vehicleLabel ? ` para ${vehicleLabel}` : ""}
-          </span>
-          {hasAnyFilter && (
-            <button className="catalog-clear" type="button" onClick={clearAll}>
-              <X size={15} /> Limpiar filtros
-            </button>
-          )}
+          <div className="catalog-toolbar__meta">
+            <span>
+              {results.length} producto(s)
+              {vehicleLabel ? ` para ${vehicleLabel}` : ""}
+            </span>
+            {hasAnyFilter && (
+              <button className="catalog-clear" type="button" onClick={clearAll}>
+                <X size={15} /> Limpiar filtros
+              </button>
+            )}
+          </div>
+
+          {/* En movil los filtros quedan debajo de la rejilla: el buscador
+              vive aqui para tenerlo a mano sin abrir el menu. */}
+          <label className="catalog-search">
+            <Search size={17} aria-hidden="true" />
+            <input
+              type="search"
+              value={filters.q}
+              onChange={(event) => apply({ q: event.target.value })}
+              placeholder="Buscar en el catálogo…"
+              aria-label="Buscar en el catálogo"
+            />
+            {filters.q && (
+              <button
+                type="button"
+                className="catalog-search__clear"
+                aria-label="Borrar búsqueda"
+                onClick={() => apply({ q: "" })}
+              >
+                <X size={15} />
+              </button>
+            )}
+          </label>
         </div>
 
         {hasVehicleFilter && results.length > 0 && (
