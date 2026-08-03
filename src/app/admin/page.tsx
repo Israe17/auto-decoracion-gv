@@ -3017,15 +3017,27 @@ function AdminDetailRelation({
   title: string;
   meta: string;
   image?: string;
-  onClick: () => void;
+  // Sin onClick la fila es informativa: no hay ficha que abrir (la linea
+  // propia no es una marca registrada, es una casilla del producto).
+  onClick?: () => void;
 }) {
-  return (
-    <button className="admin-detail-relation" type="button" onClick={onClick}>
+  const contenido = (
+    <>
       {image ? <img src={image} alt="" /> : <span className="admin-row-icon" aria-hidden="true" />}
       <span className="admin-detail-relation__body">
         <strong>{title}</strong>
         <small>{meta}</small>
       </span>
+    </>
+  );
+
+  if (!onClick) {
+    return <div className="admin-detail-relation admin-detail-relation--nota">{contenido}</div>;
+  }
+
+  return (
+    <button className="admin-detail-relation" type="button" onClick={onClick}>
+      {contenido}
       <Eye size={16} />
     </button>
   );
@@ -3111,6 +3123,7 @@ function AdminDetailDialog({
       const relatedProducts = products
         .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
         .slice(0, 4);
+      const ownLineCount = products.filter((item) => item.isOwnBrand).length;
       // Conserva la fila declarada por el producto (row) para mostrar SU
       // rango de anos, no el rango generico del modelo en el catalogo.
       const relatedVehicles = product.vehicles.flatMap((row) => {
@@ -3188,13 +3201,30 @@ function AdminDetailDialog({
             )}
           </AdminDetailSection>
 
-          <AdminDetailSection title="Marca relacionada" empty="Este producto no tiene una marca registrada.">
-            {brand && (
+          <AdminDetailSection title="Marca relacionada" empty="Este producto no tiene marca ni linea propia.">
+            {/* La linea propia NO es una marca de la tabla (se guarda como
+                casilla del producto, sin brandId), asi que hay que
+                declararla aparte o la seccion sale vacia contradiciendo la
+                ficha de arriba. Igual con las marcas viejas escritas a
+                mano, que tampoco tienen registro que abrir. */}
+            {product.isOwnBrand ? (
+              <AdminDetailRelation
+                title="G&V System"
+                meta={`Linea propia de la casa · ${ownLineCount} producto(s)`}
+              />
+            ) : brand ? (
               <AdminDetailRelation
                 title={brand.name}
                 meta={brand.description || "Sin descripcion"}
                 onClick={() => onSelect({ kind: "brand", item: brand })}
               />
+            ) : (
+              product.brandName && (
+                <AdminDetailRelation
+                  title={product.brandName}
+                  meta="Marca escrita a mano, sin ficha registrada"
+                />
+              )
             )}
           </AdminDetailSection>
 

@@ -4503,6 +4503,18 @@ body {
   color: var(--red);
 }
 
+/* Fila informativa (sin ficha que abrir): misma caja, sin ojo ni reaccion
+   al pasar el mouse, para que no se lea como algo que se puede tocar. */
+.admin-detail-relation--nota {
+  cursor: default;
+  grid-template-columns: 42px minmax(0, 1fr);
+}
+
+.admin-detail-relation--nota:hover {
+  background: #ffffff;
+  color: #2e3a4c;
+}
+
 .admin-detail-relation:focus-visible {
   background: #fff6f7;
   color: var(--red);
