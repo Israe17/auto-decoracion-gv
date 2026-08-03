@@ -36,7 +36,7 @@ import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
-import { AdminSuccessToast } from "@/components/admin/AdminSuccessToast";
+import { AdminSuccessDialog } from "@/components/admin/AdminSuccessDialog";
 import { CustomSelect } from "@/components/CustomSelect";
 import {
   AdminCollectionSkeleton,
@@ -1068,7 +1068,7 @@ export default function AdminPage() {
 
       {message && <p className="form-status form-status--error" role="alert">{message}</p>}
       {successMessage && (
-        <AdminSuccessToast
+        <AdminSuccessDialog
           key={successMessage}
           message={successMessage}
           onClose={() => setSuccessMessage("")}
