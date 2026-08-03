@@ -37,6 +37,8 @@ export function QuoteTray() {
         <MessageCircle size={18} /> WhatsApp
       </button>
       <button
+        type="button"
+        className="quote-tray__vaciar"
         aria-label="Vaciar cotizacion"
         onClick={() => {
           localStorage.removeItem(key);
