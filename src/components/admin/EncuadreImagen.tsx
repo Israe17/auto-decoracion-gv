@@ -196,6 +196,7 @@ export function EditorDeEncuadre({
         <button
           className="button button--primary image-editor__boton"
           type="button"
+          data-image-confirm
           disabled={ocupado}
           onClick={onConfirmar}
         >

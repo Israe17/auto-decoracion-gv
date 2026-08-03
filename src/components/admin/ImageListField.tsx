@@ -44,6 +44,7 @@ export function ImageListField({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const pending = Boolean(borrador || uploading || cola.length);
 
   useEffect(() => {
     const url = borrador?.url;
@@ -133,7 +134,11 @@ export function ImageListField({
   const posicion = total - cola.length;
 
   return (
-    <div className="image-field" ref={raizRef}>
+    <div
+      className="image-field"
+      ref={raizRef}
+      data-image-pending={pending ? "true" : undefined}
+    >
       {label && <span className="image-field__label">{label}</span>}
 
       <div
@@ -253,6 +258,11 @@ export function ImageListField({
           placeholder="una URL por línea"
         />
       </details>
+      {pending && (
+        <span className="image-upload__pending" role="status">
+          Confirme cada recorte con “Usar así” antes de continuar.
+        </span>
+      )}
       {error && <span className="image-upload__error">{error}</span>}
     </div>
   );

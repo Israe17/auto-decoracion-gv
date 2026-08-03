@@ -24,23 +24,39 @@ export function AdminStepper({
     form?.scrollTo({ top: 0, behavior: reduceMotion ? "auto" : "smooth" });
   }, [step]);
 
-  function validateCurrent() {
-    const panel = panelsRef.current?.children[step];
+  function validatePanel(index: number) {
+    const panel = panelsRef.current?.children[index];
     if (!panel) return true;
+
+    const pendingImage = panel.querySelector<HTMLElement>('[data-image-pending="true"]');
+    if (pendingImage) {
+      setStep(index);
+      window.requestAnimationFrame(() => {
+        pendingImage.querySelector<HTMLElement>("[data-image-confirm]")?.focus();
+      });
+      return false;
+    }
+
     const fields = Array.from(panel.querySelectorAll<Field>("input, select, textarea"));
     const invalid = fields.find((field) => !field.checkValidity());
     if (!invalid) return true;
-    invalid.reportValidity();
-    invalid.focus();
+    setStep(index);
+    window.requestAnimationFrame(() => {
+      invalid.reportValidity();
+      invalid.focus();
+    });
     return false;
   }
 
   function advance() {
-    if (validateCurrent()) setStep((current) => Math.min(steps.length - 1, current + 1));
+    if (validatePanel(step)) setStep((current) => Math.min(steps.length - 1, current + 1));
   }
 
   function submit() {
-    if (validateCurrent()) panelsRef.current?.closest("form")?.requestSubmit();
+    for (let index = 0; index < panels.length; index += 1) {
+      if (!validatePanel(index)) return;
+    }
+    panelsRef.current?.closest("form")?.requestSubmit();
   }
 
   function handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>) {

@@ -34,6 +34,15 @@ export function ImageUploadField({
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragging, setDragging] = useState(false);
+  const pending = Boolean(borrador || uploading);
+
+  // Si el mismo campo pasa de un registro a otro, su vista previa debe
+  // seguir el valor real del registro y no conservar la imagen anterior.
+  useEffect(() => {
+    setValue(defaultValue || "");
+    setBorrador(null);
+    setError(null);
+  }, [defaultValue]);
 
   // El object URL del borrador se libera al reemplazarlo o desmontar.
   useEffect(() => {
@@ -74,7 +83,7 @@ export function ImageUploadField({
   }
 
   return (
-    <div className="image-field">
+    <div className="image-field" data-image-pending={pending ? "true" : undefined}>
       <span className="image-field__label">{label}</span>
 
       <div
@@ -163,6 +172,11 @@ export function ImageUploadField({
           placeholder="https://..."
         />
       </details>
+      {pending && (
+        <span className="image-upload__pending" role="status">
+          Confirme el recorte con “Usar así” antes de continuar.
+        </span>
+      )}
       {error && <span className="image-upload__error">{error}</span>}
     </div>
   );

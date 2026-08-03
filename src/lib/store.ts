@@ -81,16 +81,57 @@ async function listCollection<T>(name: string): Promise<T[]> {
   return (data ?? []).map((row) => row.data as T);
 }
 
-async function guardar<T extends { id: string }>(tabla: string, fila: T) {
-  const { error } = await requireSupabase()
+async function revalidarCatalogoPublico() {
+  if (typeof window === "undefined") return;
+
+  try {
+    const {
+      data: { session }
+    } = await requireSupabase().auth.getSession();
+    const response = await fetch("/api/admin/revalidate", {
+      method: "POST",
+      headers: session?.access_token
+        ? { Authorization: `Bearer ${session.access_token}` }
+        : undefined
+    });
+    if (!response.ok) {
+      const result = (await response.json().catch(() => null)) as { error?: string } | null;
+      throw new Error(result?.error || "No se pudo actualizar el catalogo publico.");
+    }
+  } catch (error) {
+    // La escritura ya fue verificada. Si solo falla la invalidacion, no se
+    // presenta el guardado como fallido; la revalidacion normal de 60 s sigue
+    // siendo el respaldo.
+    console.warn("El cambio se guardo, pero no se pudo refrescar el catalogo.", error);
+  }
+}
+
+async function guardar<T extends { id: string }>(tabla: string, fila: T): Promise<T> {
+  const limpia = clean(fila);
+  const { data, error } = await requireSupabase()
     .from(tabla)
-    .upsert({ id: fila.id, data: clean(fila) });
+    .upsert({ id: fila.id, data: limpia })
+    .select("data")
+    .single();
   if (error) throw new Error(error.message);
+  const guardada = data?.data as T | undefined;
+  if (!guardada || guardada.id !== fila.id) {
+    throw new Error("La base de datos no confirmo el cambio.");
+  }
+  await revalidarCatalogoPublico();
+  return guardada;
 }
 
 async function borrar(tabla: string, id: string) {
-  const { error } = await requireSupabase().from(tabla).delete().eq("id", id);
+  const { data, error } = await requireSupabase()
+    .from(tabla)
+    .delete()
+    .eq("id", id)
+    .select("id")
+    .maybeSingle();
   if (error) throw new Error(error.message);
+  if (!data?.id) throw new Error("La base de datos no confirmo la eliminacion.");
+  await revalidarCatalogoPublico();
 }
 
 function sortProducts(products: Product[]) {
@@ -247,10 +288,15 @@ export function hasLocalAdminData() {
 
 async function guardarLote<T extends { id: string }>(tabla: string, filas: T[]) {
   if (!filas.length) return;
-  const { error } = await requireSupabase()
+  const { data, error } = await requireSupabase()
     .from(tabla)
-    .upsert(filas.map((fila) => ({ id: fila.id, data: clean(fila) })));
+    .upsert(filas.map((fila) => ({ id: fila.id, data: clean(fila) })))
+    .select("id");
   if (error) throw new Error(error.message);
+  if (data?.length !== filas.length) {
+    throw new Error("La base de datos no confirmo todos los cambios.");
+  }
+  await revalidarCatalogoPublico();
 }
 
 export async function migrateLocalAdminDataToSupabase() {
@@ -318,9 +364,9 @@ export async function fetchAdminData(): Promise<{
 export async function upsertProduct(product: Product) {
   if (!supabaseEnabled) {
     localUpsert(localKeys.products, seedProducts, product);
-    return;
+    return product;
   }
-  await guardar(PRODUCTS, product);
+  return guardar(PRODUCTS, product);
 }
 
 export async function removeProduct(id: string) {
@@ -334,9 +380,9 @@ export async function removeProduct(id: string) {
 export async function upsertCategory(category: Category) {
   if (!supabaseEnabled) {
     localUpsert(localKeys.categories, seedCategories, category);
-    return;
+    return category;
   }
-  await guardar(CATEGORIES, category);
+  return guardar(CATEGORIES, category);
 }
 
 export async function removeCategory(id: string) {
@@ -350,9 +396,9 @@ export async function removeCategory(id: string) {
 export async function upsertVehicle(vehicle: VehicleModel) {
   if (!supabaseEnabled) {
     localUpsert(localKeys.vehicles, seedVehicles, vehicle);
-    return;
+    return vehicle;
   }
-  await guardar(VEHICLES, vehicle);
+  return guardar(VEHICLES, vehicle);
 }
 
 export async function removeVehicle(id: string) {
@@ -366,9 +412,9 @@ export async function removeVehicle(id: string) {
 export async function upsertPromo(promo: Promo) {
   if (!supabaseEnabled) {
     localUpsert(localKeys.promos, seedPromos, promo);
-    return;
+    return promo;
   }
-  await guardar(PROMOS, promo);
+  return guardar(PROMOS, promo);
 }
 
 export async function removePromo(id: string) {
@@ -382,9 +428,9 @@ export async function removePromo(id: string) {
 export async function upsertBrand(brand: Brand) {
   if (!supabaseEnabled) {
     localUpsert(localKeys.brands, seedBrands, brand);
-    return;
+    return brand;
   }
-  await guardar(BRANDS, brand);
+  return guardar(BRANDS, brand);
 }
 
 export async function removeBrand(id: string) {

@@ -36,6 +36,7 @@ import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
+import { AdminSuccessToast } from "@/components/admin/AdminSuccessToast";
 import { CustomSelect } from "@/components/CustomSelect";
 import {
   AdminCollectionSkeleton,
@@ -186,6 +187,12 @@ export default function AdminPage() {
   const [query, setQuery] = useState("");
   const [vehicleFilter, setVehicleFilter] = useState("all");
   const [message, setMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
+
+  function showSuccess(nextMessage: string) {
+    setMessage("");
+    setSuccessMessage(nextMessage);
+  }
 
   useEffect(() => {
     let active = true;
@@ -361,6 +368,7 @@ export default function AdminPage() {
 
   function reportError(error: unknown) {
     console.error(error);
+    setSuccessMessage("");
     setMessage("No se pudo guardar el cambio. Revise la conexion e intente de nuevo.");
   }
 
@@ -417,7 +425,7 @@ export default function AdminPage() {
       setVehicles(data.vehicles);
       setPromos(data.promos);
       setLocalMigrationAvailable(false);
-      setMessage(
+      showSuccess(
         `Migracion completa: ${migrated.products} productos, ${migrated.categories} categorias y ${migrated.vehicles} modelos.`
       );
     } catch (error) {
@@ -437,7 +445,7 @@ export default function AdminPage() {
       setBrands(data.brands);
       setVehicles(data.vehicles);
       setPromos(data.promos);
-      setMessage("Catalogo de ejemplo importado.");
+      showSuccess("Catálogo de ejemplo importado.");
     } catch (error) {
       reportError(error);
     } finally {
@@ -448,13 +456,13 @@ export default function AdminPage() {
   async function saveProduct(product: Product) {
     const exists = products.some((item) => item.id === product.id);
     try {
-      await upsertProduct(product);
+      const savedProduct = await upsertProduct(product);
       setProducts(
         exists
-          ? products.map((item) => (item.id === product.id ? product : item))
-          : [product, ...products]
+          ? products.map((item) => (item.id === product.id ? savedProduct : item))
+          : [savedProduct, ...products]
       );
-      setMessage(exists ? "Producto actualizado." : "Producto creado.");
+      showSuccess(exists ? "Producto actualizado." : "Producto creado.");
       setProductDialog(null);
     } catch (error) {
       reportError(error);
@@ -482,9 +490,9 @@ export default function AdminPage() {
     };
 
     try {
-      await upsertProduct(updated);
-      setProducts(products.map((item) => (item.id === productId ? updated : item)));
-      setMessage("Oferta y destacado actualizados.");
+      const savedProduct = await upsertProduct(updated);
+      setProducts(products.map((item) => (item.id === productId ? savedProduct : item)));
+      showSuccess("Oferta y destacado actualizados.");
       setOfferDialog(undefined);
     } catch (error) {
       reportError(error);
@@ -501,7 +509,7 @@ export default function AdminPage() {
         try {
           await removeProduct(product.id);
           setProducts((prev) => prev.filter((item) => item.id !== product.id));
-          setMessage("Producto eliminado.");
+          showSuccess("Producto eliminado.");
         } catch (error) {
           reportError(error);
         }
@@ -525,9 +533,9 @@ export default function AdminPage() {
           featuredOrder: undefined
         };
         try {
-          await upsertProduct(updated);
-          setProducts((prev) => prev.map((item) => (item.id === product.id ? updated : item)));
-          setMessage("Promocion eliminada.");
+          const savedProduct = await upsertProduct(updated);
+          setProducts((prev) => prev.map((item) => (item.id === product.id ? savedProduct : item)));
+          showSuccess("Promoción eliminada.");
         } catch (error) {
           reportError(error);
         }
@@ -546,19 +554,19 @@ export default function AdminPage() {
       slug: editingCategory?.slug || makeSlug(name),
       name,
       description: String(form.get("categoryDescription") || ""),
-      image: String(form.get("categoryImage") || ""),
+      image: String(form.get("categoryImage") || "").trim(),
       parent: parent || undefined
     };
 
     const exists = categories.some((item) => item.id === category.id);
     try {
-      await upsertCategory(category);
+      const savedCategory = await upsertCategory(category);
       setCategories(
         exists
-          ? categories.map((item) => (item.id === category.id ? category : item))
-          : [category, ...categories]
+          ? categories.map((item) => (item.id === category.id ? savedCategory : item))
+          : [savedCategory, ...categories]
       );
-      setMessage("Categorias actualizadas.");
+      showSuccess(exists ? "Categoría e imagen actualizadas." : "Categoría creada.");
       setEditingCategory(null);
       setCategoryDialogOpen(false);
       formElement.reset();
@@ -585,13 +593,13 @@ export default function AdminPage() {
 
     const exists = promos.some((item) => item.id === promo.id);
     try {
-      await upsertPromo(promo);
+      const savedPromo = await upsertPromo(promo);
       setPromos(
         exists
-          ? promos.map((item) => (item.id === promo.id ? promo : item))
-          : [...promos, promo]
+          ? promos.map((item) => (item.id === promo.id ? savedPromo : item))
+          : [...promos, savedPromo]
       );
-      setMessage("Promociones actualizadas.");
+      showSuccess(exists ? "Promoción actualizada." : "Promoción creada.");
       setEditingPromo(null);
       setPromoDialogOpen(false);
       formElement.reset();
@@ -610,7 +618,7 @@ export default function AdminPage() {
         try {
           await removePromo(promo.id);
           setPromos((prev) => prev.filter((item) => item.id !== promo.id));
-          setMessage("Promocion eliminada.");
+          showSuccess("Promoción eliminada.");
         } catch (error) {
           reportError(error);
         }
@@ -631,7 +639,7 @@ export default function AdminPage() {
         try {
           await removeCategory(category.id);
           setCategories((prev) => prev.filter((item) => item.id !== category.id));
-          setMessage("Categoria eliminada.");
+          showSuccess("Categoría eliminada.");
         } catch (error) {
           reportError(error);
         }
@@ -655,13 +663,13 @@ export default function AdminPage() {
 
     const exists = vehicles.some((item) => item.id === vehicle.id);
     try {
-      await upsertVehicle(vehicle);
+      const savedVehicle = await upsertVehicle(vehicle);
       setVehicles(
         exists
-          ? vehicles.map((item) => (item.id === vehicle.id ? vehicle : item))
-          : [vehicle, ...vehicles]
+          ? vehicles.map((item) => (item.id === vehicle.id ? savedVehicle : item))
+          : [savedVehicle, ...vehicles]
       );
-      setMessage("Modelos actualizados.");
+      showSuccess(exists ? "Modelo actualizado." : "Modelo creado.");
       setEditingVehicle(null);
       setVehicleDialogOpen(false);
       formElement.reset();
@@ -680,7 +688,7 @@ export default function AdminPage() {
         try {
           await removeContactRequest(request.id);
           setRequests((prev) => prev.filter((item) => item.id !== request.id));
-          setMessage("Solicitud eliminada.");
+          showSuccess("Solicitud eliminada.");
         } catch (error) {
           reportError(error);
         }
@@ -701,7 +709,7 @@ export default function AdminPage() {
         try {
           await removeVehicle(vehicle.id);
           setVehicles((prev) => prev.filter((item) => item.id !== vehicle.id));
-          setMessage("Modelo eliminado.");
+          showSuccess("Modelo eliminado.");
         } catch (error) {
           reportError(error);
         }
@@ -729,12 +737,12 @@ export default function AdminPage() {
       : [];
 
     try {
-      await upsertBrand(brand);
+      const savedBrand = await upsertBrand(brand);
       await Promise.all(renamedProducts.map((product) => upsertProduct(product)));
       setBrands((current) =>
         (exists
-          ? current.map((item) => (item.id === brand.id ? brand : item))
-          : [...current, brand]
+          ? current.map((item) => (item.id === brand.id ? savedBrand : item))
+          : [...current, savedBrand]
         ).sort((a, b) => a.name.localeCompare(b.name))
       );
       if (renamedProducts.length) {
@@ -746,7 +754,7 @@ export default function AdminPage() {
           )
         );
       }
-      setMessage(exists ? "Marca actualizada." : "Marca creada.");
+      showSuccess(exists ? "Marca actualizada." : "Marca creada.");
       setEditingBrand(null);
       setBrandDialogOpen(false);
       formElement.reset();
@@ -781,7 +789,7 @@ export default function AdminPage() {
               )
             );
           }
-          setMessage("Marca eliminada.");
+          showSuccess("Marca eliminada.");
         } catch (error) {
           reportError(error);
         }
@@ -1058,7 +1066,14 @@ export default function AdminPage() {
         <ExpandableSpeedDial actions={speedDialActions} />
       </div>
 
-      {message && <p className="form-status">{message}</p>}
+      {message && <p className="form-status form-status--error" role="alert">{message}</p>}
+      {successMessage && (
+        <AdminSuccessToast
+          key={successMessage}
+          message={successMessage}
+          onClose={() => setSuccessMessage("")}
+        />
+      )}
 
       {loading && <AdminCollectionSkeleton tab={activeTab} />}
 
