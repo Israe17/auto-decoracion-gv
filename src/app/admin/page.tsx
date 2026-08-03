@@ -1826,6 +1826,15 @@ function ProductAdminPanel({
               <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={() => onView(product)}>
                 <Eye size={16} />
               </button>
+              <a
+                href={productShareWhatsAppUrl(product)}
+                target="_blank"
+                rel="noopener"
+                aria-label={`Enviar ${product.name} por WhatsApp`}
+                title="Enviar por WhatsApp"
+              >
+                <Share2 size={16} />
+              </a>
               <button type="button" aria-label="Administrar oferta" onClick={() => onOffer(product)}>
                 <Tags size={16} />
               </button>
