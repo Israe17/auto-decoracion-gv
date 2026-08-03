@@ -41,8 +41,9 @@ Reglas:
   `#ffc72c → #ff9e2c` y los neutros gris medio → gris oscuro. Cada variante
   lleva sombra suave del mismo color. NO usar degradados oscuros (negro → rojo) en
   botones: probado y descartado por el dueño. La franja del topbar mantiene
-  su degradado propio (negro → rojo) como banda informativa, y las demás
-  superficies grandes (banda CTA, bandeja de cotización) siguen planas.
+  su degradado propio (negro → rojo) como banda informativa, y la bandeja de
+  cotización sigue plana. La **banda CTA** (`.cta-band`) sí lleva el degradado
+  cálido: era el único rojo plano y desentonaba.
 - Canvas neutro plano (`--bg #f6f7f8`), sin tintes ni degradados de fondo.
 - Fondos siempre claros. **Prohibido** introducir bloques grandes oscuros
   (charcoal/negro); los únicos oscuros permitidos son el carrusel de
@@ -141,6 +142,12 @@ Móvil (iPhone-first):
   `--red-dark → #ff5a2c`), y un **destello diagonal que barre UNA vez al
   pasar el mouse** (keyframe `btn-shine`, nunca infinito; se apaga en touch
   y reduced-motion).
+- **CTA invertido sobre rojo** (`.cta-band .button--primary`): superficie
+  blanca, texto e icono en `--red` (el icono SIEMPRE `currentColor`), hover al
+  degradado ámbar `#ffc72c → #ff9e2c` con texto oscuro. Ojo con las reglas de
+  icono a nivel de bloque (`.cta-band svg`): si no se acotan al icono propio
+  del bloque (`> svg`) pintan también la flecha del botón y sale un amarillo
+  fuera de lugar.
 - `button--secondary`: blanco con borde `--line`; hover borde/texto rojo.
 - `button--ghost`: solo sobre fotos/fondos oscuros.
 - Tarjetas: superficie blanca, borde suave, sombra `--shadow-sm/md`; su cuerpo
