@@ -6,6 +6,7 @@ import { ArrowRight, Clock, MapPin, MessageCircle, Zap } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 import gsap from "gsap";
 import { business } from "@/lib/business";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 // Formato determinista (independiente del locale): enteros con punto de miles.
@@ -31,6 +32,7 @@ export function HeroShell({
   years: number;
 }) {
   const rootRef = useRef<HTMLElement>(null);
+  const vehiculo = useVehiculoCliente();
 
   const stats: Stat[] = [
     { value: years, label: "años de experiencia" },
@@ -128,7 +130,7 @@ export function HeroShell({
         <div className="hero-cta__actions" data-reveal style={d(".24s")}>
           <a
             className="button button--primary hero-cta__cta"
-            href={generalWhatsAppUrl()}
+            href={generalWhatsAppUrl(vehiculo)}
             target="_blank"
             rel="noopener"
           >

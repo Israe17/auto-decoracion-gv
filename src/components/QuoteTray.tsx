@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { MessageCircle, Trash2 } from "lucide-react";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { quoteWhatsAppUrl } from "@/lib/whatsapp";
 import { QuoteItem } from "@/types";
 
@@ -11,6 +12,7 @@ const key = "gv-quote";
 export function QuoteTray() {
   const pathname = usePathname();
   const [items, setItems] = useState<QuoteItem[]>([]);
+  const vehiculo = useVehiculoCliente();
 
   useEffect(() => {
     if (pathname.startsWith("/admin")) return;
@@ -29,7 +31,7 @@ export function QuoteTray() {
         <strong>{items.length} producto(s)</strong>
         <span>Listos para cotizar</span>
       </div>
-      <a href={quoteWhatsAppUrl(items)} target="_blank" className="button button--primary">
+      <a href={quoteWhatsAppUrl(items, vehiculo)} target="_blank" className="button button--primary">
         <MessageCircle size={18} /> WhatsApp
       </a>
       <button

@@ -4,10 +4,12 @@ import { MessageCircle } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 import { usePathname } from "next/navigation";
 import { business } from "@/lib/business";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 
 export function WhatsAppFloat() {
   const pathname = usePathname();
+  const vehiculo = useVehiculoCliente();
 
   if (pathname.startsWith("/admin")) return null;
 
@@ -25,7 +27,7 @@ export function WhatsAppFloat() {
       </a>
       <a
         className="wa-float"
-        href={generalWhatsAppUrl()}
+        href={generalWhatsAppUrl(vehiculo)}
         target="_blank"
         rel="noopener"
         aria-label="Escribir por WhatsApp"

@@ -4,6 +4,7 @@ import { FormEvent, useMemo, useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { CustomSelect } from "@/components/CustomSelect";
 import { saveContactRequest } from "@/lib/store";
+import { guardarVehiculo } from "@/lib/vehiculo";
 import { contactWhatsAppUrl } from "@/lib/whatsapp";
 import { VehicleModel } from "@/types";
 
@@ -64,6 +65,13 @@ export function ContactForm({ vehicles = [] }: { vehicles?: VehicleModel[] }) {
       vehicle: vehicleParts.join(" "),
       message: String(form.get("message") || "").trim()
     };
+
+    // El vehiculo queda recordado para el resto del sitio.
+    guardarVehiculo({
+      make: (makeIsCustom ? customMake : make).trim(),
+      model: (modelIsCustom ? customModel : model).trim(),
+      year: (yearIsCustom ? customYear : year).trim()
+    });
 
     // La solicitud queda guardada para el negocio (base de clientes),
     // pero WhatsApp se abre de inmediato: si el guardado falla, el

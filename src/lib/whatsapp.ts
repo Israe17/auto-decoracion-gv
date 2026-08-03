@@ -1,29 +1,79 @@
-import { Product, QuoteItem } from "@/types";
-import { formatCRC } from "./catalog";
+import { ContactRequest, Product, QuoteItem, SaleMode } from "@/types";
+import { formatCRC, productHasPublicPrice } from "./catalog";
 import { siteUrl } from "./seo";
+import type { VehiculoCliente } from "./vehiculo";
 
 const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "50600000000";
+const SALUDO = "Hola Auto Decoración G&V";
 
 export function whatsAppUrl(message: string) {
   return `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
 }
 
-export function generalWhatsAppUrl() {
+// --- Piezas compartidas: todos los mensajes se ven igual -------------------
+
+// `null` descarta la linea; `""` SI se conserva, es un renglon en blanco
+// que separa los bloques del mensaje.
+function texto(lineas: (string | null | undefined)[]) {
+  return lineas.filter((linea) => typeof linea === "string").join("\n");
+}
+
+/** Con vehiculo elegido lo escribe; sin el, deja las lineas para completar. */
+function bloqueVehiculo(vehiculo?: VehiculoCliente | null) {
+  const partes = [vehiculo?.make, vehiculo?.model, vehiculo?.year]
+    .map((parte) => (parte || "").trim())
+    .filter(Boolean);
+
+  if (partes.length) return [`🚗 Vehículo: ${partes.join(" ")}`];
+  return ["🚗 Mi vehículo es:", "Marca:", "Modelo:", "Año:"];
+}
+
+/** Nunca imprime ₡0: sin precio publico el producto va "a consultar". */
+function lineaPrecio(item: { saleMode: SaleMode; price?: number; oldPrice?: number }) {
+  if (!productHasPublicPrice(item)) return "💰 Precio: a consultar";
+
+  const precio = formatCRC(item.price);
+  if (item.oldPrice && item.oldPrice > (item.price as number)) {
+    const ahorro = item.oldPrice - (item.price as number);
+    return `💰 Precio: ${precio} (antes ${formatCRC(item.oldPrice)} · ahorra ${formatCRC(ahorro)})`;
+  }
+  return `💰 Precio: ${precio}`;
+}
+
+function enlaceFicha(slug: string) {
+  return `${siteUrl}/productos/${slug}`;
+}
+
+function marcaDelProducto(product: Pick<Product, "isOwnBrand" | "brandName">) {
+  if (product.isOwnBrand) return "G&V System (línea propia)";
+  return product.brandName || "";
+}
+
+// --- Mensajes del sitio ----------------------------------------------------
+
+export function generalWhatsAppUrl(vehiculo?: VehiculoCliente | null) {
+  const partes = [vehiculo?.make, vehiculo?.model, vehiculo?.year]
+    .map((parte) => (parte || "").trim())
+    .filter(Boolean);
+
   return whatsAppUrl(
-    "Hola Auto Decoracion G&V, quiero informacion sobre un producto o servicio."
+    texto([
+      `${SALUDO}, quiero información sobre un producto o servicio.`,
+      partes.length ? "" : null,
+      partes.length ? `🚗 Mi vehículo: ${partes.join(" ")}` : null
+    ])
   );
 }
 
-export function serviceWhatsAppUrl(service: string) {
+export function serviceWhatsAppUrl(service: string, vehiculo?: VehiculoCliente | null) {
   return whatsAppUrl(
-    [
-      `Hola Auto Decoracion G&V, quiero cotizar el servicio de ${service}.`,
+    texto([
+      `${SALUDO}, quiero cotizar un servicio del taller.`,
       "",
-      "Mi vehiculo es:",
-      "Marca:",
-      "Modelo:",
-      "Ano:"
-    ].join("\n")
+      `🛠️ Servicio: ${service}`,
+      "",
+      ...bloqueVehiculo(vehiculo)
+    ])
   );
 }
 
@@ -34,101 +84,107 @@ export function contactWhatsAppUrl(data: {
   message: string;
 }) {
   return whatsAppUrl(
-    [
-      "Hola Auto Decoracion G&V, ando buscando algo que no encontre en el catalogo:",
+    texto([
+      `${SALUDO}, ando buscando algo que no encontré en el catálogo.`,
       "",
-      `Nombre: ${data.name}`,
-      data.phone ? `Telefono: ${data.phone}` : "",
-      data.vehicle ? `Vehiculo: ${data.vehicle}` : "",
+      `🙋 Nombre: ${data.name}`,
+      data.phone ? `📞 Teléfono: ${data.phone}` : null,
+      data.vehicle ? `🚗 Vehículo: ${data.vehicle}` : null,
       "",
-      `Lo que busco: ${data.message}`
-    ]
-      .filter(Boolean)
-      .join("\n")
+      `🔎 Lo que busco: ${data.message}`
+    ])
   );
 }
 
-export function productWhatsAppUrl(product: Product, origin = "") {
-  const vehicleText =
+export function productWhatsAppUrl(product: Product, vehiculo?: VehiculoCliente | null) {
+  const marca = marcaDelProducto(product);
+  const compatibilidad =
     product.compatibilityMode === "universal"
-      ? "Universal / varios vehiculos"
+      ? "Universal / varios vehículos"
       : product.vehicles
           .map((vehicle) => {
-            const years =
-              vehicle.fromYear && vehicle.toYear
-                ? ` ${vehicle.fromYear}-${vehicle.toYear}`
-                : "";
-            return `${vehicle.make} ${vehicle.model}${years}`;
+            const anos =
+              vehicle.fromYear && vehicle.toYear ? ` ${vehicle.fromYear}-${vehicle.toYear}` : "";
+            return `${vehicle.make} ${vehicle.model}${anos}`;
           })
           .join(", ");
 
-  const message = [
-    "Hola Auto Decoracion G&V, quiero cotizar este producto:",
-    "",
-    `Producto: ${product.name}`,
-    `Categoria: ${product.categoryName}`,
-    `Precio mostrado: ${formatCRC(product.price)}`,
-    `Compatibilidad: ${vehicleText}`,
-    "",
-    "Mi vehiculo es:",
-    "Marca:",
-    "Modelo:",
-    "Ano:",
-    "",
-    origin ? `Link: ${origin}/productos/${product.slug}` : ""
-  ]
-    .filter(Boolean)
-    .join("\n");
-
-  return `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+  return whatsAppUrl(
+    texto([
+      `${SALUDO}, quiero cotizar este producto.`,
+      "",
+      `🛒 ${product.name}`,
+      `🏷️ Categoría: ${product.categoryName}`,
+      marca ? `🏭 Marca: ${marca}` : null,
+      lineaPrecio(product),
+      compatibilidad ? `🔧 Compatibilidad: ${compatibilidad}` : null,
+      "",
+      ...bloqueVehiculo(vehiculo),
+      "",
+      `🔗 ${enlaceFicha(product.slug)}`
+    ])
+  );
 }
 
-// Responder AL CLIENTE que dejo una solicitud en el formulario de
-// contacto: el destino es su telefono, no el del negocio. Numeros de
-// Costa Rica de 8 digitos reciben el prefijo 506.
-export function clientWhatsAppUrl(phone: string, name?: string) {
-  const digits = phone.replace(/\D/g, "");
-  if (!digits) return "";
-  const full = digits.length === 8 ? `506${digits}` : digits;
-  const message = `Hola${name ? ` ${name}` : ""}, le escribimos de Auto Decoracion G&V sobre su solicitud.`;
-  return `https://wa.me/${full}?text=${encodeURIComponent(message)}`;
+export function quoteWhatsAppUrl(items: QuoteItem[], vehiculo?: VehiculoCliente | null) {
+  const lineas = items.flatMap((item, index) => [
+    `${index + 1}. 🛒 ${item.name}${item.quantity > 1 ? ` (${item.quantity} unidades)` : ""}`,
+    `   ${lineaPrecio(item)}`,
+    `   🔗 ${enlaceFicha(item.slug)}`
+  ]);
+
+  // Solo se suma cuando TODOS tienen precio publico: un total a medias
+  // confunde mas de lo que ayuda.
+  const todosConPrecio = items.length > 0 && items.every((item) => productHasPublicPrice(item));
+  const total = todosConPrecio
+    ? items.reduce((suma, item) => suma + (item.price as number) * item.quantity, 0)
+    : null;
+
+  return whatsAppUrl(
+    texto([
+      `${SALUDO}, quiero cotizar estos productos.`,
+      "",
+      ...lineas,
+      total !== null ? "" : null,
+      total !== null ? `💰 Total aproximado: ${formatCRC(total)}` : null,
+      "",
+      ...bloqueVehiculo(vehiculo)
+    ])
+  );
 }
 
-// Compartir la ficha con un tercero: wa.me SIN numero de destino (el que
+// Compartir la ficha con un tercero: wa.me SIN número de destino (el que
 // comparte elige el contacto). Distinto de productWhatsAppUrl, que cotiza
 // escribiendo AL negocio.
 export function productShareWhatsAppUrl(product: Product) {
-  const publicPrice =
-    product.saleMode === "price_quote" && typeof product.price === "number"
-      ? `Precio: ${formatCRC(product.price)}`
-      : "";
-  const message = [
-    `Mire este producto de Auto Decoracion G&V: ${product.name}`,
-    publicPrice,
-    `${siteUrl}/productos/${product.slug}`
-  ]
-    .filter(Boolean)
-    .join("\n");
+  const message = texto([
+    "Mire este producto de Auto Decoración G&V:",
+    "",
+    `🛒 ${product.name}`,
+    lineaPrecio(product),
+    "",
+    `🔗 ${enlaceFicha(product.slug)}`
+  ]);
 
   return `https://wa.me/?text=${encodeURIComponent(message)}`;
 }
 
-export function quoteWhatsAppUrl(items: QuoteItem[]) {
-  const lines = items.map((item, index) => {
-    const price = item.saleMode === "price_quote" ? ` - ${formatCRC(item.price)}` : "";
-    return `${index + 1}. ${item.name} x${item.quantity}${price}`;
-  });
+// Responder AL CLIENTE que dejó una solicitud en el formulario de
+// contacto: el destino es su teléfono, no el del negocio. Números de
+// Costa Rica de 8 dígitos reciben el prefijo 506.
+export function clientWhatsAppUrl(
+  request: Pick<ContactRequest, "name" | "phone" | "vehicle" | "message">
+) {
+  const digits = (request.phone || "").replace(/\D/g, "");
+  if (!digits) return "";
+  const full = digits.length === 8 ? `506${digits}` : digits;
 
-  const message = [
-    "Hola Auto Decoracion G&V, quiero cotizar estos productos:",
+  const message = texto([
+    `Hola ${request.name}, le escribimos de Auto Decoración G&V sobre su solicitud.`,
     "",
-    ...lines,
-    "",
-    "Mi vehiculo es:",
-    "Marca:",
-    "Modelo:",
-    "Ano:"
-  ].join("\n");
+    request.vehicle ? `🚗 Vehículo: ${request.vehicle}` : null,
+    request.message ? `🔎 Nos pidió: ${request.message}` : null
+  ]);
 
-  return `https://wa.me/${businessNumber}?text=${encodeURIComponent(message)}`;
+  return `https://wa.me/${full}?text=${encodeURIComponent(message)}`;
 }

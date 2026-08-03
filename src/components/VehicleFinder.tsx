@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search } from "lucide-react";
 import gsap from "gsap";
 import { CustomSelect } from "@/components/CustomSelect";
+import { guardarVehiculo } from "@/lib/vehiculo";
 import { VehicleModel } from "@/types";
 
 export type VehicleQuery = { make: string; model: string; year: string };
@@ -77,6 +78,9 @@ export function VehicleFinder({
 
   function handleSearch() {
     const query = { make, model, year };
+    // Se recuerda para que los mensajes de WhatsApp salgan con el vehiculo
+    // del cliente ya escrito.
+    guardarVehiculo(query);
     if (onSearch) {
       onSearch(query);
       return;
