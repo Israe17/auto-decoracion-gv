@@ -1,6 +1,7 @@
 import { ContactRequest, Product, QuoteItem, SaleMode } from "@/types";
 import { formatCRC, productHasPublicPrice } from "./catalog";
 import { siteUrl } from "./seo";
+import type { ClienteGuardado } from "./cliente";
 import type { VehiculoCliente } from "./vehiculo";
 
 const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "50600000000";
@@ -38,6 +39,16 @@ function lineaPrecio(item: { saleMode: SaleMode; price?: number; oldPrice?: numb
     return `💰 Precio: ${precio} (antes ${formatCRC(item.oldPrice)} · ahorra ${formatCRC(ahorro)})`;
   }
   return `💰 Precio: ${precio}`;
+}
+
+/** Quien escribe. Vacio cuando el cliente aun no dejo sus datos. */
+function bloqueCliente(cliente?: ClienteGuardado | null) {
+  if (!cliente?.name?.trim()) return [];
+  return [
+    `🙋 Nombre: ${cliente.name.trim()}`,
+    cliente.phone?.trim() ? `📞 Teléfono: ${cliente.phone.trim()}` : null,
+    ""
+  ].filter((linea): linea is string => linea !== null);
 }
 
 function enlaceFicha(slug: string) {
@@ -96,7 +107,11 @@ export function contactWhatsAppUrl(data: {
   );
 }
 
-export function productWhatsAppUrl(product: Product, vehiculo?: VehiculoCliente | null) {
+export function productWhatsAppUrl(
+  product: Product,
+  vehiculo?: VehiculoCliente | null,
+  cliente?: ClienteGuardado | null
+) {
   const marca = marcaDelProducto(product);
   const compatibilidad =
     product.compatibilityMode === "universal"
@@ -113,6 +128,7 @@ export function productWhatsAppUrl(product: Product, vehiculo?: VehiculoCliente 
     texto([
       `${SALUDO}, quiero cotizar este producto.`,
       "",
+      ...bloqueCliente(cliente),
       `🛒 ${product.name}`,
       `🏷️ Categoría: ${product.categoryName}`,
       marca ? `🏭 Marca: ${marca}` : null,
@@ -126,7 +142,11 @@ export function productWhatsAppUrl(product: Product, vehiculo?: VehiculoCliente 
   );
 }
 
-export function quoteWhatsAppUrl(items: QuoteItem[], vehiculo?: VehiculoCliente | null) {
+export function quoteWhatsAppUrl(
+  items: QuoteItem[],
+  vehiculo?: VehiculoCliente | null,
+  cliente?: ClienteGuardado | null
+) {
   const lineas = items.flatMap((item, index) => [
     `${index + 1}. 🛒 ${item.name}${item.quantity > 1 ? ` (${item.quantity} unidades)` : ""}`,
     `   ${lineaPrecio(item)}`,
@@ -144,6 +164,7 @@ export function quoteWhatsAppUrl(items: QuoteItem[], vehiculo?: VehiculoCliente 
     texto([
       `${SALUDO}, quiero cotizar estos productos.`,
       "",
+      ...bloqueCliente(cliente),
       ...lineas,
       total !== null ? "" : null,
       total !== null ? `💰 Total aproximado: ${formatCRC(total)}` : null,

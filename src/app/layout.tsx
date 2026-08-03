@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Footer } from "@/components/Footer";
 import { Header } from "@/components/Header";
+import { QuoteDialog } from "@/components/QuoteDialog";
 import { QuoteTray } from "@/components/QuoteTray";
 import { ScrollFx } from "@/components/ScrollFx";
 import { SmoothScroll } from "@/components/SmoothScroll";
@@ -92,6 +93,7 @@ export default function RootLayout({
         <main>{children}</main>
         <ScrollFx />
         <QuoteTray />
+        <QuoteDialog />
         <WhatsAppFloat />
         <Footer />
       </body>
