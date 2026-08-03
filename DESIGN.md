@@ -132,6 +132,13 @@ Móvil (iPhone-first):
   La lista se duplica en el JSX (2ª copia `aria-hidden`) para un ciclo sin
   costura. El acordeón de categorías es solo de escritorio.
 - En listados con filtros, el producto va primero y los filtros después.
+- **Buscador del catálogo** (`.catalog-search`, dentro de `.catalog-toolbar`):
+  mismos tokens que el del header — superficie blanca, borde `--line`, radio
+  de píldora, lupa en `--red` y foco con borde/sombra rojos. Filtra en vivo y
+  deja la búsqueda en la URL. En móvil ocupa el ancho completo de la barra y
+  va PRIMERO (antes del conteo), porque ahí los filtros quedan debajo de la
+  rejilla; la barra necesita `grid-template-columns: minmax(0, 1fr)` o la
+  columna se encoge al contenido.
 
 ## 5. Components
 

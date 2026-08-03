@@ -598,9 +598,77 @@ img {
   align-items: center;
   background: var(--soft);
   display: flex;
+  gap: 16px;
   justify-content: space-between;
   margin-bottom: 16px;
   padding: 18px;
+}
+
+.catalog-toolbar__meta {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  min-width: 0;
+}
+
+/* Buscador de la barra de resultados: mismos tokens que el del header
+   (superficie blanca, borde --line, foco rojo de marca). */
+.catalog-search {
+  align-items: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 8px 22px rgba(17, 21, 28, 0.05);
+  color: var(--muted);
+  display: flex;
+  gap: 10px;
+  min-height: 46px;
+  padding: 0 14px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+  width: min(320px, 42vw);
+}
+
+.catalog-search:focus-within {
+  border-color: rgba(230, 33, 53, 0.36);
+  box-shadow: 0 12px 30px rgba(230, 33, 53, 0.1);
+}
+
+.catalog-search svg {
+  color: var(--red);
+  flex: none;
+}
+
+.catalog-search input {
+  background: transparent;
+  border: 0;
+  color: var(--ink);
+  /* 16px: menos que eso y iOS hace zoom al enfocar. */
+  font-size: 16px;
+  min-width: 0;
+  outline: 0;
+  width: 100%;
+}
+
+.catalog-search input::-webkit-search-cancel-button {
+  display: none;
+}
+
+.catalog-search__clear {
+  align-items: center;
+  background: none;
+  border: 0;
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  flex: none;
+  padding: 4px;
+}
+
+.catalog-search__clear:hover {
+  color: var(--red);
 }
 
 .product-grid--catalog {
@@ -841,8 +909,23 @@ img {
 
   .section__header,
   .catalog-toolbar {
-    align-items: flex-start;
+    align-items: stretch;
     display: grid;
+    gap: 12px;
+    /* Sin esto la columna se encoge al contenido y el buscador no llega
+       al ancho de la barra. */
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* En movil el buscador va primero: es lo que se usa antes de mirar el
+     conteo, y los filtros quedan debajo de la rejilla. */
+  .catalog-search {
+    order: -1;
+    width: 100%;
+  }
+
+  .catalog-toolbar__meta {
+    justify-content: space-between;
   }
 
   .quote-tray {
