@@ -18,13 +18,17 @@ export default async function GalleryPage() {
 
   return (
     <>
-      {/* Portada de la galeria: solo el titulo sobre la foto. Las fotos del
-          taller hablan por si solas; el label y el parrafo sobraban. */}
-      <section className="page-hero page-hero--gallery">
-        <h1>Trabajos hechos en nuestro taller</h1>
-      </section>
-
-      <section className="section section--tight galeria-seccion">
+      {/* Sin portada de foto: el titulo entra como los de las demas
+          secciones (cursiva + barra del degradado), y las fotos del mosaico
+          son las que mandan. */}
+      <section className="section galeria-seccion">
+        <div className="section-head section-head--left">
+          <div>
+            <h1>
+              Trabajos hechos en nuestro <em>taller.</em>
+            </h1>
+          </div>
+        </div>
         {items.length > 0 ? (
           <GalleryMasonry items={items} />
         ) : (

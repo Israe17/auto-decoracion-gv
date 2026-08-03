@@ -223,12 +223,6 @@ img {
   max-width: 760px;
 }
 
-/* Portada de solo titulo (galeria): sin nada debajo, ese margen dejaria la
-   caja descuadrada — arriba 72px de padding y abajo 92px. */
-.page-hero h1:last-child {
-  margin-bottom: 0;
-}
-
 .hero p,
 .page-hero p {
   color: rgba(255, 255, 255, 0.82);
@@ -563,18 +557,8 @@ img {
     url("/hero/catalogo-4x4.jpg") center 58% / cover;
 }
 
-/* Portada de la galeria: la foto del taller instalando, con el mismo
-   velado que el catalogo para que el titulo se lea. */
-.page-hero--gallery {
-  background:
-    linear-gradient(
-      90deg,
-      rgba(10, 13, 17, 0.92) 0%,
-      rgba(10, 13, 17, 0.7) 52%,
-      rgba(10, 13, 17, 0.26) 100%
-    ),
-    url("/hero/vehiculo.jpg") center 46% / cover;
-}
+/* La galeria NO lleva portada de foto: el dueno la descarto — su titulo
+   entra como los de las demas secciones (.section-head--left). */
 
 .catalog-layout {
   align-items: start;
@@ -7791,6 +7775,9 @@ select::-ms-expand {
   width: 18px;
 }
 
+/* h1 incluido: una pagina sin portada de foto (la galeria) usa este mismo
+   encabezado como titulo principal, sin perder la jerarquia del documento. */
+.section-head h1,
 .section-head h2 {
   font-size: clamp(32px, 4.4vw, 54px);
   font-weight: var(--font-heavy);
@@ -7799,11 +7786,13 @@ select::-ms-expand {
   margin: 0;
 }
 
+.section-head h1 em,
 .section-head h2 em {
   display: inline-block;
   font-style: italic;
 }
 
+.section-head h1 em::after,
 .section-head h2 em::after {
   background: linear-gradient(90deg, var(--red), #ff6b42);
   border-radius: 999px;
@@ -7837,6 +7826,7 @@ select::-ms-expand {
   justify-items: start;
 }
 
+.section-head--left h1,
 .section-head--left h2 {
   font-size: clamp(28px, 3.2vw, 42px);
 }
