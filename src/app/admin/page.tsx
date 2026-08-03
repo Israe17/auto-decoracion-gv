@@ -24,7 +24,7 @@ import {
   Trash2,
   X
 } from "lucide-react";
-import { formatCRC } from "@/lib/catalog";
+import { formatCRC, productHasPublicPrice } from "@/lib/catalog";
 import { clientWhatsAppUrl, productShareWhatsAppUrl } from "@/lib/whatsapp";
 import { supabaseEnabled } from "@/lib/supabase";
 import {
@@ -127,10 +127,6 @@ function emptyProduct(categories: Category[]): Product {
     isOwnBrand: false,
     featured: false
   };
-}
-
-function productHasPublicPrice(product: Product) {
-  return product.saleMode === "price_quote" && typeof product.price === "number";
 }
 
 function requestDateLabel(request: ContactRequest) {
@@ -3296,7 +3292,7 @@ function AdminDetailDialog({
 
     if (detail.kind === "request") {
       const request = detail.item;
-      const replyUrl = request.phone ? clientWhatsAppUrl(request.phone, request.name) : "";
+      const replyUrl = request.phone ? clientWhatsAppUrl(request) : "";
 
       return (
         <>

@@ -1,4 +1,4 @@
-import { Category, Product } from "@/types";
+import { Category, Product, SaleMode } from "@/types";
 
 export const categories: Category[] = [
   {
@@ -430,6 +430,13 @@ export const products: Product[] = [
     tags: ["Seguridad", "Universal", "Instalación"]
   }
 ];
+
+// Un producto solo muestra precio si se vende con precio publicado Y tiene
+// un numero guardado. Sin esto se filtran precios internos de productos
+// "solo cotizacion" (y aparece un ₡0 que no significa nada).
+export function productHasPublicPrice(item: { saleMode: SaleMode; price?: number }) {
+  return item.saleMode === "price_quote" && typeof item.price === "number";
+}
 
 export function formatCRC(price?: number) {
   if (typeof price !== "number") return "Consultar precio";

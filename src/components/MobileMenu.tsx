@@ -7,6 +7,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import gsap from "gsap";
 import { ArrowUpRight, Menu, MessageCircle, X } from "lucide-react";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { generalWhatsAppUrl } from "@/lib/whatsapp";
 import { business } from "@/lib/business";
 import { SearchBox } from "./SearchBox";
@@ -23,6 +24,7 @@ const links = [
 // el panel se despliega desde arriba y los enlaces entran en cascada
 // con GSAP; la salida se anima en reversa antes de desmontar.
 export function MobileMenu() {
+  const vehiculo = useVehiculoCliente();
   const [open, setOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
   const pathname = usePathname();
@@ -153,7 +155,7 @@ export function MobileMenu() {
             >
               <a
                 className="button button--primary"
-                href={generalWhatsAppUrl()}
+                href={generalWhatsAppUrl(vehiculo)}
                 target="_blank"
                 rel="noopener"
               >

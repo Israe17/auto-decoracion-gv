@@ -83,6 +83,9 @@ export type QuoteItem = {
   name: string;
   categoryName: string;
   price?: number;
+  // Opcional a proposito: los carritos ya guardados en el navegador del
+  // cliente no lo traen y deben seguir funcionando.
+  oldPrice?: number;
   saleMode: SaleMode;
   quantity: number;
   slug: string;

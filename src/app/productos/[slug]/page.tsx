@@ -18,9 +18,9 @@ import {
 import { products as seedProducts, formatCRC } from "@/lib/catalog";
 import { isProductFeaturedActive } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
-import { productWhatsAppUrl } from "@/lib/whatsapp";
 import { siteUrl } from "@/lib/seo";
 import { ProductActions } from "@/components/ProductActions";
+import { ProductQuoteLink } from "@/components/ProductQuoteLink";
 import { ProductPhotos } from "@/components/ProductPhotos";
 import { ProductCard } from "@/components/ProductCard";
 
@@ -255,14 +255,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               Le confirmamos precio, disponibilidad e instalación de este
               producto en un solo mensaje.
             </p>
-            <a
-              className="button button--primary"
-              href={productWhatsAppUrl(product)}
-              target="_blank"
-              rel="noopener"
-            >
+            <ProductQuoteLink product={product}>
               <MessageCircle size={18} /> Cotizar este producto
-            </a>
+            </ProductQuoteLink>
           </div>
         </div>
       </section>

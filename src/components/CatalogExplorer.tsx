@@ -9,6 +9,7 @@ import { CustomSelect } from "@/components/CustomSelect";
 import { VehicleFinder, VehicleQuery } from "@/components/VehicleFinder";
 import { categoryScope, childCategories, topCategories } from "@/lib/catalog";
 import { normalize } from "@/lib/text";
+import { guardarVehiculo } from "@/lib/vehiculo";
 import { Category, Product, VehicleModel } from "@/types";
 
 type Filters = {
@@ -87,6 +88,11 @@ export function CatalogExplorer({
   function apply(next: Partial<Filters>) {
     const merged = { ...filters, ...next };
     setFilters(merged);
+
+    // El vehiculo filtrado se recuerda para los mensajes de WhatsApp.
+    if (next.marca !== undefined || next.modelo !== undefined || next.ano !== undefined) {
+      guardarVehiculo({ make: merged.marca, model: merged.modelo, year: merged.ano });
+    }
 
     const params = new URLSearchParams();
     if (merged.q) params.set("q", merged.q);

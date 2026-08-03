@@ -453,7 +453,26 @@ lo estilan en 640px — al tocar la ficha móvil, buscar TODAS las reglas
 - Datos del negocio centralizados en `src/lib/business.ts` (dirección,
   horario, enlaces de Maps) — nunca hardcodear en componentes.
 - Mensajes de WhatsApp: helpers de `src/lib/whatsapp.ts` (no armar URLs a
-  mano).
+  mano). **Formato único** de todos los mensajes: saludo, renglón en blanco,
+  bloques con emoji de sección (🛒 producto · 🏷️ categoría · 🏭 marca ·
+  💰 precio · 🔧 compatibilidad · 🚗 vehículo · 🔗 enlace a la ficha), con
+  tildes correctas. Reglas que no se rompen:
+  - El precio sale de `productHasPublicPrice` (`src/lib/catalog.ts`); sin
+    precio público se escribe "a consultar" — **nunca ₡0**. En oferta va
+    "₡X (antes ₡Y · ahorra ₡Z)".
+  - El enlace usa `siteUrl` (`src/lib/seo.ts`), nunca `window.location`.
+  - El **vehículo del cliente** se recuerda en `src/lib/vehiculo.ts`
+    (localStorage `gv-vehiculo` + evento propio, mismo patrón que la
+    bandeja de cotización): lo escriben el buscador por vehículo, los
+    filtros del catálogo y el formulario de contacto, y lo leen todos los
+    botones de WhatsApp que son client components. Sin vehículo guardado el
+    mensaje deja las líneas "Marca: / Modelo: / Año:" para completar.
+  - Un CTA de WhatsApp dentro de un server component no puede leer el
+    vehículo: se envuelve en un componente cliente (ver
+    `src/components/ProductQuoteLink.tsx`).
+  - En el armador de mensajes (`texto()`), `null` descarta la línea y `""`
+    es un renglón en blanco a propósito: filtrar con `Boolean` borra los
+    separadores y el mensaje llega apelmazado.
 
 ## 9. Anti-patterns (prohibido)
 

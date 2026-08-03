@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { MessageCircle, Plus } from "lucide-react";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { productWhatsAppUrl } from "@/lib/whatsapp";
 import { Product, QuoteItem } from "@/types";
 
@@ -20,6 +20,9 @@ function addToQuote(product: Product) {
           name: product.name,
           categoryName: product.categoryName,
           price: product.price,
+          // Se guarda para que el mensaje de la bandeja pueda mostrar la
+          // oferta (antes / ahorro) sin volver a consultar el catalogo.
+          oldPrice: product.oldPrice,
           saleMode: product.saleMode,
           quantity: 1,
           slug: product.slug
@@ -37,17 +40,13 @@ export function ProductActions({
   product: Product;
   compact?: boolean;
 }) {
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
+  const vehiculo = useVehiculoCliente();
 
   return (
     <div className="product-actions">
       <a
         className="button button--primary"
-        href={productWhatsAppUrl(product, origin)}
+        href={productWhatsAppUrl(product, vehiculo)}
         target="_blank"
         aria-label={`Cotizar ${product.name} por WhatsApp`}
         title="Cotizar por WhatsApp"

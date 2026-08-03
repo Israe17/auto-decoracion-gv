@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useVehiculoCliente } from "@/lib/vehiculo";
 import { serviceWhatsAppUrl } from "@/lib/whatsapp";
 
 const STEPS = [
@@ -51,6 +52,7 @@ const STEPS = [
 // deslizandose desde su lado. Con reduced-motion todo queda visible.
 export function WorkshopTimeline() {
   const rootRef = useRef<HTMLDivElement>(null);
+  const vehiculo = useVehiculoCliente();
 
   useEffect(() => {
     const root = rootRef.current;
@@ -176,7 +178,7 @@ export function WorkshopTimeline() {
             <p>{step.text}</p>
             <a
               className="text-link"
-              href={serviceWhatsAppUrl(step.topic)}
+              href={serviceWhatsAppUrl(step.topic, vehiculo)}
               target="_blank"
               rel="noopener"
             >
@@ -192,7 +194,7 @@ export function WorkshopTimeline() {
         <div className="wtl__cta">
           <a
             className="button button--primary"
-            href={serviceWhatsAppUrl("servicios del taller")}
+            href={serviceWhatsAppUrl("servicios del taller", vehiculo)}
             target="_blank"
             rel="noopener"
           >
