@@ -688,7 +688,9 @@ img {
   font-size: 13px;
 }
 
-.quote-tray button {
+/* Solo el basurero es un cuadro de 44px: el CTA de WhatsApp usa las
+   clases del sistema de botones. */
+.quote-tray__vaciar {
   background: rgba(255, 255, 255, 0.12);
   border: 0;
   color: white;
@@ -1994,14 +1996,14 @@ input[type="checkbox"] {
   border: 1px solid rgba(230, 33, 53, 0.55);
 }
 
-.quote-tray button {
+.quote-tray__vaciar {
   border-radius: 14px;
   transition:
     background 180ms ease,
     transform 180ms ease;
 }
 
-.quote-tray button:hover {
+.quote-tray__vaciar:hover {
   background: rgba(255, 255, 255, 0.2);
   transform: translateY(-1px);
 }
