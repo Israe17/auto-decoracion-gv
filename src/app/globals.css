@@ -1664,10 +1664,38 @@ body {
   padding: 7px 11px;
 }
 
+/* Eyebrow sobre foto oscura: pildora de vidrio (mismo lenguaje que las
+   pildoras del marquee de categorias) con el punto amarillo de la marca,
+   en vez del gris lavado que se confundia con la foto. */
 .hero .eyebrow,
 .page-hero .eyebrow {
-  background: rgba(255, 255, 255, 0.14);
+  align-items: center;
+  /* Sin prefijo: el compilador agrega el -webkit- solo. Escribir ambos
+     hace que se quede unicamente con el prefijado y Chromium pierde el
+     desenfoque. */
+  backdrop-filter: blur(12px) saturate(140%);
+  background: rgba(17, 21, 28, 0.34);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.16),
+    0 10px 24px rgba(17, 21, 28, 0.24);
   color: var(--yellow);
+  display: inline-flex;
+  gap: 9px;
+  letter-spacing: var(--label-tracking);
+  min-height: 32px;
+  padding: 0 14px;
+}
+
+.hero .eyebrow::before,
+.page-hero .eyebrow::before {
+  background: var(--yellow);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px rgba(255, 199, 44, 0.22);
+  content: "";
+  flex: none;
+  height: 6px;
+  width: 6px;
 }
 
 .hero h1,
