@@ -19,6 +19,11 @@ export function SmoothScroll() {
       smoothWheel: true,
       syncTouch: true, // scroll suave también en celular (elegido por el dueño)
       syncTouchLerp: 0.08,
+      // SIN esto los scrollers anidados mueren en touch: Lenis cancela el
+      // touchmove en window (passive:false) en cuanto el gesto tiene
+      // componente vertical y los rieles horizontales (productos, galeria,
+      // marquee) quedan trabados — sobre todo al llegar al tope.
+      allowNestedScroll: true,
       anchors: true,
       prevent: (node) => Boolean(node.closest("[data-lenis-prevent]"))
     });

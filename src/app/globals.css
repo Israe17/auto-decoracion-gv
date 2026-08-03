@@ -8364,7 +8364,11 @@ select::-ms-expand {
   overscroll-behavior-x: contain;
   padding: 8px 24px 48px;
   scroll-padding-left: 24px;
-  scroll-snap-type: x mandatory;
+  /* proximity, NUNCA mandatory: el punto de snap de la ultima tarjeta cae
+     mas alla del scroll maximo (padding 24px sin scroll-padding-right) y
+     el snap obligatorio devuelve al tope los arrastres de vuelta — el
+     riel se sentia trabado al llegar al final en el celular. */
+  scroll-snap-type: x proximity;
   scrollbar-color: rgba(17, 21, 28, 0.18) transparent;
   scrollbar-width: thin;
   -webkit-overflow-scrolling: touch;
