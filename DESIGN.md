@@ -200,6 +200,19 @@ Móvil (iPhone-first):
   `ProductCard`, sin enlaces): categoría, nombre y precio leídos EN VIVO
   del propio formulario, así el dueño acomoda la foto viendo la tarjeta
   tal como saldrá en la tienda.
+- **Cotización rápida** (`QuoteDialog`, montado UNA vez en `layout.tsx`):
+  todo botón "Cotizar" del sitio (tarjeta, ficha o bandeja) abre este
+  diálogo por evento (`pedirCotizacion` en `src/lib/cotizar.ts`) en vez de
+  saltar directo a WhatsApp. Pide nombre (obligatorio), teléfono
+  (opcional) y vehículo con los mismos selectores del catálogo. Al enviar:
+  guarda al cliente en su navegador (`src/lib/cliente.ts` +
+  `src/lib/vehiculo.ts`), registra la solicitud en la base de clientes
+  (`saveContactRequest`, visible en la pestaña Solicitudes del admin) y
+  abre WhatsApp con el mensaje completo. **La segunda vez abre en modo
+  confirmar** — resumen de dos líneas + "Cambiar mis datos" — para que
+  cotizar sea un solo toque. Diálogo por portal, cierra con Escape o
+  toque afuera; en móvil es hoja inferior a ancho completo con
+  `env(safe-area-inset-bottom)` e inputs de 16px.
 - Banco de etiquetas del admin: opciones agrupadas en chips seleccionables,
   selección activa roja y área separada para las etiquetas elegidas; permite
   crear etiquetas propias sin sustituir las sugerencias del negocio.

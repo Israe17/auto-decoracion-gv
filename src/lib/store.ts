@@ -123,6 +123,19 @@ function sortPromos(promos: Promo[]) {
   );
 }
 
+// Solo los modelos, para los selectores de vehiculo del dialogo de
+// cotizacion: se pide una vez, cuando el cliente abre el formulario.
+export async function fetchVehicles(): Promise<VehicleModel[]> {
+  if (!supabaseEnabled) return sortVehicles(seedVehicles);
+
+  try {
+    return sortVehicles(await listCollection<VehicleModel>(VEHICLES));
+  } catch (error) {
+    console.error("No se pudieron leer los modelos de vehiculo.", error);
+    return sortVehicles(seedVehicles);
+  }
+}
+
 export async function fetchPublicCatalog(): Promise<{
   products: Product[];
   categories: Category[];

@@ -1,8 +1,7 @@
 "use client";
 
 import { MessageCircle, Plus } from "lucide-react";
-import { useVehiculoCliente } from "@/lib/vehiculo";
-import { productWhatsAppUrl } from "@/lib/whatsapp";
+import { pedirCotizacion } from "@/lib/cotizar";
 import { Product, QuoteItem } from "@/types";
 
 function addToQuote(product: Product) {
@@ -40,14 +39,12 @@ export function ProductActions({
   product: Product;
   compact?: boolean;
 }) {
-  const vehiculo = useVehiculoCliente();
-
   return (
     <div className="product-actions">
-      <a
+      <button
+        type="button"
         className="button button--primary"
-        href={productWhatsAppUrl(product, vehiculo)}
-        target="_blank"
+        onClick={() => pedirCotizacion({ tipo: "producto", producto: product })}
         aria-label={`Cotizar ${product.name} por WhatsApp`}
         title="Cotizar por WhatsApp"
       >
@@ -56,7 +53,7 @@ export function ProductActions({
         <span className="product-action__label product-action__label--desktop">
           {compact ? "Cotizar" : "Cotizar por WhatsApp"}
         </span>
-      </a>
+      </button>
       <button
         className="button button--secondary"
         onClick={() => addToQuote(product)}
