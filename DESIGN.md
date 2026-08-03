@@ -79,6 +79,14 @@ Reglas:
   ponerla. El hero tampoco lleva píldora/eyebrow arriba del titular: el
   dueño la quitó, arranca directo con el título.
 - Eyebrow/píldoras: 12px, `--font-semibold`, uppercase con letter-spacing.
+  **Sobre foto oscura** (`.hero .eyebrow`, `.page-hero .eyebrow`) van en
+  **píldora de vidrio**: fondo `rgba(17,21,28,.34)` + `backdrop-filter: blur`,
+  borde `rgba(255,255,255,.2)`, brillo interior, sombra suave, texto en
+  `--yellow` y un **punto amarillo** al inicio (eco del topbar). Antes eran un
+  gris lavado que se confundía con la foto. Trampa: escribir
+  `backdrop-filter` Y `-webkit-backdrop-filter` juntos hace que el compilador
+  se quede SOLO con el prefijado y Chromium pierde el desenfoque — declarar
+  únicamente el estándar.
 - Cuerpo: 15-17px, `line-height: 1.55`, color `--muted` para descripciones.
   Cursiva SOLO en las descripciones del timeline y los énfasis `em` de los
   titulares display.
