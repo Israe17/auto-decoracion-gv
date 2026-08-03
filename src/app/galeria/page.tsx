@@ -24,6 +24,9 @@ export default async function GalleryPage() {
       <section className="section galeria-seccion">
         <div className="section-head section-head--left">
           <div>
+            <span className="section-head__pill">
+              <Images size={14} /> Galería
+            </span>
             <h1>
               Trabajos hechos en nuestro <em>taller.</em>
             </h1>
