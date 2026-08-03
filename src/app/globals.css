@@ -3912,7 +3912,9 @@ body {
   gap: 7px;
 }
 
-.admin-row-actions button {
+/* Enlaces (compartir) y botones comparten la misma caja de accion. */
+.admin-row-actions button,
+.admin-row-actions a {
   align-items: center;
   background: #f5f7fa;
   border: 1px solid #dfe6ef;
@@ -3930,7 +3932,8 @@ body {
   width: 38px;
 }
 
-.admin-row-actions button:hover {
+.admin-row-actions button:hover,
+.admin-row-actions a:hover {
   background: #fff0f2;
   border-color: rgba(230, 33, 53, 0.22);
   color: var(--red);
