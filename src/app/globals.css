@@ -7998,25 +7998,6 @@ select::-ms-expand {
   width: min(760px, 100%);
 }
 
-.hero-cta__badge {
-  align-items: center;
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 999px;
-  /* Rojo de marca (el que abre el degradado de los botones), no el rojo
-     oscuro de precios: todo el hero habla el mismo idioma de color. */
-  color: var(--red);
-  display: inline-flex;
-  font-size: 12.5px;
-  font-weight: var(--font-heavy);
-  gap: 7px;
-  padding: 7px 14px;
-}
-
-.hero-cta__badge svg {
-  color: var(--red);
-}
-
 .hero-cta__title {
   font-size: clamp(32px, 5.4vw, 56px);
   font-weight: var(--font-heavy);
@@ -8027,9 +8008,9 @@ select::-ms-expand {
   text-wrap: balance;
 }
 
-/* Mismo acento que los titulos de seccion (cursiva + barra con el
-   degradado de marca). Las palabras van rellenas con ese degradado, el
-   de los botones, en vez del rojo plano que tenian. */
+/* Acento del hero: cursiva + palabras rellenas con el degradado de los
+   botones. SIN la barra de los titulos de seccion — el dueno la descarto
+   aqui: la parte acentuada ocupa dos lineas y la barra pesaba de mas. */
 .hero-cta__title em {
   background: linear-gradient(135deg, var(--red), #ff6b42);
   -webkit-background-clip: text;
@@ -8039,14 +8020,6 @@ select::-ms-expand {
   font-style: italic;
 }
 
-.hero-cta__title em::after {
-  background: linear-gradient(90deg, var(--red), #ff6b42);
-  border-radius: 999px;
-  content: "";
-  display: block;
-  height: 6px;
-  margin-top: 8px;
-}
 
 /* Prueba social: fila con separadores finos entre stats. */
 .hero-cta__stats {

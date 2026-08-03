@@ -69,12 +69,14 @@ Reglas:
   `clamp(32px, 4.4vw, 54px)` (centrado) / `clamp(28px, 3.2vw, 42px)`
   (variante lateral).
 - **Identidad de los titulares**: la palabra acentuada va en `<em>`
-  **cursiva** con una **barra de 6px del degradado cálido** debajo
-  (`linear-gradient(90deg, var(--red), #ff6b42)`). Aplica a los `h2` de
-  sección Y al titular del hero (`.hero-cta__title`), donde además las
-  palabras van **rellenas con ese mismo degradado**
-  (`background-clip: text`) — el rojo oscuro plano quedó descartado por el
-  dueño: el hero usa el rojo de los botones, no el de precios.
+  **cursiva**. En los `h2` de sección lleva además una **barra de 6px del
+  degradado cálido** debajo (`linear-gradient(90deg, var(--red), #ff6b42)`).
+  El titular del hero (`.hero-cta__title`) comparte la cursiva y va con las
+  palabras **rellenas con ese degradado** (`background-clip: text`, el de los
+  botones — el rojo oscuro plano se descartó), pero **SIN la barra: el dueño
+  la rechazó ahí** (ocupa dos líneas completas y pesa de más). No volver a
+  ponerla. El hero tampoco lleva píldora/eyebrow arriba del titular: el
+  dueño la quitó, arranca directo con el título.
 - Eyebrow/píldoras: 12px, `--font-semibold`, uppercase con letter-spacing.
 - Cuerpo: 15-17px, `line-height: 1.55`, color `--muted` para descripciones.
   Cursiva SOLO en las descripciones del timeline y los énfasis `em` de los
