@@ -223,6 +223,12 @@ img {
   max-width: 760px;
 }
 
+/* Portada de solo titulo (galeria): sin nada debajo, ese margen dejaria la
+   caja descuadrada — arriba 72px de padding y abajo 92px. */
+.page-hero h1:last-child {
+  margin-bottom: 0;
+}
+
 .hero p,
 .page-hero p {
   color: rgba(255, 255, 255, 0.82);
@@ -9207,9 +9213,15 @@ select::-ms-expand {
 }
 
 /* Cierre de la galeria: banda + enlace al catalogo son UN bloque. Antes
-   vivian en dos secciones distintas y entre ellos quedaban 108px de aire. */
+   vivian en dos secciones distintas y entre ellos quedaban 108px de aire.
+   El enlace cuelga de la banda y la seccion cierra corta: si no, queda
+   flotando en medio del vacio que precede al pie. */
+.galeria-cierre {
+  padding-bottom: 40px;
+}
+
 .galeria-cierre__extra {
-  margin: 22px 0 0;
+  margin: 14px 0 0;
 }
 
 /* Galeria de trabajos: mosaico tipo Masonry (React Bits, variante JS+CSS)

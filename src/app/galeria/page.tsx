@@ -18,13 +18,10 @@ export default async function GalleryPage() {
 
   return (
     <>
+      {/* Portada de la galeria: solo el titulo sobre la foto. Las fotos del
+          taller hablan por si solas; el label y el parrafo sobraban. */}
       <section className="page-hero page-hero--gallery">
-        <span className="eyebrow">Galería</span>
         <h1>Trabajos hechos en nuestro taller</h1>
-        <p>
-          Instalaciones, polarizados y accesorios montados por nuestro equipo en
-          Liberia. Vea el resultado y cotice el suyo por WhatsApp.
-        </p>
       </section>
 
       <section className="section section--tight galeria-seccion">
