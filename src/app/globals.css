@@ -557,6 +557,19 @@ img {
     url("/hero/catalogo-4x4.jpg") center 58% / cover;
 }
 
+/* Portada de contacto: la foto que eligio el dueno, con el mismo velado
+   del catalogo (mas cerrado a la izquierda) para que el texto se lea. */
+.page-hero--contact {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 13, 17, 0.92) 0%,
+      rgba(10, 13, 17, 0.72) 52%,
+      rgba(10, 13, 17, 0.24) 100%
+    ),
+    url("/hero/contacto.jpg") center 62% / cover;
+}
+
 /* La galeria NO lleva portada de foto: el dueno la descarto — su titulo
    entra como los de las demas secciones (.section-head--left). */
 
