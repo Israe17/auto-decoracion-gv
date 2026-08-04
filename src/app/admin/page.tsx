@@ -38,6 +38,9 @@ import { ImageListField } from "@/components/admin/ImageListField";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
+import { GuiaBoton } from "@/components/admin/GuiaBoton";
+import { GuiaTour } from "@/components/admin/GuiaTour";
+import { EVENTO_GUIA_FIN, ModuloGuia, guiaVista, pedirGuia } from "@/lib/guia";
 import { AdminSuccessDialog } from "@/components/admin/AdminSuccessDialog";
 import { CustomSelect } from "@/components/CustomSelect";
 import {
@@ -193,6 +196,8 @@ function featuredStatusLabel(product: Product) {
 
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState<AdminTab>("products");
+  // Sube cada vez que una guia termina: encadena el recorrido siguiente.
+  const [guiasTerminadas, setGuiasTerminadas] = useState(0);
   const [loading, setLoading] = useState(true);
   const [importing, setImporting] = useState(false);
   const [migratingLocal, setMigratingLocal] = useState(false);
@@ -267,6 +272,29 @@ export default function AdminPage() {
     return () => {
       active = false;
     };
+  }, []);
+
+  // La guia de cada modulo sale sola la PRIMERA vez que se abre, ya con los
+  // datos en pantalla (si no, las anclas de las filas todavia no existen) y
+  // dandole tiempo al reveal de AdminPanelReveal para que no se ilumine un
+  // elemento a medio aparecer. Despues queda el boton "Guia".
+  useEffect(() => {
+    if (loading) return;
+
+    // Primero el tablero (esta siempre arriba); ya visto, la del modulo
+    // abierto. Al terminar una, `guiasTerminadas` cambia y se evalua la
+    // siguiente, asi no salen dos encimadas.
+    const modulo: ModuloGuia = guiaVista("tablero") ? activeTab : "tablero";
+    if (guiaVista(modulo)) return;
+
+    const espera = window.setTimeout(() => pedirGuia(modulo), 700);
+    return () => window.clearTimeout(espera);
+  }, [activeTab, guiasTerminadas, loading]);
+
+  useEffect(() => {
+    const alTerminar = () => setGuiasTerminadas((valor) => valor + 1);
+    window.addEventListener(EVENTO_GUIA_FIN, alTerminar);
+    return () => window.removeEventListener(EVENTO_GUIA_FIN, alTerminar);
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -962,6 +990,7 @@ export default function AdminPage() {
 
   return (
     <section className="section admin-page admin-dashboard">
+      <GuiaTour />
       <div className="admin-heading">
         <div>
           <span className="section-head__pill">
@@ -971,7 +1000,9 @@ export default function AdminPage() {
           <p>Gestione productos, ofertas, modelos de autos y categorias desde una sola pantalla.</p>
         </div>
         <div className="admin-heading__meta">
+          <GuiaBoton modulo="tablero" ancla="tablero-guia" />
           <span
+            data-guia="tablero-modo"
             className={`admin-mode${supabaseEnabled ? " admin-mode--live" : ""}`}
             title={
               supabaseEnabled
@@ -1047,7 +1078,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="admin-stats">
+      <div className="admin-stats" data-guia="tablero-metricas">
         {loading ? (
           <AdminStatsSkeleton />
         ) : (
@@ -1094,7 +1125,7 @@ export default function AdminPage() {
 
       {!loading && (
         <div className="admin-dash">
-          <section className="admin-dash__card admin-dash__card--attention">
+          <section className="admin-dash__card admin-dash__card--attention" data-guia="tablero-atencion">
             <div className="admin-dash__title">
               <ShieldAlert size={17} />
               <strong>Requiere atencion</strong>
@@ -1137,7 +1168,7 @@ export default function AdminPage() {
               <Plus size={17} />
               <strong>Accesos rapidos</strong>
             </div>
-            <div className="admin-dash__quick">
+            <div className="admin-dash__quick" data-guia="tablero-accesos">
               <button type="button" onClick={() => setActiveTab("products")}>
                 <Tags size={16} /> Nuevo producto
               </button>
@@ -1184,7 +1215,7 @@ export default function AdminPage() {
         </div>
       )}
 
-      <div className="admin-tabs" role="tablist" aria-label="Administracion">
+      <div className="admin-tabs" role="tablist" aria-label="Administracion" data-guia="tablero-pestanas">
         {tabs.map(([id, label]) => (
           <button
             key={id}
@@ -1330,6 +1361,8 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Promociones del inicio"
+            guia="promos"
+            ancla="promos-lista"
             empty="No hay promociones; el carrusel muestra las categorias."
             createLabel="Nueva promocion"
             onCreate={() => {
@@ -1397,6 +1430,7 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Modelos registrados"
+            guia="vehicles"
             createLabel="Nuevo modelo"
             onCreate={() => {
               setEditingVehicle(null);
@@ -1482,6 +1516,7 @@ export default function AdminPage() {
 
           <AdminSimpleList
             title="Categorias registradas"
+            guia="categories"
             createLabel="Nueva categoria"
             onCreate={() => {
               setEditingCategory(null);
@@ -1557,6 +1592,7 @@ export default function AdminPage() {
 
             <AdminSimpleList
               title="Marcas registradas"
+              guia="brands"
               empty="Todavia no hay marcas. Cree una para poder asignarla a sus productos."
               createLabel="Nueva marca"
               onCreate={() => {
@@ -1585,6 +1621,7 @@ export default function AdminPage() {
           <div className="admin-workspace admin-workspace--simple">
             <AdminSimpleList
               title="Galería de trabajos"
+              guia="gallery"
               empty="Todavía no hay fotos. Suba trabajos terminados del taller: es lo que más convence al cliente."
               createLabel="Nueva foto"
               onCreate={() => {
@@ -1615,6 +1652,7 @@ export default function AdminPage() {
           <div className="admin-workspace admin-workspace--simple">
             <AdminSimpleList
               title="Solicitudes de clientes"
+              guia="requests"
               empty="Todavia no hay solicitudes. Cada vez que un cliente llene el formulario de contacto, quedara guardada aqui con su nombre, telefono y vehiculo."
               items={requests.map((request) => ({
                 id: request.id,
@@ -1774,7 +1812,11 @@ function FeaturedOverview({
   onEdit: (product: Product) => void;
 }) {
   return (
-    <section className="admin-featured-overview" aria-labelledby="featured-overview-title">
+    <section
+      className="admin-featured-overview"
+      aria-labelledby="featured-overview-title"
+      data-guia="productos-destacados"
+    >
       <div className="admin-featured-overview__header">
         <div>
           <span className="section-head__pill">
@@ -1851,6 +1893,9 @@ function ProductAdminPanel({
           <span>{products.length} resultado(s)</span>
         </div>
         <div className="admin-header-actions">
+          <GuiaBoton modulo="products" />
+        </div>
+        <div className="admin-header-actions" data-guia="productos-buscador">
           <CustomSelect
             ariaLabel="Filtrar por vehículo"
             className="admin-vehicle-filter"
@@ -1866,15 +1911,24 @@ function ProductAdminPanel({
             <Search size={17} />
             <input value={query} onChange={(event) => onQueryChange(event.target.value)} placeholder="Buscar..." />
           </label>
-          <button className="button button--primary" type="button" onClick={onCreate}>
+          <button
+            className="button button--primary"
+            type="button"
+            data-guia="productos-nuevo"
+            onClick={onCreate}
+          >
             <Plus size={18} /> Nuevo producto
           </button>
         </div>
       </div>
 
       <div className="admin-product-list">
-        {products.map((product) => (
-          <article className="admin-product-row admin-product-row--catalog" key={product.id}>
+        {products.map((product, indice) => (
+          <article
+            className="admin-product-row admin-product-row--catalog"
+            key={product.id}
+            data-guia={indice === 0 ? "productos-fila" : undefined}
+          >
             <img src={product.images[0]} alt={product.name} />
             <div>
               <strong>{product.name}</strong>
@@ -1892,7 +1946,10 @@ function ProductAdminPanel({
                 {productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}
               </small>
             </div>
-            <div className="admin-row-actions">
+            <div
+              className="admin-row-actions"
+              data-guia={indice === 0 ? "productos-acciones" : undefined}
+            >
               <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={() => onView(product)}>
                 <Eye size={16} />
               </button>
@@ -3023,20 +3080,33 @@ function AdminOfferList({
           <strong>Ofertas y destacados</strong>
           <span>{products.length} producto(s) con oferta o destacado</span>
         </div>
-        <button className="button button--primary" type="button" onClick={onCreate} disabled={!allProducts.length}>
-          <Plus size={18} /> Crear oferta
-        </button>
+        <div className="admin-header-actions">
+          <GuiaBoton modulo="offers" />
+          <button
+            className="button button--primary"
+            type="button"
+            data-guia="ofertas-crear"
+            onClick={onCreate}
+            disabled={!allProducts.length}
+          >
+            <Plus size={18} /> Crear oferta
+          </button>
+        </div>
       </div>
 
       {products.length ? (
         <div className="admin-offer-grid">
-          {products.map((product) => {
+          {products.map((product, indice) => {
             const hasCurrentPrice = productHasPublicPrice(product);
             const hasOffer = hasCurrentPrice && typeof product.oldPrice === "number";
             const featuredStatus = getFeaturedStatus(product);
 
             return (
-              <article className="admin-offer-card" key={product.id}>
+              <article
+                className="admin-offer-card"
+                key={product.id}
+                data-guia={indice === 0 ? "ofertas-tarjeta" : undefined}
+              >
                 <img src={product.images[0]} alt={product.name} />
                 <div className="admin-offer-card__body">
                   <div className="admin-offer-card__chips">
@@ -3050,7 +3120,10 @@ function AdminOfferList({
                   <h3>{product.name}</h3>
                   <p>{product.featured ? `${product.categoryName} - ${featuredStatusLabel(product)}` : product.categoryName}</p>
 
-                  <div className="admin-offer-card__pricing">
+                  <div
+                    className="admin-offer-card__pricing"
+                    data-guia={indice === 0 ? "ofertas-precios" : undefined}
+                  >
                     {hasOffer ? (
                       <>
                         <div>
@@ -3082,7 +3155,13 @@ function AdminOfferList({
                     <button type="button" aria-label="Editar oferta" title="Editar oferta" onClick={() => onEdit(product)}>
                       <Edit3 size={16} /> Editar oferta
                     </button>
-                    <button type="button" aria-label="Quitar oferta" title="Quitar oferta" onClick={() => onRemove(product)}>
+                    <button
+                      type="button"
+                      aria-label="Quitar oferta"
+                      title="Quitar oferta"
+                      data-guia={indice === 0 ? "ofertas-quitar" : undefined}
+                      onClick={() => onRemove(product)}
+                    >
                       <Trash2 size={16} /> Quitar
                     </button>
                   </div>
@@ -3103,12 +3182,18 @@ function AdminSimpleList({
   empty = "No hay elementos.",
   items,
   createLabel,
-  onCreate
+  onCreate,
+  guia,
+  ancla
 }: {
   title: string;
   empty?: string;
   createLabel?: string;
   onCreate?: () => void;
+  /** Modulo cuyo recorrido abre el boton "Guia" de este encabezado. */
+  guia?: ModuloGuia;
+  /** Ancla del panel completo, para los recorridos que lo señalan entero. */
+  ancla?: string;
   items: Array<{
     id: string;
     title: string;
@@ -3121,22 +3206,34 @@ function AdminSimpleList({
   }>;
 }) {
   return (
-    <div className="admin-list-panel">
+    <div className="admin-list-panel" data-guia={ancla || "lista-panel"}>
       <div className="admin-list-header">
         <div>
           <strong>{title}</strong>
           <span>{items.length} elemento(s)</span>
         </div>
-        {onCreate && createLabel && (
-          <button className="button button--primary" type="button" onClick={onCreate}>
-            <Plus size={18} /> {createLabel}
-          </button>
-        )}
+        <div className="admin-header-actions">
+          {guia && <GuiaBoton modulo={guia} />}
+          {onCreate && createLabel && (
+            <button
+              className="button button--primary"
+              type="button"
+              data-guia="lista-crear"
+              onClick={onCreate}
+            >
+              <Plus size={18} /> {createLabel}
+            </button>
+          )}
+        </div>
       </div>
       <div className="admin-product-list">
         {items.length ? (
-          items.map((item) => (
-            <article className="admin-product-row" key={item.id}>
+          items.map((item, indice) => (
+            <article
+              className="admin-product-row"
+              key={item.id}
+              data-guia={indice === 0 ? "lista-fila" : undefined}
+            >
               {item.image ? (
                 <img src={item.image} alt={item.title} />
               ) : (
@@ -3146,7 +3243,10 @@ function AdminSimpleList({
                 <strong>{item.title}</strong>
                 <span>{item.meta}</span>
               </div>
-              <div className="admin-row-actions">
+              <div
+                className="admin-row-actions"
+                data-guia={indice === 0 ? "lista-acciones" : undefined}
+              >
                 <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={item.onView}>
                   <Eye size={16} />
                 </button>

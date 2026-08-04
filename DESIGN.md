@@ -372,6 +372,30 @@ OJO: `.product-detail-hero` tiene capas de CSS posteriores que también
 lo estilan en 640px — al tocar la ficha móvil, buscar TODAS las reglas
 (`grep "product-detail-hero {"`) o la capa de abajo pisa el layout.
 
+### Guía del admin (recorrido paso a paso)
+
+Cada módulo del panel tiene su recorrido: sale **solo la primera vez** que
+se abre y queda el botón **Guía** del encabezado para repetirlo. Motor
+propio (`src/components/admin/GuiaTour.tsx`), montado UNA vez en
+`admin/page.tsx` y disparado por evento (`src/lib/guia.ts`, mismo patrón
+que `cotizar.ts`). Reglas al tocarlo o al agregar un módulo nuevo:
+
+- Los pasos viven en `RECORRIDOS` (`src/lib/guia.ts`), en español de
+  "usted" y CON TILDES: es copy visible, no comentarios de código.
+- Cada paso apunta a un `data-guia="…"` puesto **en el JSX**, no a clases
+  de CSS. Las listas simples comparten `lista-panel`, `lista-crear`,
+  `lista-fila` y `lista-acciones` porque comparten componente.
+- Empiece el recorrido por un ancla que exista SIEMPRE (el panel), porque
+  los pasos cuya ancla falta o mide 0 se saltan solos — un módulo vacío
+  (marcas, galería, solicitudes recién estrenadas) se quedaría sin guía.
+- Un recorrido sin ninguna ancla visible NO se marca como visto: debe
+  poder salir después, cuando el módulo ya tenga contenido.
+- El globo se coloca con su **alto real** (medido tras pintar) y se
+  encierra dentro de la pantalla; con anclas más altas que la ventana
+  calcularlo a ojo lo sacaba del viewport.
+- El foco es un solo recuadro con `box-shadow: 0 0 0 9999px` — nada de
+  capas apiladas ni `clip-path`.
+
 ## 6. Motion
 
 - Motor de animación de scroll: **GSAP** vía `src/components/ScrollFx.tsx`
