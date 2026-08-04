@@ -19,7 +19,7 @@ export default async function ContactPage() {
 
   return (
     <>
-      <section className="page-hero">
+      <section className="page-hero page-hero--contact">
         <span className="eyebrow">Contacto</span>
         <h1>Visítenos en Liberia o escríbanos por WhatsApp</h1>
         <p>

@@ -557,6 +557,22 @@ img {
     url("/hero/catalogo-4x4.jpg") center 58% / cover;
 }
 
+/* Portada de contacto: la foto que subio el dueno. Su cielo nublado es
+   MUY claro, asi que el velado del catalogo no alcanzaba (2.2:1 en movil,
+   texto ilegible): este cierra mas a la derecha — medido, queda en 7.2:1
+   en escritorio y 5.1:1 en movil contra el pixel mas claro detras del
+   texto. El encuadre a 70% baja la vista al vehiculo en vez del cielo. */
+.page-hero--contact {
+  background:
+    linear-gradient(
+      90deg,
+      rgba(10, 13, 17, 0.93) 0%,
+      rgba(10, 13, 17, 0.84) 52%,
+      rgba(10, 13, 17, 0.55) 100%
+    ),
+    url("/hero/contacto.jpg") center 70% / cover;
+}
+
 /* La galeria NO lleva portada de foto: el dueno la descarto — su titulo
    entra como los de las demas secciones (.section-head--left). */
 
