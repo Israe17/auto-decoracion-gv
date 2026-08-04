@@ -8812,6 +8812,43 @@ select::-ms-expand {
   flex: none;
 }
 
+/* En pantalla angosta las metricas entran de dos en dos, en cuadros chicos:
+   son 6, o sea tres filas justas. Una tarjeta gigante por renglon obligaba
+   a scrollear un buen rato antes de llegar al panel. */
+@media (max-width: 720px) {
+  .admin-stats {
+    gap: 10px;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  /* Regla vieja: estiraba la ultima a lo ancho. Con 6 tarjetas la rejilla
+     ya cierra pareja y esa excepcion la descuadra. */
+  .admin-stats > div:last-child {
+    grid-column: auto;
+  }
+
+  .admin-stats > div {
+    border-radius: 14px;
+    gap: 5px;
+    padding: 12px 13px;
+  }
+
+  .admin-stats > div span {
+    font-size: 10px;
+    gap: 5px;
+    letter-spacing: 0.05em;
+  }
+
+  .admin-stats > div span svg {
+    height: 13px;
+    width: 13px;
+  }
+
+  .admin-stats strong {
+    font-size: 23px;
+  }
+}
+
 .admin-dash {
   display: grid;
   gap: 14px;
