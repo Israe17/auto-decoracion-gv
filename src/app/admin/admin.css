@@ -774,10 +774,41 @@
   }
 }
 
+.image-field__cabecera {
+  align-items: baseline;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-between;
+}
+
 .image-field__label {
   color: #121821;
   font-size: 15px;
   font-weight: 800;
+}
+
+/* Cuantas fotos lleva y cuantas admite: se ve ANTES de arrastrar, no
+   despues de intentar la novena. */
+.image-field__cuenta {
+  background: #f1f4f8;
+  border-radius: 999px;
+  color: #596271;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  padding: 4px 10px;
+  text-transform: uppercase;
+}
+
+.image-field__cuenta.is-lleno {
+  background: #fff0f2;
+  color: var(--red);
+}
+
+.image-upload__dropzone.is-lleno {
+  cursor: not-allowed;
+  opacity: 0.72;
 }
 
 .image-field__url {
