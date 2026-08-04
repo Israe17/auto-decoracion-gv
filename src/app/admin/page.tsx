@@ -8,6 +8,7 @@ import {
   Car,
   Edit3,
   Download,
+  ExternalLink,
   Eye,
   FolderTree,
   Images,
@@ -54,6 +55,7 @@ import {
   removeContactRequest,
   removeGalleryItem,
   removeProduct,
+  saveProductSource,
   removePromo,
   removeVehicle,
   upsertCategory,
@@ -110,6 +112,30 @@ function makeSlug(value: string) {
     .replace(/[\u0300-\u036f]/g, "")
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)/g, "");
+}
+
+// "tienda.com/p/1" → "https://tienda.com/p/1", que es como la gente copia
+// una direccion. Devuelve "" si el campo va vacio y null si no se puede
+// leer: solo http y https, un `javascript:` en un enlace del panel seria
+// un agujero, no una comodidad.
+function normalizarEnlace(valor: string): string | null {
+  const limpio = valor.trim();
+  if (!limpio) return "";
+  // Con espacios no es una direccion, es una frase: `new URL` la aceptaria
+  // escapando los espacios y guardariamos basura.
+  if (/\s/.test(limpio)) return null;
+
+  try {
+    const url = new URL(/^[a-z]+:\/\//i.test(limpio) ? limpio : `https://${limpio}`);
+    if (url.protocol !== "http:" && url.protocol !== "https:") return null;
+    // Un correo (`alguien@dominio.com`) se lee como usuario y contrasena.
+    if (url.username || url.password) return null;
+    // Un dominio de verdad: algo, un punto y su terminacion.
+    if (!/^[a-z0-9.-]+\.[a-z]{2,}$/i.test(url.hostname)) return null;
+    return url.toString();
+  } catch {
+    return null;
+  }
 }
 
 function emptyProduct(categories: Category[]): Product {
@@ -180,6 +206,9 @@ export default function AdminPage() {
   const [editingPromo, setEditingPromo] = useState<Promo | null>(null);
   const [promoDialogOpen, setPromoDialogOpen] = useState(false);
   const [requests, setRequests] = useState<ContactRequest[]>([]);
+  // Enlace a la pagina del proveedor por producto. Va aparte del catalogo
+  // porque es privado (tabla product_sources, sin lectura publica).
+  const [sources, setSources] = useState<Record<string, string>>({});
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [editingGallery, setEditingGallery] = useState<GalleryItem | null>(null);
   const [galleryDialogOpen, setGalleryDialogOpen] = useState(false);
@@ -218,6 +247,7 @@ export default function AdminPage() {
         setPromos(data.promos);
         setRequests(data.requests);
         setGallery(data.gallery);
+        setSources(data.sources);
       })
       .catch((error) => {
         console.error(error);
@@ -463,15 +493,26 @@ export default function AdminPage() {
     }
   }
 
-  async function saveProduct(product: Product) {
+  async function saveProduct(product: Product, sourceUrl: string) {
     const exists = products.some((item) => item.id === product.id);
     try {
       const savedProduct = await upsertProduct(product);
+      // El enlace del proveedor se guarda aparte (tabla privada). Si el
+      // producto se guardo pero el enlace falla, el error se reporta pero
+      // el catalogo ya quedo bien: no se revierte nada.
+      await saveProductSource(savedProduct.id, sourceUrl);
       setProducts(
         exists
           ? products.map((item) => (item.id === product.id ? savedProduct : item))
           : [savedProduct, ...products]
       );
+      setSources((prev) => {
+        const next = { ...prev };
+        const limpia = sourceUrl.trim();
+        if (limpia) next[savedProduct.id] = limpia;
+        else delete next[savedProduct.id];
+        return next;
+      });
       showSuccess(exists ? "Producto actualizado." : "Producto creado.");
       setProductDialog(null);
     } catch (error) {
@@ -519,6 +560,11 @@ export default function AdminPage() {
         try {
           await removeProduct(product.id);
           setProducts((prev) => prev.filter((item) => item.id !== product.id));
+          setSources((prev) => {
+            const next = { ...prev };
+            delete next[product.id];
+            return next;
+          });
           showSuccess("Producto eliminado.");
         } catch (error) {
           reportError(error);
@@ -1577,6 +1623,7 @@ export default function AdminPage() {
           categories={categories}
           brands={brands}
           vehicleOptions={vehicles}
+          sourceUrl={sources[productDialog.id] || ""}
           onClose={() => setProductDialog(null)}
           onSave={saveProduct}
         />
@@ -1644,6 +1691,7 @@ export default function AdminPage() {
           vehicles={vehicles}
           promos={promos}
           brands={brands}
+          sources={sources}
           onClose={() => setDetail(null)}
           onBack={detailStack.length > 1 ? popDetail : undefined}
           onSelect={pushDetail}
@@ -2022,6 +2070,7 @@ function ProductDialog({
   categories,
   brands,
   vehicleOptions,
+  sourceUrl,
   onClose,
   onSave
 }: {
@@ -2029,9 +2078,13 @@ function ProductDialog({
   categories: Category[];
   brands: Brand[];
   vehicleOptions: VehicleModel[];
+  // Enlace privado a la pagina del proveedor. Viaja aparte del producto
+  // porque se guarda en otra tabla, no dentro del catalogo publico.
+  sourceUrl: string;
   onClose: () => void;
-  onSave: (product: Product) => void;
+  onSave: (product: Product, sourceUrl: string) => void;
 }) {
+  const [sourceError, setSourceError] = useState("");
   const [compatibilityMode, setCompatibilityMode] = useState(product.compatibilityMode);
   const [isOwnBrand, setIsOwnBrand] = useState(Boolean(product.isOwnBrand));
   const [brandId, setBrandId] = useState(product.brandId || "");
@@ -2069,6 +2122,12 @@ function ProductDialog({
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const enlaceProveedor = normalizarEnlace(String(form.get("supplierUrl") || ""));
+    if (enlaceProveedor === null) {
+      setSourceError("Escriba una direccion valida, por ejemplo tienda.com/producto");
+      return;
+    }
+    setSourceError("");
     const name = String(form.get("name") || "").trim();
     const categorySlug = String(form.get("categorySlug") || "");
     const category = categories.find((item) => item.slug === categorySlug);
@@ -2082,7 +2141,8 @@ function ProductDialog({
     const selectedBrand = brands.find((brand) => brand.id === brandId);
     const legacyBrandName = !product.isOwnBrand && !product.brandId ? product.brandName : undefined;
 
-    onSave({
+    onSave(
+      {
       ...product,
       slug: product.slug || makeSlug(name),
       name,
@@ -2112,7 +2172,9 @@ function ProductDialog({
           : selectedBrand?.name || (keepLegacyBrand ? legacyBrandName : undefined),
       isOwnBrand,
       featured: product.featured
-    });
+      },
+      enlaceProveedor
+    );
   }
 
   return (
@@ -2204,6 +2266,41 @@ function ProductDialog({
             <span>Linea propia G&amp;V System</span>
           </label>
         </div>
+
+        <label>
+          {/* El label es grid: el texto y la etiqueta van en un mismo hijo
+              o cada uno se llevaria su propia fila. */}
+          <span className="admin-form-label">
+            Página del proveedor <span className="admin-form-tag">privado</span>
+          </span>
+          <input
+            name="supplierUrl"
+            type="text"
+            inputMode="url"
+            autoComplete="off"
+            spellCheck={false}
+            defaultValue={sourceUrl}
+            placeholder="tienda.com/producto"
+            onChange={(event) => {
+              // El stepper valida campo por campo y salta al paso del que
+              // falle: marcando el error aqui, el aviso se ve donde esta el
+              // campo y no en un paso que ya quedo atras.
+              const malo = normalizarEnlace(event.target.value) === null;
+              event.target.setCustomValidity(
+                malo ? "Escriba una direccion como tienda.com/producto" : ""
+              );
+              setSourceError(malo ? "Escriba una direccion como tienda.com/producto" : "");
+            }}
+          />
+          {sourceError ? (
+            <small className="admin-form-hint admin-form-hint--error">{sourceError}</small>
+          ) : (
+            <small className="admin-form-hint">
+              De dónde se consigue este producto. Solo se ve aquí en el panel: nunca sale en el
+              sitio.
+            </small>
+          )}
+        </label>
 
         </div>
         <div>
@@ -3074,6 +3171,7 @@ function AdminDetailDialog({
   vehicles,
   promos,
   brands,
+  sources,
   onClose,
   onBack,
   onSelect,
@@ -3090,6 +3188,8 @@ function AdminDetailDialog({
   vehicles: VehicleModel[];
   promos: Promo[];
   brands: Brand[];
+  // Enlaces privados del proveedor por id de producto.
+  sources: Record<string, string>;
   onClose: () => void;
   onBack?: () => void;
   onSelect: (detail: AdminDetail) => void;
@@ -3271,6 +3371,18 @@ function AdminDetailDialog({
             >
               <Eye size={18} /> Ver en el sitio
             </a>
+            {sources[product.id] && (
+              /* `noreferrer` a proposito: al proveedor no tiene por que
+                 llegarle que la visita sale del panel del negocio. */
+              <a
+                className="button button--secondary"
+                href={sources[product.id]}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <ExternalLink size={18} /> Página del proveedor
+              </a>
+            )}
             <button className="button button--secondary" type="button" onClick={onClose}>Cerrar</button>
           </div>
         </>

@@ -2389,6 +2389,38 @@ input[type="checkbox"] {
   resize: vertical;
 }
 
+/* Rotulo con etiqueta al lado (el label es grid: sin este contenedor, el
+   texto y la etiqueta caerian en filas distintas). */
+.admin-form-label {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* "privado": avisa de un dato que NO sale al sitio. */
+.admin-form-tag {
+  background: #eef1f6;
+  border-radius: 999px;
+  color: #596271;
+  font-size: 10px;
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.12em;
+  padding: 3px 9px;
+  text-transform: uppercase;
+}
+
+.admin-form-hint {
+  color: #596271;
+  font-size: 12px;
+  font-weight: var(--font-semibold);
+  line-height: 1.45;
+}
+
+.admin-form-hint--error {
+  color: var(--red);
+}
+
 .admin-submit-row {
   align-items: center;
   background: #ffffff;
