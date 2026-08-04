@@ -4908,6 +4908,81 @@ body {
   font-size: 13px;
 }
 
+/* Paso "Oferta": el precio normal (que ya sabe el sistema) al lado del
+   campo del precio rebajado, para leerlos juntos. */
+.admin-offer-prices {
+  align-items: end;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+.admin-offer-prices__normal {
+  background: #f8fafc;
+  border: 1px solid #e6edf5;
+  border-radius: 10px;
+  display: grid;
+  gap: 4px;
+  min-height: 46px;
+  padding: 8px 14px;
+}
+
+.admin-offer-prices__normal span {
+  color: #687386;
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.admin-offer-prices__normal strong {
+  color: #121821;
+  font-size: 18px;
+}
+
+/* Cuentas ya hechas: cuanto ahorra el cliente y como se vera en el sitio. */
+.admin-offer-resumen {
+  background: rgba(10, 159, 115, 0.08);
+  border: 1px solid rgba(10, 159, 115, 0.24);
+  border-radius: 14px;
+  display: grid;
+  gap: 4px;
+  margin-top: 14px;
+  padding: 12px 14px;
+}
+
+.admin-offer-resumen strong {
+  color: #07734f;
+}
+
+.admin-offer-resumen span {
+  color: #3d6857;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.admin-featured-hint {
+  color: #687386;
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  line-height: 1.5;
+  margin: 14px 0 0;
+}
+
+.admin-featured-error {
+  color: var(--red);
+  font-size: 13px;
+  font-weight: var(--font-semibold);
+  line-height: 1.5;
+  margin: 14px 0 0;
+}
+
+@media (max-width: 640px) {
+  .admin-offer-prices {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
 .admin-dialog-notice {
   margin: 0;
 }

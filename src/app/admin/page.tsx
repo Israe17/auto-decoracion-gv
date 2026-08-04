@@ -138,6 +138,13 @@ function normalizarEnlace(valor: string): string | null {
   }
 }
 
+// Precio de lista, con o sin oferta puesta: cuando hay oferta, el de lista
+// es el tachado (oldPrice) y `price` es el rebajado que ve el cliente.
+function precioNormal(product?: Product | null) {
+  if (!product || !productHasPublicPrice(product)) return undefined;
+  return product.oldPrice ?? product.price;
+}
+
 function emptyProduct(categories: Category[]): Product {
   const category = categories[0];
 
@@ -520,9 +527,11 @@ export default function AdminPage() {
     }
   }
 
+  // `offerPrice` es el precio REBAJADO que ve el cliente. El de lista sale
+  // del producto, no se pide: al ponerlo en oferta pasa a ser el tachado.
   async function saveOffer(
     productId: string,
-    oldPrice?: number,
+    offerPrice?: number,
     featured = false,
     featuredOrder?: number,
     featuredFrom?: string,
@@ -531,9 +540,19 @@ export default function AdminPage() {
     const target = products.find((product) => product.id === productId);
     if (!target) return;
 
+    const listPrice = precioNormal(target);
+    const conOferta =
+      typeof listPrice === "number" &&
+      typeof offerPrice === "number" &&
+      offerPrice > 0 &&
+      offerPrice < listPrice;
+
     const updated: Product = {
       ...target,
-      oldPrice: productHasPublicPrice(target) ? oldPrice : undefined,
+      // Sin oferta el producto vuelve a su precio normal: si se quedara con
+      // el rebajado, quitar la oferta seria regalarlo para siempre.
+      price: listPrice === undefined ? target.price : conOferta ? offerPrice : listPrice,
+      oldPrice: conOferta ? listPrice : undefined,
       featured,
       featuredFrom: featured ? featuredFrom : undefined,
       featuredUntil: featured ? featuredUntil : undefined,
@@ -577,11 +596,14 @@ export default function AdminPage() {
     const label = product.oldPrice ? "Quitar oferta" : "Quitar destacado";
     setConfirmState({
       title: label,
-      body: `Se quitara la promocion de "${product.name}". El producto seguira en el catalogo.`,
+      body: `Se quitara ${product.oldPrice ? "la oferta" : "el destacado"} de "${product.name}". El producto seguira en el catalogo, a su precio normal.`,
       actionLabel: label,
       onConfirm: async () => {
         const updated: Product = {
           ...product,
+          // Vuelve al precio de lista; dejarlo en el rebajado convertiria la
+          // oferta en el precio de siempre.
+          price: precioNormal(product) ?? product.price,
           oldPrice: undefined,
           featured: false,
           featuredFrom: undefined,
@@ -591,7 +613,7 @@ export default function AdminPage() {
         try {
           const savedProduct = await upsertProduct(updated);
           setProducts((prev) => prev.map((item) => (item.id === product.id ? savedProduct : item)));
-          showSuccess("Promoción eliminada.");
+          showSuccess(product.oldPrice ? "Oferta eliminada." : "Destacado eliminado.");
         } catch (error) {
           reportError(error);
         }
@@ -2085,6 +2107,11 @@ function ProductDialog({
   onSave: (product: Product, sourceUrl: string) => void;
 }) {
   const [sourceError, setSourceError] = useState("");
+  // Con oferta puesta, `price` es el rebajado y `oldPrice` el normal.
+  const ofertaActiva =
+    typeof product.oldPrice === "number" &&
+    typeof product.price === "number" &&
+    product.price < product.oldPrice;
   const [compatibilityMode, setCompatibilityMode] = useState(product.compatibilityMode);
   const [isOwnBrand, setIsOwnBrand] = useState(Boolean(product.isOwnBrand));
   const [brandId, setBrandId] = useState(product.brandId || "");
@@ -2138,6 +2165,12 @@ function ProductDialog({
       .map((line) => line.trim())
       .filter(Boolean);
     const canShowPrice = saleMode === "price_quote" && price > 0;
+    // El campo edita el precio NORMAL. Si hay oferta puesta, el rebajado se
+    // conserva (y nunca queda por encima del normal nuevo).
+    const precioRebajado =
+      canShowPrice && ofertaActiva && typeof product.price === "number"
+        ? Math.min(product.price, price)
+        : undefined;
     const selectedBrand = brands.find((brand) => brand.id === brandId);
     const legacyBrandName = !product.isOwnBrand && !product.brandId ? product.brandName : undefined;
 
@@ -2149,8 +2182,8 @@ function ProductDialog({
       categorySlug,
       categoryName: category?.name || "Sin categoria",
       saleMode,
-      price: canShowPrice ? price : undefined,
-      oldPrice: canShowPrice ? product.oldPrice : undefined,
+      price: canShowPrice ? precioRebajado ?? price : undefined,
+      oldPrice: precioRebajado !== undefined ? price : undefined,
       status: String(form.get("status")) as Product["status"],
       compatibilityMode,
       vehicles:
@@ -2319,7 +2352,13 @@ function ProductDialog({
           </label>
           <label>
             Precio normal
-            <input name="price" type="number" min="0" defaultValue={product.price} />
+            <input name="price" type="number" min="0" defaultValue={precioNormal(product) ?? product.price} />
+            {ofertaActiva && (
+              <small className="admin-form-hint">
+                Este producto esta en oferta a {formatCRC(product.price)}. Aqui se cambia el precio
+                normal; la oferta se maneja en la pestaña Ofertas.
+              </small>
+            )}
           </label>
         </div>
 
@@ -2477,7 +2516,7 @@ function OfferDialog({
   onClose: () => void;
   onSave: (
     productId: string,
-    oldPrice?: number,
+    offerPrice?: number,
     featured?: boolean,
     featuredOrder?: number,
     featuredFrom?: string,
@@ -2489,24 +2528,42 @@ function OfferDialog({
   const [featuredError, setFeaturedError] = useState("");
   const selectedProduct = products.find((product) => product.id === selectedId);
   const canOffer = Boolean(selectedProduct && productHasPublicPrice(selectedProduct));
+  // Precio de lista del producto: con oferta puesta, el de lista es el
+  // tachado (oldPrice) y `price` es el rebajado.
+  const listPrice = precioNormal(selectedProduct);
+  // Lo que se escribe es el precio REBAJADO, que es como lo piensa el
+  // dueno: "esto vale 78 000 y lo pongo en 65 000".
+  const [offerInput, setOfferInput] = useState(
+    selectedProduct?.oldPrice ? String(selectedProduct.price ?? "") : ""
+  );
 
   useEffect(() => {
     setIsFeatured(Boolean(selectedProduct?.featured));
     setFeaturedError("");
+    setOfferInput(selectedProduct?.oldPrice ? String(selectedProduct.price ?? "") : "");
   }, [selectedProduct?.id]);
+
+  const offerValue = Number(offerInput);
+  const offerActiva = Boolean(offerInput.trim()) && offerValue > 0;
+  const offerInvalida = offerActiva && Boolean(listPrice) && offerValue >= (listPrice as number);
+  const ahorro = offerActiva && !offerInvalida && listPrice ? listPrice - offerValue : 0;
 
   function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (!selectedProduct) return;
 
     const form = new FormData(event.currentTarget);
-    const oldPrice = Number(form.get("oldPrice"));
     const featuredFrom = String(form.get("featuredFrom") || "").trim();
     const featuredUntil = String(form.get("featuredUntil") || "").trim();
     const featuredOrderValue = Number(form.get("featuredOrder"));
     const featuredOrder = Number.isInteger(featuredOrderValue) && featuredOrderValue > 0
       ? featuredOrderValue
       : undefined;
+
+    if (offerInvalida) {
+      setFeaturedError("El precio de oferta tiene que ser menor que el precio normal.");
+      return;
+    }
 
     if (isFeatured && featuredFrom && featuredUntil && featuredUntil < featuredFrom) {
       setFeaturedError("La fecha de cierre no puede ser anterior a la fecha de inicio.");
@@ -2515,7 +2572,7 @@ function OfferDialog({
 
     onSave(
       selectedProduct.id,
-      canOffer && oldPrice > 0 ? oldPrice : undefined,
+      canOffer && offerActiva && !offerInvalida ? offerValue : undefined,
       isFeatured,
       featuredOrder,
       featuredFrom || undefined,
@@ -2524,9 +2581,9 @@ function OfferDialog({
   }
 
   return (
-    <AdminDialog title={initialProduct ? "Editar promocion" : "Crear oferta o destacado"} onClose={onClose}>
+    <AdminDialog title={initialProduct ? "Editar oferta y destacado" : "Nueva oferta o destacado"} onClose={onClose}>
       <form key={selectedId} className="admin-form admin-dialog-form" noValidate onSubmit={handleSubmit}>
-        <AdminStepper steps={["Producto", "Oferta", "Destacado"]} submitLabel="Guardar promocion">
+        <AdminStepper steps={["Producto", "Oferta", "Destacado"]} submitLabel="Guardar oferta">
           <div>
             <label>
               Producto
@@ -2561,20 +2618,48 @@ function OfferDialog({
           </div>
 
           <div>
-            <label>
-              Precio anterior
-              <input
-                name="oldPrice"
-                type="number"
-                min="0"
-                disabled={!canOffer}
-                defaultValue={selectedProduct?.oldPrice}
-                placeholder="Ej: 78000"
-              />
-            </label>
-            <p className="admin-featured-hint">
-              Deje este campo vacio si desea destacar el producto sin aplicar descuento.
-            </p>
+            {/* Se escribe el precio REBAJADO. El normal ya lo sabe el
+                sistema (es el del producto) y el ahorro se calcula solo:
+                antes se pedia el precio anterior y era al reves de como lo
+                piensa uno al poner una oferta. */}
+            <div className="admin-offer-prices">
+              <div className="admin-offer-prices__normal">
+                <span>Precio normal</span>
+                <strong>{listPrice ? formatCRC(listPrice) : "Solo cotizacion"}</strong>
+              </div>
+              <label>
+                Precio en oferta
+                <input
+                  name="offerPrice"
+                  type="number"
+                  min="0"
+                  max={listPrice ? listPrice - 1 : undefined}
+                  disabled={!canOffer}
+                  value={offerInput}
+                  onChange={(event) => setOfferInput(event.target.value)}
+                  placeholder={listPrice ? `Menos de ${listPrice}` : "Ej: 65000"}
+                />
+              </label>
+            </div>
+
+            {offerInvalida ? (
+              <p className="admin-featured-error">
+                El precio de oferta tiene que ser menor que el normal ({formatCRC(listPrice)}).
+              </p>
+            ) : ahorro > 0 && listPrice ? (
+              <div className="admin-offer-resumen">
+                <strong>El cliente ahorra {formatCRC(ahorro)}</strong>
+                <span>
+                  {Math.round((ahorro / listPrice) * 100)}% de descuento · en el sitio se vera{" "}
+                  {formatCRC(listPrice)} tachado y {formatCRC(offerValue)} como precio nuevo.
+                </span>
+              </div>
+            ) : (
+              <p className="admin-featured-hint">
+                Deje este campo vacio para dejarlo al precio normal (sirve para destacar el
+                producto sin rebajarlo). Si el producto ya tenia oferta, se le quita.
+              </p>
+            )}
           </div>
 
           <div>
@@ -2936,10 +3021,10 @@ function AdminOfferList({
       <div className="admin-list-header admin-offers-header">
         <div>
           <strong>Ofertas y destacados</strong>
-          <span>{products.length} producto(s) con promocion o destacado</span>
+          <span>{products.length} producto(s) con oferta o destacado</span>
         </div>
         <button className="button button--primary" type="button" onClick={onCreate} disabled={!allProducts.length}>
-          <Plus size={18} /> Crear promocion
+          <Plus size={18} /> Crear oferta
         </button>
       </div>
 
@@ -2994,8 +3079,8 @@ function AdminOfferList({
                     <button type="button" aria-label="Ver detalle" title="Ver detalle" onClick={() => onView(product)}>
                       <Eye size={16} /> Ver detalle
                     </button>
-                    <button type="button" aria-label="Editar promocion" title="Editar promocion" onClick={() => onEdit(product)}>
-                      <Edit3 size={16} /> Editar promocion
+                    <button type="button" aria-label="Editar oferta" title="Editar oferta" onClick={() => onEdit(product)}>
+                      <Edit3 size={16} /> Editar oferta
                     </button>
                     <button type="button" aria-label="Quitar oferta" title="Quitar oferta" onClick={() => onRemove(product)}>
                       <Trash2 size={16} /> Quitar
