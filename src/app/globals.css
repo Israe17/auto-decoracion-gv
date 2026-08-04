@@ -760,6 +760,10 @@ img {
   color: white;
   display: flex;
   gap: 14px;
+  /* Los botones se van al borde derecho y el texto se queda con lo que
+     sobra: sin esto la fila terminaba antes del borde y quedaba mas aire
+     de un lado que del otro. */
+  justify-content: space-between;
   padding: 12px;
   position: fixed;
   right: 20px;
@@ -768,6 +772,14 @@ img {
 
 .quote-tray div {
   display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Los botones mandan su ancho; el que cede es el texto. */
+.quote-tray .button,
+.quote-tray__vaciar {
+  flex: none;
 }
 
 .quote-tray span {
@@ -949,8 +961,25 @@ img {
 
   .quote-tray {
     bottom: 10px;
+    gap: 10px;
     left: 10px;
+    padding: 10px;
     right: 10px;
+  }
+
+  /* En 390px el CTA se comia el ancho y el texto caia en tres renglones:
+     la bandeja crecia a 113px y los botones quedaban chiquitos al lado del
+     bloque de texto. Con el CTA mas corto todo entra en una linea. */
+  .quote-tray .button {
+    padding: 0 16px;
+  }
+
+  /* Red de seguridad: pase lo que pase, cada renglon es uno solo. */
+  .quote-tray strong,
+  .quote-tray span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 }
 
