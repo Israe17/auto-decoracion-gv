@@ -4,6 +4,7 @@ import {
   ContactRequest,
   GalleryItem,
   Product,
+  ProductSource,
   Promo,
   VehicleModel
 } from "@/types";
@@ -17,6 +18,7 @@ const VEHICLES = "vehicles";
 const PROMOS = "promos";
 const BRANDS = "brands";
 const CONTACT_REQUESTS = "contact_requests";
+const PRODUCT_SOURCES = "product_sources";
 const GALLERY = "gallery";
 
 const localKeys = {
@@ -26,6 +28,7 @@ const localKeys = {
   promos: "gv-admin-promos",
   brands: "gv-admin-brands",
   requests: "gv-contact-requests",
+  sources: "gv-admin-product-sources",
   gallery: "gv-admin-gallery"
 };
 const LOCAL_MIGRATION_DONE = "gv-admin-supabase-migrated";
@@ -302,6 +305,52 @@ export async function removeContactRequest(id: string) {
   await borrar(CONTACT_REQUESTS, id);
 }
 
+// --- Enlaces a la pagina del proveedor (PRIVADOS) -------------------------
+//
+// Viven aparte del producto a proposito: la tabla `products` la lee
+// cualquiera (es el catalogo del sitio), asi que un campo suyo seria
+// publico aunque no se muestre. `product_sources` no tiene politica para el
+// anonimo, solo para la sesion del admin. Nada del sitio publico debe leer
+// de aqui.
+
+// Sin URL no hay fila: `saveProductSource("", ...)` borra en vez de guardar
+// una cadena vacia, asi la tabla no junta basura.
+export async function saveProductSource(productId: string, url: string) {
+  const limpia = url.trim();
+  if (!limpia) {
+    await removeProductSource(productId);
+    return;
+  }
+
+  const fila: ProductSource = { id: productId, url: limpia };
+  if (!supabaseEnabled) {
+    localUpsert(localKeys.sources, [] as ProductSource[], fila);
+    return;
+  }
+  await guardar(PRODUCT_SOURCES, fila);
+}
+
+export async function removeProductSource(productId: string) {
+  if (!supabaseEnabled) {
+    localRemove(localKeys.sources, [] as ProductSource[], productId);
+    return;
+  }
+
+  // A diferencia del resto, aqui el borrado puede no encontrar fila (un
+  // producto sin proveedor anotado) y eso no es un error.
+  const { error } = await requireSupabase().from(PRODUCT_SOURCES).delete().eq("id", productId);
+  if (error) throw new Error(error.message);
+}
+
+// Mapa id de producto → enlace, que es como lo consume el panel.
+export async function fetchProductSources(): Promise<Record<string, string>> {
+  const filas = supabaseEnabled
+    ? await listCollection<ProductSource>(PRODUCT_SOURCES)
+    : readLocal(localKeys.sources, [] as ProductSource[]);
+
+  return Object.fromEntries(filas.map((fila) => [fila.id, fila.url]));
+}
+
 // --- Admin: Supabase si esta configurado, localStorage en modo demo ---
 
 function readLocal<T>(key: string, fallback: T): T {
@@ -380,6 +429,8 @@ export async function fetchAdminData(): Promise<{
   brands: Brand[];
   requests: ContactRequest[];
   gallery: GalleryItem[];
+  // Enlaces privados del proveedor, por id de producto.
+  sources: Record<string, string>;
 }> {
   if (!supabaseEnabled) {
     return {
@@ -389,19 +440,22 @@ export async function fetchAdminData(): Promise<{
       promos: sortPromos(readLocal(localKeys.promos, seedPromos)),
       brands: readLocal(localKeys.brands, seedBrands),
       requests: await fetchContactRequests(),
-      gallery: await fetchGallery()
+      gallery: await fetchGallery(),
+      sources: await fetchProductSources()
     };
   }
 
-  const [products, categories, vehicles, promos, brands, requests, gallery] = await Promise.all([
-    listCollection<Product>(PRODUCTS),
-    listCollection<Category>(CATEGORIES),
-    listCollection<VehicleModel>(VEHICLES),
-    listCollection<Promo>(PROMOS),
-    listCollection<Brand>(BRANDS),
-    fetchContactRequests(),
-    fetchGallery()
-  ]);
+  const [products, categories, vehicles, promos, brands, requests, gallery, sources] =
+    await Promise.all([
+      listCollection<Product>(PRODUCTS),
+      listCollection<Category>(CATEGORIES),
+      listCollection<VehicleModel>(VEHICLES),
+      listCollection<Promo>(PROMOS),
+      listCollection<Brand>(BRANDS),
+      fetchContactRequests(),
+      fetchGallery(),
+      fetchProductSources()
+    ]);
 
   return {
     products: sortProducts(products),
@@ -410,7 +464,8 @@ export async function fetchAdminData(): Promise<{
     promos: sortPromos(promos),
     brands: [...brands].sort((a, b) => a.name.localeCompare(b.name)),
     requests,
-    gallery
+    gallery,
+    sources
   };
 }
 
@@ -423,6 +478,10 @@ export async function upsertProduct(product: Product) {
 }
 
 export async function removeProduct(id: string) {
+  // El enlace del proveedor se va con el producto: si no, la tabla queda
+  // con filas huerfanas que nadie vuelve a ver ni a borrar.
+  await removeProductSource(id);
+
   if (!supabaseEnabled) {
     localRemove(localKeys.products, seedProducts, id);
     return;

@@ -65,6 +65,15 @@ export type VehicleModel = {
   toYear?: number;
 };
 
+// Pagina del proveedor donde el negocio consigue el producto. Dato PRIVADO:
+// por eso no es un campo de Product (la tabla `products` la lee cualquiera,
+// es el catalogo publico) sino su propia tabla `product_sources`, sin
+// politica para el anonimo. `id` es el id del producto.
+export type ProductSource = {
+  id: string;
+  url: string;
+};
+
 // Lamina promocional del carrusel del home, administrada desde el admin:
 // arte + titulo + subtitulo + boton de accion.
 export type Promo = {
