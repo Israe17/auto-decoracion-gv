@@ -18,6 +18,7 @@ export function ImageListField({
   folder,
   ancho = 1100,
   alto = 1000,
+  max = 8,
   tarjeta
 }: {
   name: string;
@@ -28,6 +29,8 @@ export function ImageListField({
   /** Medida del recuadro donde viven estas imagenes en el sitio. */
   ancho?: number;
   alto?: number;
+  /** Cuantas fotos admite la galeria de este elemento. */
+  max?: number;
   /** Datos base para la vista previa del card (se completan con lo que
       ya este escrito en el formulario al abrir el editor). */
   tarjeta?: { nombre?: string; categoria?: string };
@@ -35,7 +38,7 @@ export function ImageListField({
   const inputId = useId();
   const raizRef = useRef<HTMLDivElement>(null);
   const [vista, setVista] = useState<{ nombre?: string; categoria?: string; precio?: string }>();
-  const [urls, setUrls] = useState<string[]>(defaultValue.filter(Boolean));
+  const [urls, setUrls] = useState<string[]>(defaultValue.filter(Boolean).slice(0, max));
   // Al soltar varias fotos se encuadran UNA POR UNA: la primera entra al
   // editor y las demas esperan en cola.
   const [cola, setCola] = useState<File[]>([]);
@@ -94,10 +97,24 @@ export function ImageListField({
       setError("Los archivos deben ser imagenes.");
       return;
     }
-    setError(null);
-    setTotal(imagenes.length);
+
+    // Solo entran las que caben: mejor avisar aqui que dejar al dueño
+    // recortando fotos que despues se iban a descartar.
+    const espacio = max - urls.length;
+    if (espacio <= 0) {
+      setError(`Ya tiene el maximo de ${max} fotos. Quite alguna para agregar otra.`);
+      return;
+    }
+
+    const entran = imagenes.slice(0, espacio);
+    setError(
+      entran.length < imagenes.length
+        ? `Caben ${max} fotos: se tomaron las primeras ${entran.length}.`
+        : null
+    );
+    setTotal(entran.length);
     leerFormulario();
-    abrirSiguiente(imagenes);
+    abrirSiguiente(entran);
   }
 
   async function confirmarRecorte() {
@@ -107,7 +124,7 @@ export function ImageListField({
     try {
       const recorte = await recortarBorrador(borrador, ancho, alto);
       const url = await uploadAdminImage(recorte, folder);
-      setUrls((current) => [...current, url]);
+      setUrls((current) => [...current, url].slice(0, max));
       abrirSiguiente(cola);
     } catch (fallo) {
       setError(fallo instanceof Error ? fallo.message : "No se pudo subir la imagen. Intente de nuevo.");
@@ -139,7 +156,12 @@ export function ImageListField({
       ref={raizRef}
       data-image-pending={pending ? "true" : undefined}
     >
-      {label && <span className="image-field__label">{label}</span>}
+      <div className="image-field__cabecera">
+        {label && <span className="image-field__label">{label}</span>}
+        <span className={`image-field__cuenta${urls.length >= max ? " is-lleno" : ""}`}>
+          {urls.length} de {max} fotos
+        </span>
+      </div>
 
       <div
         className={`image-upload image-upload--list${dragging ? " image-upload--dragging" : ""}${
@@ -214,14 +236,33 @@ export function ImageListField({
             onCancelar={() => abrirSiguiente(cola)}
           />
         ) : (
-          <label htmlFor={inputId} className="image-upload__dropzone image-upload__dropzone--compact">
+          <label
+            htmlFor={inputId}
+            className={`image-upload__dropzone image-upload__dropzone--compact${
+              urls.length >= max ? " is-lleno" : ""
+            }`}
+          >
             <span className="image-upload__icon">
               <ImageUp size={20} />
             </span>
-            <strong>Arrastre imágenes aquí</strong>
-            <span className="image-upload__hint">o haga clic para elegir archivos</span>
+            {urls.length >= max ? (
+              <>
+                <strong>Ya tiene las {max} fotos</strong>
+                <span className="image-upload__hint">Quite alguna si quiere cambiarla por otra.</span>
+              </>
+            ) : (
+              <>
+                <strong>Arrastre las fotos aquí</strong>
+                <span className="image-upload__hint">
+                  o haga clic para elegirlas — puede escoger varias de una vez (faltan{" "}
+                  {max - urls.length})
+                </span>
+              </>
+            )}
             <span className="image-upload__medida">Recuadro: {ancho}×{alto} px</span>
-            <span className="image-upload__portada-pista">La primera foto será la portada de la tarjeta.</span>
+            <span className="image-upload__portada-pista">
+              La primera foto es la portada; las demás se ven en la galería del producto.
+            </span>
           </label>
         )}
 
@@ -254,7 +295,7 @@ export function ImageListField({
           name={name}
           rows={2}
           value={urls.join("\n")}
-          onChange={(event) => setUrls(event.target.value.split("\n"))}
+          onChange={(event) => setUrls(event.target.value.split("\n").slice(0, max))}
           placeholder="una URL por línea"
         />
       </details>

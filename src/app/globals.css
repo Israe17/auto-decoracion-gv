@@ -6166,6 +6166,19 @@ textarea {
   scrollbar-width: none;
 }
 
+/* Las miniaturas conservan su tamaño y la tira se desliza: sin esto, con
+   8 fotos el flex las aplasta a 72px en vez de correrlas. */
+.product-gallery__thumbs button {
+  flex: none;
+  scroll-snap-align: start;
+}
+
+.product-gallery__thumbs {
+  /* `proximity`, nunca `mandatory`: con padding lateral el ultimo punto de
+     snap cae mas alla del scroll maximo y la tira se siente trabada. */
+  scroll-snap-type: x proximity;
+}
+
 .product-gallery__thumbs::-webkit-scrollbar {
   display: none;
 }

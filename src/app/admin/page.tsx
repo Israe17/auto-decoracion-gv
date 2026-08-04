@@ -2423,8 +2423,10 @@ function ProductDialog({
         <div>
         <ImageListField
           name="images"
+          label="Fotos del producto"
           defaultValue={product.images}
           folder="products"
+          max={8}
           tarjeta={{ nombre: product.name, categoria: product.categoryName }}
         />
 
