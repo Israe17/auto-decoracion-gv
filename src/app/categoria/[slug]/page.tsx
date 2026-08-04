@@ -69,13 +69,10 @@ export default async function CategoryPage({
         <p>{category.description}</p>
       </section>
 
-      <section className="section section--tight">
-        <Link href="/catalogo" className="text-link">
+      <section className="section category-subcategories">
+        <Link href="/catalogo" className="text-link category-subcategories__back">
           <ArrowLeft size={18} /> Volver al catálogo
         </Link>
-      </section>
-
-      <section className="section">
         <div className="section-head section-head--left">
           <div>
             <span className="section-head__pill">

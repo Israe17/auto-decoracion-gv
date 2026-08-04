@@ -288,6 +288,10 @@ img {
   padding-top: 36px;
 }
 
+.category-subcategories__back {
+  margin-bottom: clamp(24px, 3vw, 40px);
+}
+
 .section--muted {
   background: var(--soft);
   max-width: none;
