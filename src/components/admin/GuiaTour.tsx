@@ -91,7 +91,14 @@ export function GuiaTour() {
     }
 
     frame = window.requestAnimationFrame(() => setCaja(medir(paso.ancla)));
-    return () => window.cancelAnimationFrame(frame);
+    // Segunda medida cuando el panel ya se asento: los reveals con GSAP y las
+    // fotos que cargan tarde mueven el elemento despues de la primera, y el
+    // foco se quedaria iluminando donde estaba.
+    const reajuste = window.setTimeout(() => setCaja(medir(paso.ancla)), 450);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(reajuste);
+    };
   }, [paso]);
 
   useLayoutEffect(() => {
