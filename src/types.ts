@@ -49,6 +49,12 @@ export type Product = {
   brandId?: string;
   brandName?: string;
   isOwnBrand?: boolean;
+  // Complemento: producto que se vende aparte pero acompaña a otro (el
+  // extra de un producto padre). El hijo es el que apunta al padre, asi la
+  // tarjeta pinta su etiqueta sin recorrer el catalogo entero; el nombre va
+  // denormalizado igual que `categoryName` y `brandName`.
+  parentProductId?: string;
+  parentProductName?: string;
   featured?: boolean;
   // Fechas YYYY-MM-DD en horario de Costa Rica. Sin fecha = visible de inmediato o sin vencimiento.
   featuredFrom?: string;
