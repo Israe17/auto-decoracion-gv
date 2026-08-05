@@ -1,20 +1,24 @@
 "use client";
 
 import { ChangeEvent, DragEvent, useEffect, useId, useRef, useState } from "react";
-import { ArrowLeft, ArrowRight, ImageUp, Link2, Loader2, Star, Trash2 } from "lucide-react";
+import { ImageUp, Link2, Loader2, Move, Star, Trash2 } from "lucide-react";
 import { formatCRC } from "@/lib/catalog";
 import { uploadAdminImage } from "@/lib/storage";
 import {
   Borrador,
   EditorDeEncuadre,
   cargarBorrador,
-  recortarBorrador
+  cargarBorradorDeUrl,
+  focoDeBorrador,
+  prepararOriginal
 } from "@/components/admin/EncuadreImagen";
 
 export function ImageListField({
   name,
+  focusName,
   label,
   defaultValue,
+  defaultFocus,
   folder,
   ancho = 1100,
   alto = 1000,
@@ -22,9 +26,12 @@ export function ImageListField({
   tarjeta
 }: {
   name: string;
+  /** Campo oculto donde viaja el encuadre de cada foto (JSON). */
+  focusName: string;
   /** Omitir cuando el encabezado del paso ya dice lo mismo. */
   label?: string;
   defaultValue: string[];
+  defaultFocus?: Record<string, string>;
   folder: string;
   /** Medida del recuadro donde viven estas imagenes en el sitio. */
   ancho?: number;
@@ -39,10 +46,15 @@ export function ImageListField({
   const raizRef = useRef<HTMLDivElement>(null);
   const [vista, setVista] = useState<{ nombre?: string; categoria?: string; precio?: string }>();
   const [urls, setUrls] = useState<string[]>(defaultValue.filter(Boolean).slice(0, max));
+  // Encuadre por foto, con la URL como llave: reordenar o quitar no lo
+  // descuadra.
+  const [focos, setFocos] = useState<Record<string, string>>(defaultFocus || {});
   // Al soltar varias fotos se encuadran UNA POR UNA: la primera entra al
   // editor y las demas esperan en cola.
   const [cola, setCola] = useState<File[]>([]);
   const [borrador, setBorrador] = useState<Borrador | null>(null);
+  // Cuando se reabre el encuadre de una foto YA subida, aqui va su URL.
+  const [acomodando, setAcomodando] = useState<string | null>(null);
   const [total, setTotal] = useState(0);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -50,11 +62,13 @@ export function ImageListField({
   const pending = Boolean(borrador || uploading || cola.length);
 
   useEffect(() => {
-    const url = borrador?.url;
+    // Solo se liberan los blobs de archivos nuevos; las fotos ya subidas
+    // se abren por su URL de siempre.
+    const url = borrador?.archivo ? borrador.url : undefined;
     return () => {
       if (url) URL.revokeObjectURL(url);
     };
-  }, [borrador?.url]);
+  }, [borrador?.url, borrador?.archivo]);
 
   // Lee lo que el dueno YA escribio en este mismo formulario (nombre,
   // precio, modo de venta) para que la vista previa del card muestre su
@@ -77,6 +91,7 @@ export function ImageListField({
   async function abrirSiguiente(pendientes: File[]) {
     const [siguiente, ...resto] = pendientes;
     setCola(resto);
+    setAcomodando(null);
     if (!siguiente) {
       setBorrador(null);
       setTotal(0);
@@ -99,7 +114,7 @@ export function ImageListField({
     }
 
     // Solo entran las que caben: mejor avisar aqui que dejar al dueño
-    // recortando fotos que despues se iban a descartar.
+    // encuadrando fotos que despues se iban a descartar.
     const espacio = max - urls.length;
     if (espacio <= 0) {
       setError(`Ya tiene el maximo de ${max} fotos. Quite alguna para agregar otra.`);
@@ -117,14 +132,26 @@ export function ImageListField({
     abrirSiguiente(entran);
   }
 
-  async function confirmarRecorte() {
+  // Sube la foto TAL CUAL y guarda aparte el encuadre elegido.
+  async function confirmarFoto() {
     if (!borrador) return;
+
+    // Reacomodar una foto que ya está subida: no se vuelve a subir nada.
+    if (acomodando) {
+      setFocos((current) => ({ ...current, [acomodando]: focoDeBorrador(borrador) }));
+      setBorrador(null);
+      setAcomodando(null);
+      return;
+    }
+
     setUploading(true);
     setError(null);
     try {
-      const recorte = await recortarBorrador(borrador, ancho, alto);
-      const url = await uploadAdminImage(recorte, folder);
+      const original = await prepararOriginal(borrador);
+      const url = await uploadAdminImage(original, folder);
+      const foco = focoDeBorrador(borrador);
       setUrls((current) => [...current, url].slice(0, max));
+      setFocos((current) => ({ ...current, [url]: foco }));
       abrirSiguiente(cola);
     } catch (fallo) {
       setError(fallo instanceof Error ? fallo.message : "No se pudo subir la imagen. Intente de nuevo.");
@@ -133,18 +160,30 @@ export function ImageListField({
     }
   }
 
+  async function acomodar(url: string) {
+    setError(null);
+    leerFormulario();
+    try {
+      setAcomodando(url);
+      setBorrador(await cargarBorradorDeUrl(url, focos[url]));
+    } catch {
+      setAcomodando(null);
+      setError("No se pudo abrir esa foto para acomodarla.");
+    }
+  }
+
   function removeAt(index: number) {
     setUrls((current) => current.filter((_, i) => i !== index));
   }
 
-  // La PRIMERA foto es la portada de la tarjeta: reordenar importa.
-  function mover(index: number, delta: number) {
+  // La PRIMERA foto es la portada de la tarjeta: se elige de un toque, sin
+  // tener que ir moviendola de puesto una por una.
+  function hacerPortada(index: number) {
     setUrls((current) => {
-      const destino = index + delta;
-      if (destino < 0 || destino >= current.length) return current;
+      if (index <= 0 || index >= current.length) return current;
       const copia = [...current];
-      [copia[index], copia[destino]] = [copia[destino], copia[index]];
-      return copia;
+      const [elegida] = copia.splice(index, 1);
+      return [elegida, ...copia];
     });
   }
 
@@ -181,8 +220,20 @@ export function ImageListField({
         {urls.length > 0 && !borrador && (
           <div className="image-upload__thumbs">
             {urls.map((url, index) => (
-              <div key={`${url}-${index}`} className="image-upload__preview-card image-upload__preview-card--sm">
-                <img src={url} alt="" className="image-upload__preview" />
+              <div
+                key={`${url}-${index}`}
+                className={`image-upload__preview-card image-upload__preview-card--sm${
+                  index === 0 ? " is-portada" : ""
+                }`}
+              >
+                {/* La miniatura se ve con SU encuadre: lo que se acomoda
+                    aqui es lo que sale en la tienda. */}
+                <img
+                  src={url}
+                  alt=""
+                  className="image-upload__preview"
+                  style={{ objectPosition: focos[url] || "50% 50%" }}
+                />
                 {index === 0 && (
                   <span className="image-upload__portada">
                     <Star size={11} /> Portada
@@ -193,30 +244,31 @@ export function ImageListField({
                     <button
                       type="button"
                       className="image-upload__overlay-btn"
-                      onClick={() => mover(index, -1)}
-                      aria-label="Mover antes"
+                      onClick={() => hacerPortada(index)}
+                      aria-label="Usar como portada"
+                      title="Usar como portada"
                     >
-                      <ArrowLeft size={15} />
+                      <Star size={15} />
                     </button>
                   )}
+                  <button
+                    type="button"
+                    className="image-upload__overlay-btn"
+                    onClick={() => acomodar(url)}
+                    aria-label="Acomodar la foto"
+                    title="Acomodar la foto"
+                  >
+                    <Move size={15} />
+                  </button>
                   <button
                     type="button"
                     className="image-upload__overlay-btn image-upload__overlay-btn--danger"
                     onClick={() => removeAt(index)}
                     aria-label="Quitar imagen"
+                    title="Quitar imagen"
                   >
-                    <Trash2 size={16} />
+                    <Trash2 size={15} />
                   </button>
-                  {index < urls.length - 1 && (
-                    <button
-                      type="button"
-                      className="image-upload__overlay-btn"
-                      onClick={() => mover(index, 1)}
-                      aria-label="Mover despues"
-                    >
-                      <ArrowRight size={15} />
-                    </button>
-                  )}
                 </div>
               </div>
             ))}
@@ -229,11 +281,19 @@ export function ImageListField({
             ancho={ancho}
             alto={alto}
             ocupado={uploading}
-            progreso={total > 1 ? `Foto ${posicion} de ${total}` : undefined}
+            completa
+            etiquetaConfirmar={acomodando ? "Guardar encuadre" : "Usar así"}
+            progreso={
+              acomodando
+                ? "Acomodando una foto ya subida"
+                : total > 1
+                  ? `Foto ${posicion} de ${total}`
+                  : undefined
+            }
             tarjeta={tarjeta ? vista ?? tarjeta : undefined}
             onCambiar={setBorrador}
-            onConfirmar={confirmarRecorte}
-            onCancelar={() => abrirSiguiente(cola)}
+            onConfirmar={confirmarFoto}
+            onCancelar={() => (acomodando ? (setBorrador(null), setAcomodando(null)) : abrirSiguiente(cola))}
           />
         ) : (
           <label
@@ -259,9 +319,10 @@ export function ImageListField({
                 </span>
               </>
             )}
-            <span className="image-upload__medida">Recuadro: {ancho}×{alto} px</span>
+            <span className="image-upload__medida">Recuadro del sitio: {ancho}×{alto} px</span>
             <span className="image-upload__portada-pista">
-              La primera foto es la portada; las demás se ven en la galería del producto.
+              La foto se guarda completa: usted elige qué parte se ve y puede cambiarlo cuando
+              quiera. La portada es la primera, y se cambia con la estrella.
             </span>
           </label>
         )}
@@ -286,6 +347,15 @@ export function ImageListField({
         />
       </div>
 
+      {/* Solo viajan los encuadres de las fotos que siguen en la lista. */}
+      <input
+        type="hidden"
+        name={focusName}
+        value={JSON.stringify(
+          Object.fromEntries(urls.filter((url) => focos[url]).map((url) => [url, focos[url]]))
+        )}
+      />
+
       <details className="image-field__avanzado">
         <summary>
           <Link2 size={13} /> Pegar URLs de imagen
@@ -301,7 +371,7 @@ export function ImageListField({
       </details>
       {pending && (
         <span className="image-upload__pending" role="status">
-          Confirme cada recorte con “Usar así” antes de continuar.
+          Confirme cada foto antes de continuar.
         </span>
       )}
       {error && <span className="image-upload__error">{error}</span>}

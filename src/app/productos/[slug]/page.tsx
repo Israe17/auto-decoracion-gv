@@ -147,7 +147,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </Link>
 
         <div className="product-detail__grid">
-          <ProductPhotos images={product.images} name={product.name} discount={discount} />
+          <ProductPhotos
+            images={product.images}
+            focos={product.imageFocus}
+            name={product.name}
+            discount={discount}
+          />
 
           <div className="product-info">
             <div className="product-info__topline">

@@ -43,6 +43,13 @@ export type Product = {
   compatibilityMode: CompatibilityMode;
   vehicles: VehicleCompatibility[];
   images: string[];
+  // Qué parte de cada foto se ve dentro del recuadro del sitio, en el
+  // formato de `object-position` ("50% 30%"). La foto se guarda ENTERA:
+  // esto solo dice cómo encuadrarla, así que se puede reacomodar cuando
+  // se quiera sin volver a subirla. Va con la URL como llave —y no por
+  // posición— para que reordenar o quitar fotos no descuadre el resto.
+  // Sin entrada = centrada.
+  imageFocus?: Record<string, string>;
   description: string;
   tags: string[];
   // Marca comercial del producto. La linea propia usa G&V System.

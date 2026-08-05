@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { BadgePercent, Sparkles } from "lucide-react";
 import gsap from "gsap";
-import { estadoDelProducto, formatCRC } from "@/lib/catalog";
+import { encuadreDe, estadoDelProducto, formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
 import { ProductActions } from "./ProductActions";
 
@@ -86,6 +86,9 @@ export function ProductCard({
           alt={product.name}
           fill
           sizes="(max-width: 720px) 50vw, (max-width: 1200px) 33vw, 300px"
+          /* La foto se guarda entera: el encuadre elegido en el panel se
+             aplica aquí, no recortando el archivo. */
+          style={{ objectPosition: encuadreDe(product, product.images[0]) }}
         />
       </Link>
       <div className="product-card__body">
