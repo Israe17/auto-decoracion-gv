@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { ArrowLeft, ArrowRight, LayoutGrid } from "lucide-react";
+import { ArrowLeft, ArrowRight, LayoutGrid, PackageSearch } from "lucide-react";
 import { CategoryCard } from "@/components/CategoryCard";
+import { ProductCard } from "@/components/ProductCard";
 import {
   categories as seedCategories,
   childCategories,
@@ -58,8 +59,10 @@ export default async function CategoryPage({
     redirect(`/catalogo?categoria=${slug}`);
   }
 
-  const countFor = (categorySlug: string) =>
-    products.filter((product) => product.categorySlug === categorySlug).length;
+  // Productos puestos en la categoria GENERAL, no en una subcategoria: sin
+  // esto quedaban invisibles aqui (la pagina solo mostraba subcategorias) y
+  // solo aparecian entrando a "Ver todo".
+  const sueltos = products.filter((product) => product.categorySlug === slug);
 
   return (
     <>
@@ -96,6 +99,29 @@ export default async function CategoryPage({
           ))}
         </div>
       </section>
+
+      {sueltos.length > 0 && (
+        <section className="section section--tight">
+          <div className="section-head section-head--left">
+            <div>
+              <span className="section-head__pill">
+                <PackageSearch size={14} /> {category.name}
+              </span>
+              <h2>
+                También en esta <em>categoría.</em>
+              </h2>
+            </div>
+            <Link href={`/catalogo?categoria=${slug}`} className="text-link">
+              Ver todo <ArrowRight size={18} />
+            </Link>
+          </div>
+          <div className="product-grid product-grid--catalog">
+            {sueltos.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </div>
+        </section>
+      )}
     </>
   );
 }
