@@ -232,6 +232,23 @@ Móvil (iPhone-first):
      renglón y el nombre de la categoría salía cortado.
   4. Ritmo del cuerpo: etiqueta y nombre pegados (gap 7-9px), el precio y
      los botones despegados con margen propio.
+- **Armonía de las dos tarjetas de la ficha** (decisión del dueño: "no
+  tienen armonía"). Tres reglas que la sostienen:
+  1. **Una sola familia de superficie neutra**, con el MISMO fondo
+     (`--soft`), borde (`--line` 1px) y **radio 8px**: las etiquetas de la
+     tarjeta y del panel, las filas de modelos compatibles
+     (`.product-detail-panel__block li`) y las piezas de apoyo
+     (`.product-info__meta span`). Antes eran tres cajas distintas —
+     radios 14/9/8, una sin borde y otra con borde y sombra rojos.
+  2. **Las piezas de apoyo no llevan rojo**: iban en pastilla blanca con
+     borde y sombra rojos y un icono en caja de degradado con sombra
+     propia — tres cajas rojas al pie, para la información menos
+     importante de la ficha. El icono va del mismo tono que su texto.
+  3. **Un solo primario rojo en toda la ficha**. "Cotizar" (hero) y
+     "Cotizar este producto" (bloque ámbar) abren EXACTAMENTE el mismo
+     diálogo; con los dos en rojo se anulaban entre sí. El segundo va en
+     `button--secondary`, así el bloque conserva su CTA de cierre (§7) sin
+     robarle el foco al de arriba.
 - **Etiqueta sutil** (decisión del dueño): fondo `--soft`, borde `--line`
   de 1px, radio 8px, 10-12px, `--font-medium`, texto `--muted-fuerte`,
   **sin degradado, sin sombra, sin mayúsculas forzadas y sin hover** (no
@@ -364,9 +381,8 @@ Móvil (iPhone-first):
 - Ficha de producto: **precio héroe sin cajón** junto al tachado y al label
   verde elevado "Ahorra ₡X"; badge de descuento "−N%" sobre la foto;
   acciones lado a lado 1.5:1 (primario dominante); categoría/marca como
-  labels de marca, **disponibilidad como `.estado-punto`** (ya no como
-  label verde macizo) y meta-información en piezas blancas con icono
-  degradado, radio y sombra coordinados.
+  labels de marca y **disponibilidad como `.estado-punto`** (ya no como
+  label verde macizo).
 - **Tipografía del precio de la ficha** (decisión del dueño: el precio
   desentonaba con el resto de la tarjeta). Iba a 34px, `--font-bold` y
   `--red-dark`: el mismo peso visual que el nombre (37px, bold) justo
