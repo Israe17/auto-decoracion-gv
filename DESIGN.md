@@ -222,15 +222,22 @@ Móvil (iPhone-first):
      vienen de varias hijas y la etiqueta es lo que las distingue). La
      fila reserva `min-height` aunque no haya etiqueta, o en una misma
      rejilla unas tarjetas arrancarían el nombre 22px más arriba.
-  3. **Disponibilidad**, junto al precio (`.product-card__estado`): punto
-     de color de 6-7px + texto en capitalización normal, **sin fondo y
-     sin sombra** — verde `--green` disponible, ámbar bajo pedido, gris
-     agotado. Va en la fila del precio y no en la de la etiqueta porque
-     en la tarjeta de móvil (~172px) las dos cosas no caben en un
-     renglón. "Agotado" es el único que se escribe en `--ink` y
-     `--font-semibold`: es el que cambia la decisión de compra.
+  3. **Disponibilidad**, junto al precio: el indicador `.estado-punto`
+     (ver abajo). Va en la fila del precio y no en la de la etiqueta
+     porque en la tarjeta de móvil (~172px) las dos cosas no caben en un
+     renglón y el nombre de la categoría salía cortado.
   4. Ritmo del cuerpo: etiqueta y nombre pegados (gap 7-9px), el precio y
      los botones despegados con margen propio.
+- **Indicador de disponibilidad** (`.estado-punto`, decisión del dueño):
+  punto de color de 6-7px + texto en capitalización normal, **sin fondo y
+  sin sombra** — verde `--green` disponible, ámbar bajo pedido, gris
+  agotado. "Agotado" es el único que se escribe en `--ink` y
+  `--font-semibold`: es el que cambia la decisión de compra. Sustituye al
+  label verde macizo en LOS DOS lugares donde se muestra el estado, la
+  tarjeta y la ficha del producto (`.product-info__estado`, 13px para
+  convivir con los labels de categoría y marca de esa fila). El texto y el
+  tono salen de `estadoDelProducto()` en `src/lib/catalog.ts`, no de cada
+  componente, para que digan siempre lo mismo.
 - **Dashboard del admin** (`.admin-stats` + `.admin-dash`): fila de KPIs
   con ícono rojo y rejilla `auto-fit` (nunca dejar tarjetas huérfanas en
   una fila sola), y debajo tres paneles: **Requiere atención** (avisos
@@ -315,7 +322,8 @@ Móvil (iPhone-first):
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y label verde elevado "Ahorra ₡X"); badge de
   descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
-  dominante); categoría/marca como labels de marca y meta-información en
+  dominante); categoría/marca como labels de marca, **disponibilidad como
+  `.estado-punto`** (ya no como label verde macizo) y meta-información en
   piezas blancas con icono degradado, radio y sombra coordinados.
 - **Complementos** (extras que se venden aparte pero acompañan a otro
   producto): el HIJO guarda `parentProductId` + `parentProductName`
