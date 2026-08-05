@@ -1004,6 +1004,94 @@
   font-weight: 600;
 }
 
+/* --- Fotos dentro del detalle del producto --- */
+.admin-detail-fotos {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
+}
+
+.admin-detail-foto {
+  /* La proporcion REAL de la tarjeta del sitio: lo que se acomoda aqui es
+     lo que sale en la tienda. */
+  aspect-ratio: 1.1;
+  border-radius: 12px;
+  box-shadow: var(--shadow-sm);
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.admin-detail-foto.is-portada {
+  box-shadow: 0 0 0 2px var(--red), var(--shadow-sm);
+}
+
+.admin-detail-foto img {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+.admin-detail-foto__portada {
+  align-items: center;
+  background: var(--label-brand-gradient);
+  border-radius: 999px;
+  color: #fff;
+  display: inline-flex;
+  font-size: 9.5px;
+  font-weight: 700;
+  gap: 4px;
+  left: 6px;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  position: absolute;
+  text-transform: uppercase;
+  top: 6px;
+}
+
+/* Siempre visible: en tactil no hay hover y no habria forma de tocarlo. */
+.admin-detail-foto__accion {
+  align-items: center;
+  background: #fff;
+  border: 0;
+  border-radius: 999px;
+  bottom: 6px;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+  cursor: pointer;
+  display: inline-flex;
+  height: 30px;
+  justify-content: center;
+  position: absolute;
+  right: 6px;
+  transition: transform 180ms ease;
+  width: 30px;
+}
+
+.admin-detail-foto__accion:hover {
+  transform: translateY(-2px);
+}
+
+.admin-detail-fotos__pista {
+  color: var(--muted);
+  font-size: 12.5px;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.admin-detail-encuadre {
+  display: grid;
+  gap: 8px;
+}
+
+.admin-detail-fotos__guardando {
+  align-items: center;
+  color: var(--muted);
+  display: inline-flex;
+  font-size: 12.5px;
+  gap: 7px;
+}
+
 /* Renglon completo: explica que la foto NO se recorta al guardarse. */
 .image-editor__completa {
   color: var(--muted);

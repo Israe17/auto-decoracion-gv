@@ -41,6 +41,7 @@ import {
   selectActiveFeaturedProducts
 } from "@/lib/featured";
 import { ImageListField } from "@/components/admin/ImageListField";
+import { AdminDetailFotos } from "@/components/admin/AdminDetailFotos";
 import { ImageUploadField } from "@/components/admin/ImageUploadField";
 import { ExpandableSpeedDial, type SpeedDialAction } from "@/components/admin/ExpandableSpeedDial";
 import { AdminStepper } from "@/components/admin/AdminStepper";
@@ -620,6 +621,14 @@ export default function AdminPage() {
     } catch (error) {
       reportError(error);
     }
+  }
+
+  // Guarda SOLO el encuadre desde el detalle: no toca ningun otro campo,
+  // asi acomodar una foto no puede pisar nada de lo que se este editando.
+  async function guardarEncuadre(product: Product, imageFocus: Record<string, string>) {
+    const savedProduct = await upsertProduct({ ...product, imageFocus });
+    setProducts((prev) => prev.map((item) => (item.id === savedProduct.id ? savedProduct : item)));
+    showSuccess("Encuadre de la foto guardado.");
   }
 
   function confirmDeleteProduct(product: Product) {
@@ -1647,7 +1656,7 @@ export default function AdminPage() {
               items={brands.map((brand) => ({
                 id: brand.id,
                 title: brand.name,
-                meta: `${brand.description || "Sin descripcion"} · ${productCountByBrand[brand.id] || 0} producto(s)`,
+                meta: `${brand.description || "Sin descripción"} · ${productCountByBrand[brand.id] || 0} producto(s)`,
                 image: brand.logo,
                 onView: () => setDetail({ kind: "brand", item: brand }),
                 onEdit: () => {
@@ -1799,6 +1808,7 @@ export default function AdminPage() {
           brands={brands}
           sources={sources}
           onClose={() => setDetail(null)}
+          onGuardarEncuadre={guardarEncuadre}
           onBack={detailStack.length > 1 ? popDetail : undefined}
           onSelect={pushDetail}
           onEditProduct={(product) => {
@@ -2000,7 +2010,7 @@ function ProductAdminPanel({
               <small>
                 {product.oldPrice ? "Oferta" : "Sin oferta"} -{" "}
                 {product.featured ? featuredStatusLabel(product) : "Normal"} -{" "}
-                {productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}
+                {productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotización"}
               </small>
             </div>
             <div
@@ -2781,7 +2791,7 @@ function OfferDialog({
                   <span>{selectedProduct.categoryName}</span>
                   <small>
                     Precio actual:{" "}
-                    {productHasPublicPrice(selectedProduct) ? formatCRC(selectedProduct.price) : "Solo cotizacion"}
+                    {productHasPublicPrice(selectedProduct) ? formatCRC(selectedProduct.price) : "Solo cotización"}
                   </small>
                 </div>
               </div>
@@ -2802,7 +2812,7 @@ function OfferDialog({
             <div className="admin-offer-prices">
               <div className="admin-offer-prices__normal">
                 <span>Precio normal</span>
-                <strong>{listPrice ? formatCRC(listPrice) : "Solo cotizacion"}</strong>
+                <strong>{listPrice ? formatCRC(listPrice) : "Solo cotización"}</strong>
               </div>
               <label>
                 Precio en oferta
@@ -3239,7 +3249,7 @@ function AdminOfferList({
                     {featuredStatus === "scheduled" && <span>Destacado programado</span>}
                     {featuredStatus === "expired" && <span>Destacado vencido</span>}
                     {!hasOffer && hasCurrentPrice && <span>Sin descuento</span>}
-                    {!hasCurrentPrice && <span>Solo cotizacion</span>}
+                    {!hasCurrentPrice && <span>Solo cotización</span>}
                   </div>
                   <h3>{product.name}</h3>
                   <p>{product.featured ? `${product.categoryName} - ${featuredStatusLabel(product)}` : product.categoryName}</p>
@@ -3267,7 +3277,7 @@ function AdminOfferList({
                     ) : (
                       <div className="admin-offer-card__quote">
                         <span>Precio publico</span>
-                        <strong>Solo cotizacion</strong>
+                        <strong>Solo cotización</strong>
                       </div>
                     )}
                   </div>
@@ -3485,6 +3495,7 @@ function AdminDetailDialog({
   onBack,
   onSelect,
   onEditProduct,
+  onGuardarEncuadre,
   onEditOffer,
   onEditPromo,
   onEditVehicle,
@@ -3492,6 +3503,8 @@ function AdminDetailDialog({
   onEditBrand
 }: {
   detail: AdminDetail;
+  /** Guarda el encuadre de las fotos sin salir del detalle. */
+  onGuardarEncuadre: (product: Product, imageFocus: Record<string, string>) => Promise<void>;
   products: Product[];
   categories: Category[];
   vehicles: VehicleModel[];
@@ -3570,32 +3583,47 @@ function AdminDetailDialog({
               <h2>{product.name}</h2>
               <div className="admin-detail-price">
                 {offer && <del>{formatCRC(offer.before)}</del>}
-                <strong>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</strong>
+                <strong>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotización"}</strong>
               </div>
-              <p>{product.description || "Sin descripcion registrada."}</p>
+              <p>{product.description || "Sin descripción registrada."}</p>
               <div className="admin-detail-chips">
                 <span className={`admin-detail-chip--${product.status}`}>{productStatusLabel(product)}</span>
               </div>
             </div>
           </div>
 
+          {/* Las etiquetas salen FUERA de esta rejilla: son la fila mas
+              alta y, dentro, estiraban a las otras tres dejandolas casi
+              vacias con el dato flotando abajo. */}
           <div className="admin-detail-facts">
-            <div><span>Categoria</span><strong>{product.categoryName}</strong></div>
-            <div><span>Marca</span><strong>{product.isOwnBrand ? "G&V System (linea propia)" : product.brandName || "Sin marca"}</strong></div>
-            <div><span>Compatibilidad</span><strong>{product.compatibilityMode === "universal" ? "Universal" : "Especifica"}</strong></div>
+            <div><span>Categoría</span><strong>{product.categoryName}</strong></div>
+            <div><span>Marca</span><strong>{product.isOwnBrand ? "G&V System (línea propia)" : product.brandName || "Sin marca"}</strong></div>
+            <div><span>Compatibilidad</span><strong>{product.compatibilityMode === "universal" ? "Universal" : "Específica"}</strong></div>
             <div>
-              <span>Etiquetas</span>
-              {product.tags.length ? (
-                <span className="admin-detail-tags">
-                  {product.tags.map((tag) => (
-                    <em key={tag}>{tag}</em>
-                  ))}
-                </span>
-              ) : (
-                <strong>Sin etiquetas</strong>
-              )}
+              <span>Fotos</span>
+              <strong>
+                {product.images.length === 1 ? "1 foto" : `${product.images.length} fotos`}
+              </strong>
             </div>
           </div>
+
+          <div className="admin-detail-etiquetas">
+            <span>Etiquetas</span>
+            {product.tags.length ? (
+              <span className="admin-detail-tags">
+                {product.tags.map((tag) => (
+                  <em key={tag}>{tag}</em>
+                ))}
+              </span>
+            ) : (
+              <strong>Sin etiquetas</strong>
+            )}
+          </div>
+
+          <AdminDetailFotos
+            product={product}
+            onGuardar={(imageFocus) => onGuardarEncuadre(product, imageFocus)}
+          />
 
           {(offer || product.featured) && (
             <section className="admin-detail-section">
@@ -3614,18 +3642,18 @@ function AdminDetailDialog({
             </section>
           )}
 
-          <AdminDetailSection title="Categoria relacionada" empty="La categoria no esta registrada.">
+          <AdminDetailSection title="Categoría relacionada" empty="La categoría no está registrada.">
             {category && (
               <AdminDetailRelation
                 title={category.name}
-                meta={category.description || "Sin descripcion"}
+                meta={category.description || "Sin descripción"}
                 image={category.image}
                 onClick={() => onSelect({ kind: "category", item: category })}
               />
             )}
           </AdminDetailSection>
 
-          <AdminDetailSection title="Marca relacionada" empty="Este producto no tiene marca ni linea propia.">
+          <AdminDetailSection title="Marca relacionada" empty="Este producto no tiene marca ni línea propia.">
             {/* La linea propia NO es una marca de la tabla (se guarda como
                 casilla del producto, sin brandId), asi que hay que
                 declararla aparte o la seccion sale vacia contradiciendo la
@@ -3634,12 +3662,12 @@ function AdminDetailDialog({
             {product.isOwnBrand ? (
               <AdminDetailRelation
                 title="G&V System"
-                meta={`Linea propia de la casa · ${ownLineCount} producto(s)`}
+                meta={`Línea propia de la casa · ${ownLineCount} producto(s)`}
               />
             ) : brand ? (
               <AdminDetailRelation
                 title={brand.name}
-                meta={brand.description || "Sin descripcion"}
+                meta={brand.description || "Sin descripción"}
                 onClick={() => onSelect({ kind: "brand", item: brand })}
               />
             ) : (
@@ -3655,7 +3683,7 @@ function AdminDetailDialog({
           {product.parentProductId && (
             <AdminDetailSection
               title="Producto principal"
-              empty="El producto principal ya no esta en el catalogo."
+              empty="El producto principal ya no está en el catálogo."
             >
               {principal && (
                 <AdminDetailRelation
@@ -3663,7 +3691,7 @@ function AdminDetailDialog({
                   meta={`Este producto es un complemento suyo · ${
                     productHasPublicPrice(principal)
                       ? formatCRC(principal.price)
-                      : "Solo cotizacion"
+                      : "Solo cotización"
                   }`}
                   image={principal.images[0]}
                   onClick={() => onSelect({ kind: "product", item: principal })}
@@ -3681,7 +3709,7 @@ function AdminDetailDialog({
                 key={item.id}
                 title={item.name}
                 meta={
-                  productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"
+                  productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotización"
                 }
                 image={item.images[0]}
                 onClick={() => onSelect({ kind: "product", item })}
@@ -3700,12 +3728,12 @@ function AdminDetailDialog({
             ))}
           </AdminDetailSection>
 
-          <AdminDetailSection title="Productos relacionados" empty="No hay otros productos en esta categoria.">
+          <AdminDetailSection title="Productos relacionados" empty="No hay otros productos en esta categoría.">
             {relatedProducts.map((item) => (
               <AdminDetailRelation
                 key={item.id}
                 title={item.name}
-                meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"}
+                meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotización"}
                 image={item.images[0]}
                 onClick={() => onSelect({ kind: "product", item })}
               />
@@ -3771,7 +3799,7 @@ function AdminDetailDialog({
               <p>{product.categoryName}</p>
               <div className="admin-detail-chips">
                 {product.oldPrice && <span>Antes: {formatCRC(product.oldPrice)}</span>}
-                <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotizacion"}</span>
+                <span>{productHasPublicPrice(product) ? formatCRC(product.price) : "Solo cotización"}</span>
                 {product.featured && <span>{featuredStatusLabel(product)}</span>}
               </div>
             </div>
@@ -3846,7 +3874,7 @@ function AdminDetailDialog({
             {linkedCategory && (
               <AdminDetailRelation
                 title={linkedCategory.name}
-                meta={linkedCategory.description || "Sin descripcion"}
+                meta={linkedCategory.description || "Sin descripción"}
                 image={linkedCategory.image}
                 onClick={() => onSelect({ kind: "category", item: linkedCategory })}
               />
@@ -3975,7 +4003,7 @@ function AdminDetailDialog({
             <div>
               <span className="admin-detail-kicker">Marca comercial</span>
               <h2>{brand.name}</h2>
-              <p>{brand.description || "Sin descripcion registrada."}</p>
+              <p>{brand.description || "Sin descripción registrada."}</p>
             </div>
           </div>
 
@@ -4001,7 +4029,7 @@ function AdminDetailDialog({
               <AdminDetailRelation
                 key={item.id}
                 title={item.name}
-                meta={item.description || "Sin descripcion"}
+                meta={item.description || "Sin descripción"}
                 image={item.image}
                 onClick={() => onSelect({ kind: "category", item })}
               />
@@ -4070,7 +4098,7 @@ function AdminDetailDialog({
           <div>
             <span className="admin-detail-kicker">Categoria</span>
             <h2>{category.name}</h2>
-            <p>{category.description || "Sin descripcion registrada."}</p>
+            <p>{category.description || "Sin descripción registrada."}</p>
             <div className="admin-detail-chips">
               <span>{parent ? `Subcategoria de ${parent.name}` : "Categoria principal"}</span>
             </div>
@@ -4087,7 +4115,7 @@ function AdminDetailDialog({
           {parent && (
             <AdminDetailRelation
               title={parent.name}
-              meta={parent.description || "Sin descripcion"}
+              meta={parent.description || "Sin descripción"}
               image={parent.image}
               onClick={() => onSelect({ kind: "category", item: parent })}
             />
@@ -4099,7 +4127,7 @@ function AdminDetailDialog({
             <AdminDetailRelation
               key={item.id}
               title={item.name}
-              meta={item.description || "Sin descripcion"}
+              meta={item.description || "Sin descripción"}
               image={item.image}
               onClick={() => onSelect({ kind: "category", item })}
             />
@@ -4111,7 +4139,7 @@ function AdminDetailDialog({
             <AdminDetailRelation
               key={item.id}
               title={item.name}
-              meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"}
+              meta={productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotización"}
               image={item.images[0]}
               onClick={() => onSelect({ kind: "product", item })}
             />
@@ -4123,7 +4151,7 @@ function AdminDetailDialog({
             <AdminDetailRelation
               key={item.id}
               title={item.name}
-              meta={item.description || "Sin descripcion"}
+              meta={item.description || "Sin descripción"}
               image={item.image}
               onClick={() => onSelect({ kind: "category", item })}
             />
