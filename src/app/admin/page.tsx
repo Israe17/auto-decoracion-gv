@@ -16,7 +16,6 @@ import {
   MessageCircle,
   Phone,
   Plus,
-  RefreshCw,
   Save,
   Search,
   Share2,
@@ -452,15 +451,6 @@ export default function AdminPage() {
     console.error(error);
     setSuccessMessage("");
     setMessage("No se pudo guardar el cambio. Revise la conexion e intente de nuevo.");
-  }
-
-  function confirmImportSeed() {
-    setConfirmState({
-      title: "Sincronizar catalogo de ejemplo",
-      body: "Se agregaran los productos, categorias y modelos de ejemplo nuevos. Los elementos de ejemplo ya existentes volveran a su version original; los que usted creo aparte no se tocan.",
-      actionLabel: "Sincronizar",
-      onConfirm: handleImportSeed
-    });
   }
 
   // Descarga TODO el catalogo tal como esta en Firestore, en un solo JSON.
@@ -1079,18 +1069,6 @@ export default function AdminPage() {
             </button>
           )}
 
-          {supabaseEnabled && !loading && (products.length > 0 || categories.length > 0) && (
-            <button
-              className="admin-mode__sync"
-              type="button"
-              disabled={importing}
-              onClick={confirmImportSeed}
-              title="Restaura los productos de ejemplo a su version original"
-            >
-              <RefreshCw size={13} />
-              {importing ? "Sincronizando..." : "Catalogo de ejemplo"}
-            </button>
-          )}
         </div>
       </div>
 
