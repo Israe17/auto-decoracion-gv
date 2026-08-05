@@ -275,11 +275,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               Díganos su marca, modelo y año. Le confirmamos precio,
               disponibilidad e instalación en un solo mensaje.
             </p>
-            {/* Secundario a proposito: abre EXACTAMENTE el mismo dialogo
-                que el "Cotizar" de arriba. Dos primarios rojos iguales en
-                la misma pagina se anulan entre si; asi queda un solo foco
-                y este sigue siendo el cierre del bloque. */}
-            <ProductQuoteLink product={product} className="button button--secondary">
+            <ProductQuoteLink product={product}>
               <MessageCircle size={18} /> Cotizar este producto
             </ProductQuoteLink>
           </div>
