@@ -22,6 +22,7 @@ Tokens:
 | `--yellow` | `#ffc72c` | Badges de oferta, acentos sobre fondos oscuros/rojos, hover de CTA invertido |
 | `--ink` | `#11151c` | Texto principal |
 | `--muted` | `#697383` | Texto secundario |
+| `--muted-fuerte` | `#626c7c` | Texto pequeño sobre `--soft` (etiquetas sutiles). `--muted` ahí da 4.42:1 y no llega al mínimo 4.5:1; este da 4.89:1 |
 | `--line` | `#e2e7ee` | Bordes y separadores |
 | `--soft` | `#f3f6f9` | Fondos suaves de tarjetas internas |
 | `--surface` / `--surface-strong` | `#fff` / `#f8fafc` | Superficies de tarjetas |
@@ -172,8 +173,11 @@ Móvil (iPhone-first):
   redondeado y sombra de color. Tipografía de 10-11px, `--font-semibold`,
   uppercase y tracking moderado. Prohibido mezclar labels planos con otros
   elevados dentro del mismo contexto, o introducir puntas/`clip-path`.
-  1. **Categoría, marca y tags**: degradado cálido rojo → coral, texto/icono
-     blanco, radio 9-11px y sombra roja suave.
+  1. **Categoría y marca**: degradado cálido rojo → coral, texto/icono
+     blanco, radio 9-11px y sombra roja suave. **Excepción del dueño**: en
+     la tarjeta de producto y en las etiquetas del panel de compatibilidad
+     NO — ahí van sutiles (ver "Etiqueta sutil"), porque cinco pastillas
+     rojas con sombra dentro de un bloque informativo se ven cargadas.
   2. **Promoción y estado sobre foto**: labels flotantes redondeados en las
      esquinas. Destacado usa marca, oferta ámbar, disponible verde, bajo
      pedido ámbar y agotado gris; todos comparten altura y profundidad.
@@ -228,6 +232,15 @@ Móvil (iPhone-first):
      renglón y el nombre de la categoría salía cortado.
   4. Ritmo del cuerpo: etiqueta y nombre pegados (gap 7-9px), el precio y
      los botones despegados con margen propio.
+- **Etiqueta sutil** (decisión del dueño): fondo `--soft`, borde `--line`
+  de 1px, radio 8px, 10-12px, `--font-medium`, texto `--muted-fuerte`,
+  **sin degradado, sin sombra, sin mayúsculas forzadas y sin hover** (no
+  son botones). Es el lenguaje de la información que acompaña, frente a
+  los labels elevados, que quedan para lo que interrumpe (oferta,
+  destacado). Se usa en la etiqueta de la tarjeta de producto
+  (`.product-card__etiqueta`) y en las etiquetas del panel de
+  compatibilidad de la ficha (`.product-tags span`). El color del texto es
+  `--muted-fuerte` y no `--muted` por contraste: ver la tabla de color.
 - **Indicador de disponibilidad** (`.estado-punto`, decisión del dueño):
   punto de color de 6-7px + texto en capitalización normal, **sin fondo y
   sin sombra** — verde `--green` disponible, ámbar bajo pedido, gris
