@@ -26,7 +26,12 @@ import {
   Trash2,
   X
 } from "lucide-react";
-import { formatCRC, productHasPublicPrice } from "@/lib/catalog";
+import {
+  complementsOf,
+  formatCRC,
+  productHasPublicPrice,
+  puedeTenerComplementos
+} from "@/lib/catalog";
 import { clientWhatsAppUrl, productShareWhatsAppUrl } from "@/lib/whatsapp";
 import { supabaseEnabled } from "@/lib/supabase";
 import {
@@ -529,17 +534,36 @@ export default function AdminPage() {
   }
 
   async function saveProduct(product: Product, sourceUrl: string) {
-    const exists = products.some((item) => item.id === product.id);
+    const previo = products.find((item) => item.id === product.id);
+    const exists = Boolean(previo);
+    // El nombre del producto principal viaja copiado dentro de cada
+    // complemento (igual que `brandName`): si se renombra hay que
+    // actualizarlos o la etiqueta se queda con el nombre viejo.
+    const complementosRenombrados =
+      previo && previo.name !== product.name
+        ? complementsOf(products, product.id).map((item) => ({
+            ...item,
+            parentProductName: product.name
+          }))
+        : [];
     try {
       const savedProduct = await upsertProduct(product);
+      await Promise.all(complementosRenombrados.map((item) => upsertProduct(item)));
       // El enlace del proveedor se guarda aparte (tabla privada). Si el
       // producto se guardo pero el enlace falla, el error se reporta pero
       // el catalogo ya quedo bien: no se revierte nada.
       await saveProductSource(savedProduct.id, sourceUrl);
+      const lista = exists
+        ? products.map((item) => (item.id === product.id ? savedProduct : item))
+        : [savedProduct, ...products];
       setProducts(
-        exists
-          ? products.map((item) => (item.id === product.id ? savedProduct : item))
-          : [savedProduct, ...products]
+        complementosRenombrados.length
+          ? lista.map((item) =>
+              item.parentProductId === savedProduct.id
+                ? { ...item, parentProductName: savedProduct.name }
+                : item
+            )
+          : lista
       );
       setSources((prev) => {
         const next = { ...prev };
@@ -598,15 +622,35 @@ export default function AdminPage() {
   }
 
   function confirmDeleteProduct(product: Product) {
+    // Los complementos NO se borran con el principal: son productos que se
+    // venden aparte. Solo dejan de estar amarrados a el, o quedarian
+    // apuntando a una ficha que ya no existe.
+    const complementos = complementsOf(products, product.id);
+    const sueltos = complementos.map((item) => ({
+      ...item,
+      parentProductId: undefined,
+      parentProductName: undefined
+    }));
     setConfirmState({
       title: "Eliminar producto",
-      body: `Se eliminara "${product.name}" del catalogo. Esta accion no se puede deshacer.`,
+      body: complementos.length
+        ? `Se eliminara "${product.name}" del catalogo. Sus ${complementos.length} complemento(s) NO se borran: quedan en el catalogo como productos normales. Esta accion no se puede deshacer.`
+        : `Se eliminara "${product.name}" del catalogo. Esta accion no se puede deshacer.`,
       actionLabel: "Eliminar producto",
       tone: "danger",
       onConfirm: async () => {
         try {
+          await Promise.all(sueltos.map((item) => upsertProduct(item)));
           await removeProduct(product.id);
-          setProducts((prev) => prev.filter((item) => item.id !== product.id));
+          setProducts((prev) =>
+            prev
+              .filter((item) => item.id !== product.id)
+              .map((item) =>
+                item.parentProductId === product.id
+                  ? { ...item, parentProductId: undefined, parentProductName: undefined }
+                  : item
+              )
+          );
           setSources((prev) => {
             const next = { ...prev };
             delete next[product.id];
@@ -1680,6 +1724,7 @@ export default function AdminPage() {
       {productDialog && (
         <ProductDialog
           product={productDialog}
+          products={products}
           categories={categories}
           brands={brands}
           vehicleOptions={vehicles}
@@ -1939,6 +1984,9 @@ function ProductAdminPanel({
                   : product.brandName
                     ? ` - ${product.brandName}`
                     : ""}
+                {product.parentProductName
+                  ? ` - Complemento de ${product.parentProductName}`
+                  : ""}
               </span>
               <small>
                 {product.oldPrice ? "Oferta" : "Sin oferta"} -{" "}
@@ -2146,6 +2194,7 @@ function ProductTagBank({ defaultValue }: { defaultValue: string[] }) {
 
 function ProductDialog({
   product,
+  products,
   categories,
   brands,
   vehicleOptions,
@@ -2154,6 +2203,9 @@ function ProductDialog({
   onSave
 }: {
   product: Product;
+  // El catalogo completo: de aqui salen los productos que se pueden elegir
+  // como principal cuando este se guarda como complemento.
+  products: Product[];
   categories: Category[];
   brands: Brand[];
   vehicleOptions: VehicleModel[];
@@ -2177,6 +2229,16 @@ function ProductDialog({
   );
   const [vehicleRows, setVehicleRows] = useState<VehicleCompatibility[]>(
     product.vehicles.length ? product.vehicles : []
+  );
+  const [parentProductId, setParentProductId] = useState(product.parentProductId || "");
+
+  // Este producto ya tiene extras propios: no puede ser, al mismo tiempo,
+  // el extra de otro (la relacion es de un solo nivel).
+  const complementosPropios = complementsOf(products, product.id);
+  // Y los que ya son complementos tampoco sirven como principal, o se
+  // armaria una cadena.
+  const posiblesPrincipales = products.filter(
+    (item) => item.id !== product.id && puedeTenerComplementos(item)
   );
 
   const optionKey = (make: string, model: string) => `${make}|${model}`;
@@ -2230,6 +2292,9 @@ function ProductDialog({
         : undefined;
     const selectedBrand = brands.find((brand) => brand.id === brandId);
     const legacyBrandName = !product.isOwnBrand && !product.brandId ? product.brandName : undefined;
+    const principal = complementosPropios.length
+      ? undefined
+      : posiblesPrincipales.find((item) => item.id === parentProductId);
 
     onSave(
       {
@@ -2261,6 +2326,8 @@ function ProductDialog({
           ? "G&V System"
           : selectedBrand?.name || (keepLegacyBrand ? legacyBrandName : undefined),
       isOwnBrand,
+      parentProductId: principal?.id,
+      parentProductName: principal?.name,
       featured: product.featured
       },
       enlaceProveedor
@@ -2356,6 +2423,32 @@ function ProductDialog({
             <span>Linea propia G&amp;V System</span>
           </label>
         </div>
+
+        <label>
+          Complemento de
+          <CustomSelect
+            ariaLabel="Producto principal del que este es complemento"
+            value={complementosPropios.length ? "" : parentProductId}
+            onChange={setParentProductId}
+            disabled={complementosPropios.length > 0}
+            options={[
+              { label: "No es complemento de otro producto", value: "" },
+              ...posiblesPrincipales.map((item) => ({ label: item.name, value: item.id }))
+            ]}
+          />
+          {complementosPropios.length > 0 ? (
+            <small className="admin-form-hint">
+              Este producto ya tiene {complementosPropios.length} complemento(s) propio(s), asi
+              que no puede ser el extra de otro. Quiteselos primero si lo quiere cambiar.
+            </small>
+          ) : (
+            <small className="admin-form-hint">
+              Uselo para los extras que se venden aparte pero acompañan a otro producto.
+              Aparecera en la ficha del principal y en el catalogo con la etiqueta
+              &quot;Complemento&quot;.
+            </small>
+          )}
+        </label>
 
         <label>
           {/* El label es grid: el texto y la etiqueta van en un mismo hijo
@@ -3407,8 +3500,19 @@ function AdminDetailDialog({
       const product = detail.item;
       const category = categories.find((item) => item.slug === product.categorySlug);
       const brand = brands.find((item) => item.id === product.brandId);
+      // El principal y los complementos tienen su propia seccion abajo: si
+      // ademas salieran aqui, el mismo producto aparaceria dos veces.
+      const principal = product.parentProductId
+        ? products.find((item) => item.id === product.parentProductId)
+        : undefined;
+      const complementos = complementsOf(products, product.id);
+      const yaListados = new Set([
+        product.id,
+        ...complementos.map((item) => item.id),
+        ...(principal ? [principal.id] : [])
+      ]);
       const relatedProducts = products
-        .filter((item) => item.id !== product.id && item.categorySlug === product.categorySlug)
+        .filter((item) => !yaListados.has(item.id) && item.categorySlug === product.categorySlug)
         .slice(0, 4);
       const ownLineCount = products.filter((item) => item.isOwnBrand).length;
       // Conserva la fila declarada por el producto (row) para mostrar SU
@@ -3513,6 +3617,43 @@ function AdminDetailDialog({
                 />
               )
             )}
+          </AdminDetailSection>
+
+          {product.parentProductId && (
+            <AdminDetailSection
+              title="Producto principal"
+              empty="El producto principal ya no esta en el catalogo."
+            >
+              {principal && (
+                <AdminDetailRelation
+                  title={principal.name}
+                  meta={`Este producto es un complemento suyo · ${
+                    productHasPublicPrice(principal)
+                      ? formatCRC(principal.price)
+                      : "Solo cotizacion"
+                  }`}
+                  image={principal.images[0]}
+                  onClick={() => onSelect({ kind: "product", item: principal })}
+                />
+              )}
+            </AdminDetailSection>
+          )}
+
+          <AdminDetailSection
+            title="Complementos"
+            empty="Este producto no tiene extras que se vendan aparte."
+          >
+            {complementos.map((item) => (
+              <AdminDetailRelation
+                key={item.id}
+                title={item.name}
+                meta={
+                  productHasPublicPrice(item) ? formatCRC(item.price) : "Solo cotizacion"
+                }
+                image={item.images[0]}
+                onClick={() => onSelect({ kind: "product", item })}
+              />
+            ))}
           </AdminDetailSection>
 
           <AdminDetailSection title="Modelos compatibles" empty="Este producto es universal o no tiene modelos vinculados.">

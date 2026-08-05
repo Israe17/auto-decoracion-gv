@@ -1135,6 +1135,16 @@ img {
   justify-content: flex-start;
 }
 
+/* Enlace al producto principal cuando la ficha abierta es la de un
+   complemento. `.product-info` es grid: sin `justify-self` el enlace se
+   estira a todo el ancho y su fondo de hover se ve como una banda. El
+   margen negativo compensa el padding propio de `.text-link` para que el
+   icono quede a plomo con el titulo. */
+.product-info__padre {
+  justify-self: start;
+  margin: -10px 0 -6px -12px;
+}
+
 .product-info__topline .eyebrow {
   align-items: center;
   background: var(--label-brand-gradient);
@@ -7163,7 +7173,8 @@ textarea {
 }
 
 .product-card__category,
-.product-card__brand {
+.product-card__brand,
+.product-card__complemento {
   align-items: center;
   align-self: start;
   background: var(--label-brand-gradient);
@@ -7190,6 +7201,13 @@ textarea {
 }
 
 .product-card__brand {
+  color: white;
+  flex: none;
+}
+
+.product-card__complemento {
+  background: var(--label-neutral-gradient);
+  box-shadow: 0 6px 14px rgba(86, 96, 110, 0.22);
   color: white;
   flex: none;
 }
@@ -7361,7 +7379,8 @@ textarea {
   }
 
   .product-card__category,
-  .product-card__brand {
+  .product-card__brand,
+  .product-card__complemento {
     font-size: 9px;
     min-height: 24px;
     padding: 0 7px;
@@ -8014,6 +8033,15 @@ select::-ms-expand {
 
 .section-head--left .text-link {
   margin-bottom: 6px;
+}
+
+/* Renglon de apoyo bajo el titular de una seccion, para explicar en una
+   linea de que va lo que sigue sin abrir otro bloque. */
+.section-head__nota {
+  color: var(--muted);
+  font-size: var(--type-md);
+  margin: 0;
+  max-width: 60ch;
 }
 
 .wtl {

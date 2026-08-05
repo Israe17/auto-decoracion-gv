@@ -473,3 +473,23 @@ export function categoryScope(categories: Category[], slug: string): string[] {
 export function findCategoryBySlug(categories: Category[], slug: string) {
   return categories.find((category) => category.slug === slug);
 }
+
+// --- Complementos (producto padre → extras que se venden aparte) ---
+
+// Los extras de un producto: se cotizan y se compran por separado, pero
+// acompañan al padre y se muestran en su ficha.
+export function complementsOf(products: Product[], productId: string) {
+  return products.filter((product) => product.parentProductId === productId);
+}
+
+// La relación es de UN solo nivel: un complemento no puede tener
+// complementos propios, ni un producto que ya tiene extras puede volverse
+// el extra de otro. Sin este tope la ficha se convertiría en un árbol y el
+// cliente perdería de vista cuál es el producto principal.
+export function puedeSerComplemento(product: Product, products: Product[]) {
+  return !complementsOf(products, product.id).length;
+}
+
+export function puedeTenerComplementos(product: Product) {
+  return !product.parentProductId;
+}

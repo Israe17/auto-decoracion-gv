@@ -294,6 +294,20 @@ Móvil (iPhone-first):
   descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
   dominante); categoría/marca como labels de marca y meta-información en
   piezas blancas con icono degradado, radio y sombra coordinados.
+- **Complementos** (extras que se venden aparte pero acompañan a otro
+  producto): el HIJO guarda `parentProductId` + `parentProductName`
+  (denormalizado como `categoryName`/`brandName`, para que la tarjeta pinte
+  su etiqueta sin recorrer el catálogo). Relación de **un solo nivel** —
+  helpers `complementsOf`, `puedeTenerComplementos` y `puedeSerComplemento`
+  en `src/lib/catalog.ts`; el admin bloquea el campo en cuanto el producto
+  tiene extras propios. En el sitio: sección `Complementos / "Complete su
+  equipo."` con `.product-grid` en la ficha del principal, enlace
+  `.product-info__padre` de vuelta en la del complemento, y etiqueta
+  **gris** (`--label-neutral-gradient`) en la tarjeta — es información, no
+  compite con los labels de marca de categoría/marca. El principal y sus
+  complementos se excluyen de "Productos relacionados": ya tienen su lugar
+  en la página (anti-patrón #3). Borrar el principal NO borra los extras;
+  solo los suelta.
 - Bloques relacionados se unifican en paneles con divisores internos, no
   tarjetas sueltas de alturas dispares.
 - **Encabezados de sección de la portada** (`.section-head`): **overline

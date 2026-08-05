@@ -137,6 +137,12 @@ export const RECORRIDOS: Record<ModuloGuia, Recorrido> = {
           "El formulario va por pasos: datos, precio, fotos, descripción y para cuáles vehículos sirve. Puede devolverse cuando quiera antes de guardar."
       },
       {
+        ancla: "productos-nuevo",
+        titulo: "Extras de otro producto",
+        texto:
+          "En el primer paso está \"Complemento de\". Úselo para los accesorios que se venden aparte pero acompañan a otro producto: aparecerán en la ficha del principal y en el catálogo con la etiqueta \"Complemento\"."
+      },
+      {
         ancla: "productos-fila",
         titulo: "Cada producto en una línea",
         texto:

@@ -79,6 +79,17 @@ export function ProductCard({ product }: { product: Product }) {
               {product.isOwnBrand ? "G&V System" : product.brandName}
             </span>
           )}
+          {/* En gris a proposito: la etiqueta informa de que producto es
+              extra, no compite con la categoria ni con la marca, que son
+              las que llevan el degradado de marca. */}
+          {product.parentProductName && (
+            <span
+              className="product-card__complemento"
+              title={`Complemento de ${product.parentProductName}`}
+            >
+              Complemento
+            </span>
+          )}
         </div>
         <Link href={`/productos/${product.slug}`} className="product-card__title">
           <h3>{product.name}</h3>

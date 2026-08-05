@@ -9,13 +9,14 @@ import {
   MessageCircle,
   PackageCheck,
   PackageX,
+  Puzzle,
   ShieldCheck,
   Sparkles,
   Tag,
   Truck,
   Wrench
 } from "lucide-react";
-import { products as seedProducts, formatCRC } from "@/lib/catalog";
+import { products as seedProducts, complementsOf, formatCRC } from "@/lib/catalog";
 import { isProductFeaturedActive } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
 import { siteUrl } from "@/lib/seo";
@@ -76,11 +77,24 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
   if (!product) notFound();
 
+  // Extras que se venden aparte pero acompañan a este producto, y el
+  // producto principal cuando la ficha abierta es la de un complemento.
+  const complementos = complementsOf(products, product.id);
+  const padre = product.parentProductId
+    ? products.find((item) => item.id === product.parentProductId)
+    : undefined;
+
+  // Los complementos y el padre ya tienen su propio lugar en la pagina:
+  // repetirlos aqui seria mostrar el mismo producto dos veces.
+  const yaEnLaPagina = new Set([
+    product.id,
+    ...complementos.map((item) => item.id),
+    ...(padre ? [padre.id] : [])
+  ]);
+
   const related = products
-    .filter(
-      (item) => item.id !== product.id && item.categorySlug === product.categorySlug
-    )
-    .concat(products.filter((item) => item.id !== product.id && isProductFeaturedActive(item)))
+    .filter((item) => !yaEnLaPagina.has(item.id) && item.categorySlug === product.categorySlug)
+    .concat(products.filter((item) => !yaEnLaPagina.has(item.id) && isProductFeaturedActive(item)))
     .filter((item, index, list) => list.findIndex((match) => match.id === item.id) === index)
     .slice(0, 4);
 
@@ -173,6 +187,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             <h1>{product.name}</h1>
             <p>{product.description}</p>
 
+            {padre && (
+              <Link
+                href={`/productos/${padre.slug}`}
+                className="text-link product-info__padre"
+              >
+                <Puzzle size={16} aria-hidden="true" /> Complemento de {padre.name}
+              </Link>
+            )}
+
             <div className="product-price-hero">
               {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
               <strong>
@@ -261,6 +284,33 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
           </div>
         </div>
       </section>
+
+      {complementos.length > 0 && (
+        <section className="section section--tight">
+          <div className="section-head section-head--left">
+            <div>
+              <span className="section-head__pill">
+                <Puzzle size={14} /> Complementos
+              </span>
+              {/* El nombre del producto NO va en el titular: la barra del
+                  degradado se dibuja bajo el <em> y con un nombre largo
+                  ocupa dos renglones enteros. */}
+              <h2>
+                Complete su <em>equipo.</em>
+              </h2>
+              <p className="section-head__nota">
+                Accesorios que acompañan este producto. Se cotizan y se compran por
+                separado.
+              </p>
+            </div>
+          </div>
+          <div className="product-grid">
+            {complementos.map((item) => (
+              <ProductCard key={item.id} product={item} />
+            ))}
+          </div>
+        </section>
+      )}
 
       {related.length > 0 && (
         <section className="section section--tight">
