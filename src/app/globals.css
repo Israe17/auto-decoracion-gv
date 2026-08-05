@@ -5925,16 +5925,13 @@ body {
   padding: 0;
 }
 
-/* Misma superficie y mismo radio que las etiquetas de abajo, para que la
-   tarjeta se lea como un solo sistema y no como tres cajas distintas. */
 .product-detail-panel__block li {
   align-items: center;
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
+  background: #f8fafc;
+  border-radius: 14px;
   display: flex;
   gap: 9px;
-  padding: 9px 11px;
+  padding: 10px 12px;
 }
 
 .product-detail-panel__block li svg {
@@ -6060,36 +6057,12 @@ body {
   transform: translateY(-2px);
 }
 
-/* Las tres piezas de apoyo ("Instalación en taller", etc.) llevaban pastilla
-   blanca con borde y sombra ROJOS y un icono en degradado con sombra propia:
-   tres cajas rojas al pie de la tarjeta, para la informacion menos
-   importante de todas. Pasan al mismo gris sutil que las etiquetas, y el
-   icono deja de ser una caja de color. */
-.product-info .product-info__meta span {
-  background: var(--soft);
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  box-shadow: none;
-  color: var(--muted-fuerte);
-  font-size: 12px;
-  font-weight: var(--font-medium);
-  gap: 7px;
-  min-height: 32px;
-  padding: 0 10px;
-  /* No son botones: sin transicion ni hover que insinuen que se tocan. */
-  transition: none;
+.product-info__meta span {
+  transition: border-color 180ms ease;
 }
 
-.product-info .product-info__meta span:hover {
-  border-color: var(--line);
-}
-
-.product-info .product-info__meta svg {
-  background: none;
-  border-radius: 0;
-  box-shadow: none;
-  color: var(--muted-fuerte);
-  padding: 0;
+.product-info__meta span:hover {
+  border-color: var(--red);
 }
 
 @media (max-width: 980px) {
