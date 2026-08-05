@@ -5,15 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import { BadgePercent, Sparkles } from "lucide-react";
 import gsap from "gsap";
-import { formatCRC } from "@/lib/catalog";
+import { estadoDelProducto, formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
 import { ProductActions } from "./ProductActions";
-
-const ESTADOS = {
-  available: { label: "Disponible", tono: "disponible" },
-  on_request: { label: "Bajo pedido", tono: "bajo-pedido" },
-  sold_out: { label: "Agotado", tono: "agotado" }
-} as const;
 
 export function ProductCard({
   product,
@@ -26,7 +20,7 @@ export function ProductCard({
   ocultarCategoria?: boolean;
 }) {
   const cardRef = useRef<HTMLElement>(null);
-  const estado = ESTADOS[product.status];
+  const estado = estadoDelProducto(product);
 
   // UNA sola etiqueta descriptiva bajo la foto, por orden de importancia:
   // ser el extra de otro producto cambia cómo se lee el producto entero; la
@@ -122,8 +116,10 @@ export function ProductCard({
               etiqueta: en la tarjeta de movil (~170px) las dos cosas no
               caben en un renglon y el nombre de la categoria salia
               cortado. */}
-          <span className={`product-card__estado product-card__estado--${estado.tono}`}>
-            <span className="product-card__punto" aria-hidden="true" />
+          <span
+            className={`estado-punto estado-punto--${estado.tono} product-card__estado`}
+          >
+            <span className="estado-punto__punto" aria-hidden="true" />
             {estado.label}
           </span>
         </div>

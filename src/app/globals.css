@@ -7208,7 +7208,10 @@ textarea {
   white-space: nowrap;
 }
 
-.product-card__estado {
+/* Indicador de disponibilidad: punto de color + texto en capitalizacion
+   normal, sin fondo ni sombra. Compartido por la tarjeta y la ficha del
+   producto para que el estado se lea igual en los dos lados. */
+.estado-punto {
   align-items: center;
   color: var(--muted);
   display: inline-flex;
@@ -7219,30 +7222,35 @@ textarea {
   white-space: nowrap;
 }
 
-.product-card__punto {
+.estado-punto__punto {
   border-radius: 50%;
   flex: none;
   height: 7px;
   width: 7px;
 }
 
-.product-card__estado--disponible .product-card__punto {
+.estado-punto--disponible .estado-punto__punto {
   background: var(--green);
 }
 
-.product-card__estado--bajo-pedido .product-card__punto {
+.estado-punto--bajo-pedido .estado-punto__punto {
   background: #ff9e2c;
 }
 
-.product-card__estado--agotado .product-card__punto {
+.estado-punto--agotado .estado-punto__punto {
   background: #97a1ae;
 }
 
 /* "Agotado" es el unico estado que cambia la decision: se lee en tinta
    plena aunque el indicador siga siendo discreto. */
-.product-card__estado--agotado {
+.estado-punto--agotado {
   color: var(--ink);
   font-weight: var(--font-semibold);
+}
+
+/* En la ficha convive con el label de categoria, que es mas grande. */
+.product-info__estado {
+  font-size: 13px;
 }
 
 .product-card__title {
@@ -7378,7 +7386,7 @@ textarea {
     gap: 5px;
   }
 
-  .product-card__punto {
+  .product-card__estado .estado-punto__punto {
     height: 6px;
     width: 6px;
   }

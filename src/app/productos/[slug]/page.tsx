@@ -5,10 +5,7 @@ import {
   ArrowRight,
   BadgeCheck,
   CheckCircle2,
-  Clock3,
   MessageCircle,
-  PackageCheck,
-  PackageX,
   Puzzle,
   ShieldCheck,
   Sparkles,
@@ -16,7 +13,12 @@ import {
   Truck,
   Wrench
 } from "lucide-react";
-import { products as seedProducts, complementsOf, formatCRC } from "@/lib/catalog";
+import {
+  products as seedProducts,
+  complementsOf,
+  estadoDelProducto,
+  formatCRC
+} from "@/lib/catalog";
 import { isProductFeaturedActive } from "@/lib/featured";
 import { fetchPublicCatalog } from "@/lib/store";
 import { siteUrl } from "@/lib/seo";
@@ -98,26 +100,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
     .filter((item, index, list) => list.findIndex((match) => match.id === item.id) === index)
     .slice(0, 4);
 
-  const statusLabel =
-    product.status === "available"
-      ? "Disponible"
-      : product.status === "on_request"
-        ? "Bajo pedido"
-        : "Agotado";
-
-  const statusClass =
-    product.status === "available"
-      ? ""
-      : product.status === "on_request"
-        ? " product-status--on-request"
-        : " product-status--sold-out";
-
-  const StatusIcon =
-    product.status === "available"
-      ? PackageCheck
-      : product.status === "on_request"
-        ? Clock3
-        : PackageX;
+  const estado = estadoDelProducto(product);
 
   const discount =
     product.oldPrice && product.price
@@ -178,9 +161,14 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
                   {product.isOwnBrand ? "G&V System" : product.brandName}
                 </span>
               )}
-              <span className={`product-status${statusClass}`}>
-                <StatusIcon size={14} aria-hidden="true" />
-                {statusLabel}
+              {/* Mismo indicador discreto que la tarjeta: punto de color y
+                  texto, sin fondo ni sombra. El label verde macizo cargaba
+                  la fila junto a los de categoria y marca. */}
+              <span
+                className={`estado-punto estado-punto--${estado.tono} product-info__estado`}
+              >
+                <span className="estado-punto__punto" aria-hidden="true" />
+                {estado.label}
               </span>
             </div>
 

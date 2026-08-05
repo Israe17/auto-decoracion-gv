@@ -1,4 +1,4 @@
-import { Category, Product, SaleMode } from "@/types";
+import { Category, Product, ProductStatus, SaleMode } from "@/types";
 
 export const categories: Category[] = [
   {
@@ -449,6 +449,19 @@ export function formatCRC(price?: number) {
 
 export function findProductBySlug(slug: string) {
   return products.find((product) => product.slug === slug);
+}
+
+// Disponibilidad como indicador discreto (punto de color + texto). Vive
+// aquí y no en cada componente para que la tarjeta y la ficha del producto
+// digan siempre lo mismo.
+const ESTADOS = {
+  available: { label: "Disponible", tono: "disponible" },
+  on_request: { label: "Bajo pedido", tono: "bajo-pedido" },
+  sold_out: { label: "Agotado", tono: "agotado" }
+} as const;
+
+export function estadoDelProducto(product: { status: ProductStatus }) {
+  return ESTADOS[product.status];
 }
 
 // --- Jerarquía de categorías (madre → subcategorías) ---
