@@ -319,6 +319,35 @@ Móvil (iPhone-first):
   `min-height` recortando el contenido. La receta que funciona: columna
   **flex** con `flex-shrink: 0` en los hijos + `height: fit-content` en el
   hero.
+- **Galería de la ficha** (`ProductPhotos`): una pista deslizable con
+  `scroll-snap` y, en escritorio, una tira de miniaturas de control.
+  Encima de eso, tres cosas que hay que respetar si se toca:
+  1. **Zoom que sigue al cursor**: la foto amplía a `scale(1.8)` al pasar
+     el mouse y el `transform-origin` se mueve con el puntero (el
+     componente escribe `--zx`/`--zy`; el origen **no** se transiciona, o
+     el zoom iría con retraso). Solo con
+     `@media (hover: hover) and (pointer: fine)` — en táctil no hay hover
+     y el zoom se quedaría pegado. Trampa: `.product-gallery:hover img`
+     lleva un `scale(1.04)` heredado que vive más abajo en el archivo, así
+     que las reglas del zoom cuelgan de `.product-gallery` para ganarle
+     por especificidad.
+  2. **La foto se abre a pantalla completa** al tocarla (`.visor`, por
+     portal al body, z-85): fondo velado, `object-fit: contain` para verla
+     entera, flechas, contador, y cierre con la X, con Escape o tocando el
+     fondo. Las flechas del teclado pasan de foto. Al cerrar, la pista se
+     queda en la foto que se estaba viendo. Un arrastre **no** abre el
+     visor: se compara el punto del `pointerdown` con el del `click`, o
+     pasar de foto en el celular lo abriría.
+  3. **La tira de miniaturas se desliza** con flechas a los lados (se
+     apagan en los extremos) o con la rueda del mouse. La rueda necesita
+     un listener nativo con `passive: false` — React registra `wheel` como
+     pasivo y desde `onWheel` el `preventDefault` no hace nada — y la tira
+     lleva `data-lenis-prevent`, porque Lenis escucha la rueda en `window`
+     y si no la página baja a la vez. Cuando la tira llega al tope el
+     gesto se deja pasar a propósito, para que el sitio no se sienta
+     trabado. Ojo: el `display: none` de móvil tiene que ir **después**
+     del `display: flex` de la tira; las media queries no suman
+     especificidad.
 - Ficha de producto: **precio héroe sin cajón** (número grande en
   `--red-dark` junto al tachado y label verde elevado "Ahorra ₡X"); badge de
   descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
