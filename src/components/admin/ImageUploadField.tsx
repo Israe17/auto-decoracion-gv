@@ -169,6 +169,10 @@ export function ImageUploadField({
           value={value}
           required={required}
           onChange={(event) => setValue(event.target.value)}
+          // Este input vive plegado dentro del <details>, asi que el globo
+          // del navegador no se ve: sin esto el formulario se quedaba
+          // trabado sin explicar que faltaba la foto.
+          onInvalid={() => setError("Suba la foto antes de guardar.")}
           placeholder="https://..."
         />
       </details>

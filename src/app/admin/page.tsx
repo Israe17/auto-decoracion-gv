@@ -3044,8 +3044,10 @@ function GalleryDialog({
                 onChange={(valor) => setShape(valor as GalleryShape)}
               />
             </label>
+            {/* Sin `key`: cambiar la forma remontaba el campo y borraba en
+                silencio la foto ya subida, y el formulario se negaba a
+                guardar sin decir por que. */}
             <ImageUploadField
-              key={shape}
               name="galleryImage"
               label="Foto del trabajo"
               required
