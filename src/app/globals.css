@@ -4562,7 +4562,11 @@ body {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
 }
 
+/* `align-content: start`: la rejilla iguala la altura de la fila, y sin
+   esto el dato se iba al fondo de una caja casi vacia cuando otra tarjeta
+   crecia. Ahora el contenido se queda arriba, pegado a su rotulo. */
 .admin-detail-facts > div {
+  align-content: start;
   background: #ffffff;
   border: 1px solid #e3eaf2;
   border-radius: 14px;
@@ -4588,23 +4592,53 @@ body {
   overflow-wrap: anywhere;
 }
 
+/* Las etiquetas van en su propia fila a lo ancho: son texto de largo
+   variable y dentro de la rejilla de datos estiraban a las demas. */
+.admin-detail-etiquetas {
+  align-content: start;
+  background: #ffffff;
+  border: 1px solid #e3eaf2;
+  border-radius: 14px;
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+}
+
+.admin-detail-etiquetas > span {
+  color: #718096;
+  font-size: 11px;
+  font-weight: var(--font-semibold);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.admin-detail-etiquetas > strong {
+  color: #1b2533;
+  font-size: 14px;
+  font-weight: var(--font-semibold);
+}
+
 .admin-detail-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
 }
 
+/* En degradado rojo, MAYUSCULAS y 10px eran seis pastillas gritando y con
+   el texto partido a la mitad. Frases como "Incluye bolso organizador"
+   necesitan leerse, no llamar la atencion. */
 .admin-detail-tags em {
-  background: var(--label-brand-gradient);
-  border-radius: 9px;
-  box-shadow: 0 6px 14px rgba(230, 33, 53, 0.2);
-  color: white;
-  font-size: 10px;
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--muted-fuerte);
+  font-size: 12px;
   font-style: normal;
-  font-weight: var(--font-semibold);
-  letter-spacing: 0.05em;
-  padding: 4px 8px;
-  text-transform: uppercase;
+  font-weight: var(--font-medium);
+  letter-spacing: 0;
+  padding: 4px 9px;
+  text-transform: none;
 }
 
 .admin-detail-section {

@@ -333,10 +333,23 @@ Móvil (iPhone-first):
   misma caja que la X) regresa al detalle anterior; editar limpia la pila.
   En producto: precio héroe (`del` + actual en `--red-dark`), chip de
   estado con la variante semántica del sistema de labels
-  (`--available`/`--on_request`/`--sold_out`), etiquetas como chips
-  pequeños, y bloque "Oferta y vitrina" (ahorro, estado del destacado con
-  fechas, prioridad) SOLO cuando hay datos reales — nada duplicado con el
-  hero. Acciones: Editar (primario) / **Compartir por WhatsApp**
+  (`--available`/`--on_request`/`--sold_out`), y bloque "Oferta y vitrina"
+  (ahorro, estado del destacado con fechas, prioridad) SOLO cuando hay
+  datos reales — nada duplicado con el hero.
+  **Rejilla de datos** (`.admin-detail-facts`): cuatro datos cortos
+  —categoría, marca, compatibilidad y número de fotos— con
+  `align-content: start`. La rejilla iguala la altura de la fila, así que
+  sin eso el dato se iba al fondo de una caja casi vacía en cuanto otra
+  tarjeta crecía. Por lo mismo las **etiquetas salen de la rejilla** a su
+  propio bloque a lo ancho (`.admin-detail-etiquetas`): son de largo
+  variable y estiraban a las otras tres. Van en **etiqueta sutil** y sin
+  mayúsculas: en degradado rojo, 10px y versalitas eran seis pastillas
+  gritando con el texto partido, y son frases que hay que poder leer.
+  **Fotos** (`AdminDetailFotos`): la tira de fotos del producto con su
+  encuadre real, la portada marcada, y un botón por foto para
+  **reacomodarla ahí mismo** — guarda solo `imageFocus`, sin tocar ningún
+  otro campo, así acomodar no puede pisar nada. Agregar, quitar o cambiar
+  la portada sigue siendo cosa de "Editar". Acciones: Editar (primario) / **Compartir por WhatsApp**
   (`productShareWhatsAppUrl` en `whatsapp.ts`: `wa.me/?text=` SIN número —
   el dueño elige el contacto; distinto de cotizar, que escribe AL negocio)
   / Ver en el sitio (`/productos/slug`, pestaña nueva) / Cerrar; en móvil
