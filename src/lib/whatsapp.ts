@@ -1,10 +1,13 @@
 import { ContactRequest, Product, QuoteItem, SaleMode } from "@/types";
+import { business } from "./business";
 import { formatCRC, productHasPublicPrice } from "./catalog";
 import { siteUrl } from "./seo";
 import type { ClienteGuardado } from "./cliente";
 import type { VehiculoCliente } from "./vehiculo";
 
-const businessNumber = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || "50600000000";
+// El numero vive en business.ts, no en una variable de entorno: asi cambiarlo
+// es un commit y no depende de la configuracion del despliegue.
+const businessNumber = business.whatsappNumber;
 const SALUDO = "Hola Auto Decoración G&V";
 
 export function whatsAppUrl(message: string) {
