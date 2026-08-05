@@ -202,12 +202,35 @@ Móvil (iPhone-first):
   scroll horizontal real con `scroll-snap`, tarjetas de ~250-270px,
   scrollbar fina que se tiñe de rojo al hover. Se desliza en touch y con
   rueda/arrastre en escritorio.
-- Insignias de tarjeta (`badge`): label flotante redondeado — "Destacado" con
-  degradado de marca y "Oferta" ámbar. Incluye icono en escritorio y sombra
-  de color; sin punta.
-- Estados ("Disponible/Bajo pedido/Agotado"): label flotante enfrentado en la
-  esquina superior derecha, con verde/ámbar/gris, icono y las mismas
-  dimensiones/profundidad de la insignia opuesta.
+- **Etiquetas de la tarjeta de producto** (decisión del dueño: la tarjeta
+  se veía cargada). La tarjeta es la EXCEPCIÓN al sistema de labels
+  elevado de arriba, que sigue vigente en la ficha, el admin y el resto
+  del sitio. Regla, de arriba abajo:
+  1. **Sobre la foto, como mucho UN distintivo llamativo** (`badge`): label
+     flotante redondeado con icono y sombra de color — "Oferta" (ámbar,
+     gana si hay las dos) o "Destacado" (degradado de marca). Reservado
+     para eso: nada de categoría, marca ni disponibilidad ahí.
+  2. **Bajo la foto, como mucho UNA etiqueta descriptiva**
+     (`.product-card__etiqueta`): fondo `--soft`, borde `--line` de 1px,
+     radio 8px, 10-11px, `--font-medium`, **sin degradado, sin sombra y
+     sin mayúsculas forzadas**; se recorta con puntos suspensivos y lleva
+     el texto completo en `title`. Sale UNA sola, por orden de
+     importancia: `Complemento` → categoría → marca. La categoría se
+     omite (`ocultarCategoria`) cuando ya la dice el título de la sección
+     o el filtro activo: página de categoría, y catálogo filtrado a una
+     categoría **hoja** (con una madre NO, porque ahí los resultados
+     vienen de varias hijas y la etiqueta es lo que las distingue). La
+     fila reserva `min-height` aunque no haya etiqueta, o en una misma
+     rejilla unas tarjetas arrancarían el nombre 22px más arriba.
+  3. **Disponibilidad**, junto al precio (`.product-card__estado`): punto
+     de color de 6-7px + texto en capitalización normal, **sin fondo y
+     sin sombra** — verde `--green` disponible, ámbar bajo pedido, gris
+     agotado. Va en la fila del precio y no en la de la etiqueta porque
+     en la tarjeta de móvil (~172px) las dos cosas no caben en un
+     renglón. "Agotado" es el único que se escribe en `--ink` y
+     `--font-semibold`: es el que cambia la decisión de compra.
+  4. Ritmo del cuerpo: etiqueta y nombre pegados (gap 7-9px), el precio y
+     los botones despegados con margen propio.
 - **Dashboard del admin** (`.admin-stats` + `.admin-dash`): fila de KPIs
   con ícono rojo y rejilla `auto-fit` (nunca dejar tarjetas huérfanas en
   una fila sola), y debajo tres paneles: **Requiere atención** (avisos
@@ -302,9 +325,10 @@ Móvil (iPhone-first):
   en `src/lib/catalog.ts`; el admin bloquea el campo en cuanto el producto
   tiene extras propios. En el sitio: sección `Complementos / "Complete su
   equipo."` con `.product-grid` en la ficha del principal, enlace
-  `.product-info__padre` de vuelta en la del complemento, y etiqueta
-  **gris** (`--label-neutral-gradient`) en la tarjeta — es información, no
-  compite con los labels de marca de categoría/marca. El principal y sus
+  `.product-info__padre` de vuelta en la del complemento, y la etiqueta
+  `Complemento` en la tarjeta, que es la de MAYOR prioridad de la única
+  etiqueta descriptiva (ver "Etiquetas de la tarjeta de producto"): ser el
+  extra de otro producto cambia cómo se lee el producto entero. El principal y sus
   complementos se excluyen de "Productos relacionados": ya tienen su lugar
   en la página (anti-patrón #3). Borrar el principal NO borra los extras;
   solo los suelta.

@@ -3,21 +3,45 @@
 import { useEffect, useRef } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { BadgePercent, Clock3, PackageCheck, PackageX, Sparkles } from "lucide-react";
+import { BadgePercent, Sparkles } from "lucide-react";
 import gsap from "gsap";
 import { formatCRC } from "@/lib/catalog";
 import { Product } from "@/types";
 import { ProductActions } from "./ProductActions";
 
-export function ProductCard({ product }: { product: Product }) {
+const ESTADOS = {
+  available: { label: "Disponible", tono: "disponible" },
+  on_request: { label: "Bajo pedido", tono: "bajo-pedido" },
+  sold_out: { label: "Agotado", tono: "agotado" }
+} as const;
+
+export function ProductCard({
+  product,
+  ocultarCategoria = false
+}: {
+  product: Product;
+  // La categoría ya se sabe por el título de la sección o por el filtro
+  // activo (página de categoría, catálogo filtrado a una hoja): repetirla en
+  // cada tarjeta solo carga la vista.
+  ocultarCategoria?: boolean;
+}) {
   const cardRef = useRef<HTMLElement>(null);
-  const status =
-    product.status === "available"
-      ? { label: "Disponible", className: "available", Icon: PackageCheck }
-      : product.status === "sold_out"
-        ? { label: "Agotado", className: "sold-out", Icon: PackageX }
-        : { label: "Bajo pedido", className: "on-request", Icon: Clock3 };
-  const StatusIcon = status.Icon;
+  const estado = ESTADOS[product.status];
+
+  // UNA sola etiqueta descriptiva bajo la foto, por orden de importancia:
+  // ser el extra de otro producto cambia cómo se lee el producto entero; la
+  // categoría solo cuando no se sabe ya por el contexto; la marca al final,
+  // que es la que más se adivina por la foto y el nombre.
+  const etiqueta = product.parentProductName
+    ? { texto: "Complemento", detalle: `Complemento de ${product.parentProductName}` }
+    : !ocultarCategoria
+      ? { texto: product.categoryName, detalle: undefined }
+      : product.brandName
+        ? {
+            texto: product.isOwnBrand ? "G&V System" : product.brandName,
+            detalle: undefined
+          }
+        : null;
 
   useEffect(() => {
     const card = cardRef.current;
@@ -50,6 +74,9 @@ export function ProductCard({ product }: { product: Product }) {
   return (
     <article ref={cardRef} className="product-card">
       <Link href={`/productos/${product.slug}`} className="product-card__image">
+        {/* Sobre la foto solo va lo que de verdad interrumpe: oferta o
+            destacado. La disponibilidad bajó al cuerpo como indicador
+            discreto. */}
         {(product.oldPrice || product.featured) && (
           <span className={`badge badge--${product.oldPrice ? "offer" : "featured"}`}>
             {product.oldPrice ? (
@@ -60,10 +87,6 @@ export function ProductCard({ product }: { product: Product }) {
             {product.oldPrice ? "Oferta" : "Destacado"}
           </span>
         )}
-        <span className={`stock-row stock-row--${status.className}`}>
-          <StatusIcon size={14} aria-hidden="true" />
-          {status.label}
-        </span>
         <Image
           src={product.images[0]}
           alt={product.name}
@@ -73,21 +96,15 @@ export function ProductCard({ product }: { product: Product }) {
       </Link>
       <div className="product-card__body">
         <div className="product-card__meta">
-          <span className="product-card__category">{product.categoryName}</span>
-          {product.brandName && (
-            <span className="product-card__brand">
-              {product.isOwnBrand ? "G&V System" : product.brandName}
-            </span>
-          )}
-          {/* En gris a proposito: la etiqueta informa de que producto es
-              extra, no compite con la categoria ni con la marca, que son
-              las que llevan el degradado de marca. */}
-          {product.parentProductName && (
+          {etiqueta && (
+            // El `title` lleva siempre el texto completo: en la tarjeta de
+            // movil un nombre de categoria largo se corta con puntos
+            // suspensivos, y asi el dato no se pierde.
             <span
-              className="product-card__complemento"
-              title={`Complemento de ${product.parentProductName}`}
+              className="product-card__etiqueta"
+              title={etiqueta.detalle ?? etiqueta.texto}
             >
-              Complemento
+              {etiqueta.texto}
             </span>
           )}
         </div>
@@ -101,6 +118,14 @@ export function ProductCard({ product }: { product: Product }) {
               {product.saleMode === "price_quote" ? formatCRC(product.price) : "Consultar precio"}
             </strong>
           </div>
+          {/* La disponibilidad va junto al precio, no en la fila de la
+              etiqueta: en la tarjeta de movil (~170px) las dos cosas no
+              caben en un renglon y el nombre de la categoria salia
+              cortado. */}
+          <span className={`product-card__estado product-card__estado--${estado.tono}`}>
+            <span className="product-card__punto" aria-hidden="true" />
+            {estado.label}
+          </span>
         </div>
         <ProductActions product={product} compact />
       </div>

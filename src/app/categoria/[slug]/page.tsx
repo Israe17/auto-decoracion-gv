@@ -117,7 +117,9 @@ export default async function CategoryPage({
           </div>
           <div className="product-grid product-grid--catalog">
             {sueltos.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              // La portada de la pagina ya dice la categoria: todos estos
+              // productos son de ella y repetirla en cada tarjeta sobra.
+              <ProductCard key={product.id} product={product} ocultarCategoria />
             ))}
           </div>
         </section>
