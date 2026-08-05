@@ -1306,6 +1306,43 @@ img {
   white-space: nowrap;
 }
 
+/* --- Precio de la ficha ---
+   Iba a 34px, negrita y en rojo oscuro: el mismo peso visual que el
+   nombre (37px, negrita) justo encima, y otro rojo mas encima del boton
+   de cotizar. Nada lideraba. Ahora baja un escalon respecto al nombre y
+   va en tinta: el rojo se guarda para la accion.
+   Especificidad de dos clases para ganarle a `.product-price-hero strong`
+   sin depender del orden del archivo. */
+.product-info .product-price-hero strong {
+  color: var(--ink);
+  font-size: clamp(24px, 2vw, 29px);
+  /* Cifras de ancho fijo: los precios de una lista quedan a plomo. */
+  font-variant-numeric: tabular-nums;
+  font-weight: var(--font-bold);
+  letter-spacing: -0.02em;
+  line-height: 1;
+}
+
+/* "Consultar precio" es una frase, no una cifra: ni el tamaño ni el
+   tracking apretado de un numero le sientan bien. */
+.product-info .product-price-hero strong.product-price-hero__consulta {
+  font-size: clamp(18px, 1.5vw, 21px);
+  font-weight: var(--font-semibold);
+  letter-spacing: 0;
+}
+
+.product-info .product-price-hero del {
+  font-size: 16px;
+}
+
+/* Ritmo intencionado, no parejo: con los 14px de la rejilla en todos los
+   huecos, el nombre y el precio se leian como un solo bloque. El precio
+   se despega del nombre y la nota se queda pegada al precio, que es a lo
+   que se refiere. */
+.product-info .product-price-hero {
+  margin-top: 6px;
+}
+
 .product-price-note {
   color: var(--muted);
   font-size: 13.5px !important;

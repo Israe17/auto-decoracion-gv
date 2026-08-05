@@ -361,12 +361,34 @@ Móvil (iPhone-first):
      trabado. Ojo: el `display: none` de móvil tiene que ir **después**
      del `display: flex` de la tira; las media queries no suman
      especificidad.
-- Ficha de producto: **precio héroe sin cajón** (número grande en
-  `--red-dark` junto al tachado y label verde elevado "Ahorra ₡X"); badge de
-  descuento "−N%" sobre la foto; acciones lado a lado 1.5:1 (primario
-  dominante); categoría/marca como labels de marca, **disponibilidad como
-  `.estado-punto`** (ya no como label verde macizo) y meta-información en
-  piezas blancas con icono degradado, radio y sombra coordinados.
+- Ficha de producto: **precio héroe sin cajón** junto al tachado y al label
+  verde elevado "Ahorra ₡X"; badge de descuento "−N%" sobre la foto;
+  acciones lado a lado 1.5:1 (primario dominante); categoría/marca como
+  labels de marca, **disponibilidad como `.estado-punto`** (ya no como
+  label verde macizo) y meta-información en piezas blancas con icono
+  degradado, radio y sombra coordinados.
+- **Tipografía del precio de la ficha** (decisión del dueño: el precio
+  desentonaba con el resto de la tarjeta). Iba a 34px, `--font-bold` y
+  `--red-dark`: el mismo peso visual que el nombre (37px, bold) justo
+  encima, y otro rojo encima del botón de cotizar — nada lideraba. Regla:
+  1. **Color `--ink`**, no rojo: el rojo se guarda para la acción
+     (§1: "no competirlo con otros botones llamativos en la misma vista").
+     El tachado sigue en `--muted` y el ahorro en el label verde.
+  2. **Baja un escalón respecto al nombre**: `clamp(24px, 2vw, 29px)` en
+     `--font-bold`, con `font-variant-numeric: tabular-nums` para que las
+     cifras queden a plomo.
+  3. **"Consultar precio" es una frase, no una cifra**
+     (`.product-price-hero__consulta`): `clamp(18px, 1.5vw, 21px)`,
+     `--font-semibold` y **tracking 0** — el `-0.02em` de los números
+     aprieta las letras.
+  4. **Posición**: el precio va pegado al nombre, ANTES de la descripción
+     (nombre → precio → nota del precio → descripción → botones). Antes la
+     descripción se metía en medio y el precio terminaba pegado al botón,
+     dos rojos seguidos.
+  5. **Ritmo intencionado, no parejo**: la rejilla da 14px a todos los
+     huecos y así el nombre y el precio se leían como un solo bloque. El
+     precio se despega (20px) y la nota se queda pegada al precio (4px),
+     que es a lo que se refiere.
 - **Complementos** (extras que se venden aparte pero acompañan a otro
   producto): el HIJO guarda `parentProductId` + `parentProductName`
   (denormalizado como `categoryName`/`brandName`, para que la tarjeta pinte

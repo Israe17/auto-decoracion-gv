@@ -173,20 +173,19 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
 
             <h1>{product.name}</h1>
-            <p>{product.description}</p>
 
-            {padre && (
-              <Link
-                href={`/productos/${padre.slug}`}
-                className="text-link product-info__padre"
-              >
-                <Puzzle size={16} aria-hidden="true" /> Complemento de {padre.name}
-              </Link>
-            )}
-
+            {/* El precio va pegado al nombre: primero qué es y cuánto vale,
+                después el detalle. Antes la descripción se metía en medio y
+                el precio terminaba pegado al botón, dos rojos seguidos. */}
             <div className="product-price-hero">
               {product.oldPrice && <del>{formatCRC(product.oldPrice)}</del>}
-              <strong>
+              <strong
+                className={
+                  product.saleMode === "price_quote"
+                    ? undefined
+                    : "product-price-hero__consulta"
+                }
+              >
                 {product.saleMode === "price_quote"
                   ? formatCRC(product.price)
                   : "Consultar precio"}
@@ -201,6 +200,17 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <p className="product-price-note">
                 El precio depende del modelo y la versión de su vehículo.
               </p>
+            )}
+
+            <p>{product.description}</p>
+
+            {padre && (
+              <Link
+                href={`/productos/${padre.slug}`}
+                className="text-link product-info__padre"
+              >
+                <Puzzle size={16} aria-hidden="true" /> Complemento de {padre.name}
+              </Link>
             )}
 
             <ProductActions product={product} compact />
