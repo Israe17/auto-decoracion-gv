@@ -262,9 +262,8 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               <strong>Cotice este producto para su vehículo</strong>
             </div>
             <p>
-              Envíenos la marca, el modelo, el año y la versión de su vehículo.
-              Le confirmamos precio, disponibilidad e instalación de este
-              producto en un solo mensaje.
+              Díganos su marca, modelo y año. Le confirmamos precio,
+              disponibilidad e instalación en un solo mensaje.
             </p>
             <ProductQuoteLink product={product}>
               <MessageCircle size={18} /> Cotizar este producto

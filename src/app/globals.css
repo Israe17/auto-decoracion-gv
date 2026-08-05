@@ -2,6 +2,10 @@
   --bg: #f6f7f8;
   --ink: #11151c;
   --muted: #697383;
+  /* `--muted` sobre `--soft` da 4.42:1 y se queda corto del minimo 4.5:1
+     de accesibilidad. Este es el gris para TEXTO PEQUEÑO sobre superficies
+     grises claras (las etiquetas sutiles): 4.9:1. */
+  --muted-fuerte: #626c7c;
   --line: #e2e7ee;
   --soft: #f3f6f9;
   --red: #e62135;
@@ -5900,7 +5904,34 @@ body {
 
 .product-detail-panel .product-tags {
   border-top: 1px solid var(--line);
+  gap: 7px;
   padding-top: 16px;
+}
+
+/* Las etiquetas son informacion, no acciones: van en el mismo gris suave
+   que la etiqueta de la tarjeta. En degradado rojo con sombra eran cinco
+   pastillas gritando dentro de un bloque que solo explica compatibilidad.
+   Va con esta especificidad porque mas abajo hay un `.product-tags span`
+   que fija el peso semibold. */
+.product-detail-panel .product-tags span {
+  background: var(--soft);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: none;
+  color: var(--muted-fuerte);
+  font-size: 12px;
+  font-weight: var(--font-medium);
+  min-height: 0;
+  padding: 5px 9px;
+  transition: none;
+}
+
+/* No son botones: sin hover que insinue que se puede tocar. */
+.product-detail-panel .product-tags span:hover {
+  background: var(--soft);
+  border-color: var(--line);
+  box-shadow: none;
+  transform: none;
 }
 
 .product-detail-panel__block--tip {
@@ -5928,6 +5959,19 @@ body {
   .product-detail-panel__block--tip {
     border-left: 0;
     border-top: 1px solid rgba(255, 199, 44, 0.5);
+  }
+}
+
+/* En el celular los dos bloques van uno debajo del otro y con 26px de aire
+   el panel se comia dos pantallas enteras. */
+@media (max-width: 720px) {
+  .product-detail-panel__block {
+    gap: 13px;
+    padding: 20px 18px;
+  }
+
+  .product-detail-panel .product-tags {
+    padding-top: 13px;
   }
 }
 
@@ -7285,7 +7329,7 @@ textarea {
   border: 1px solid var(--line);
   border-radius: 8px;
   box-shadow: none;
-  color: var(--muted);
+  color: var(--muted-fuerte);
   display: inline-block;
   flex: 0 1 auto;
   font-size: 11px;
