@@ -487,6 +487,16 @@ export function findCategoryBySlug(categories: Category[], slug: string) {
   return categories.find((category) => category.slug === slug);
 }
 
+// Encuadre guardado de una foto, listo para `object-position`. Sin nada
+// guardado va centrada, que es lo que hacía el sitio antes de que se
+// pudiera acomodar.
+export function encuadreDe(
+  product: { imageFocus?: Record<string, string> },
+  image: string | undefined
+) {
+  return (image && product.imageFocus?.[image]) || "50% 50%";
+}
+
 // --- Complementos (producto padre → extras que se venden aparte) ---
 
 // Los extras de un producto: se cotizan y se compran por separado, pero

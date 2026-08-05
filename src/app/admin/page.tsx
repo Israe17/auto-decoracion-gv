@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import {
   complementsOf,
+  encuadreDe,
   formatCRC,
   productHasPublicPrice,
   puedeTenerComplementos
@@ -1887,7 +1888,11 @@ function FeaturedOverview({
               type="button"
               onClick={() => onEdit(product)}
             >
-              <img src={product.images[0]} alt="" />
+              <img
+                src={product.images[0]}
+                alt=""
+                style={{ objectPosition: encuadreDe(product, product.images[0]) }}
+              />
               <span>
                 <small>#{product.featuredOrder ?? index + 1}</small>
                 <strong>{product.name}</strong>
@@ -1974,7 +1979,11 @@ function ProductAdminPanel({
             key={product.id}
             data-guia={indice === 0 ? "productos-fila" : undefined}
           >
-            <img src={product.images[0]} alt={product.name} />
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              style={{ objectPosition: encuadreDe(product, product.images[0]) }}
+            />
             <div>
               <strong>{product.name}</strong>
               <span>
@@ -2283,6 +2292,19 @@ function ProductDialog({
       .split("\n")
       .map((line) => line.trim())
       .filter(Boolean);
+    // El encuadre de cada foto viaja en un campo oculto como JSON. Si
+    // viniera roto se descarta: peor seria no poder guardar el producto.
+    const imageFocus = (() => {
+      try {
+        const crudo = JSON.parse(String(form.get("imageFocus") || "{}")) as Record<string, string>;
+        const limpio = Object.fromEntries(
+          images.filter((url) => typeof crudo[url] === "string").map((url) => [url, crudo[url]])
+        );
+        return Object.keys(limpio).length ? limpio : undefined;
+      } catch {
+        return product.imageFocus;
+      }
+    })();
     const canShowPrice = saleMode === "price_quote" && price > 0;
     // El campo edita el precio NORMAL. Si hay oferta puesta, el rebajado se
     // conserva (y nunca queda por encima del normal nuevo).
@@ -2315,6 +2337,7 @@ function ProductDialog({
       images: images.length
         ? images
         : ["https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?auto=format&fit=crop&w=900&q=80"],
+      imageFocus,
       description: String(form.get("description") || ""),
       tags: String(form.get("tags") || "")
         .split(",")
@@ -2516,8 +2539,10 @@ function ProductDialog({
         <div>
         <ImageListField
           name="images"
+          focusName="imageFocus"
           label="Fotos del producto"
           defaultValue={product.images}
+          defaultFocus={product.imageFocus}
           folder="products"
           max={8}
           tarjeta={{ nombre: product.name, categoria: product.categoryName }}
@@ -3202,7 +3227,11 @@ function AdminOfferList({
                 key={product.id}
                 data-guia={indice === 0 ? "ofertas-tarjeta" : undefined}
               >
-                <img src={product.images[0]} alt={product.name} />
+                <img
+              src={product.images[0]}
+              alt={product.name}
+              style={{ objectPosition: encuadreDe(product, product.images[0]) }}
+            />
                 <div className="admin-offer-card__body">
                   <div className="admin-offer-card__chips">
                     {hasOffer && <span>Oferta activa</span>}
@@ -3531,7 +3560,11 @@ function AdminDetailDialog({
       return (
         <>
           <div className="admin-detail-hero">
-            <img src={product.images[0]} alt={product.name} />
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              style={{ objectPosition: encuadreDe(product, product.images[0]) }}
+            />
             <div>
               <span className="admin-detail-kicker">Producto</span>
               <h2>{product.name}</h2>
@@ -3727,7 +3760,11 @@ function AdminDetailDialog({
       return (
         <>
           <div className="admin-detail-hero">
-            <img src={product.images[0]} alt={product.name} />
+            <img
+              src={product.images[0]}
+              alt={product.name}
+              style={{ objectPosition: encuadreDe(product, product.images[0]) }}
+            />
             <div>
               <span className="admin-detail-kicker">Oferta o destacado</span>
               <h2>{product.name}</h2>

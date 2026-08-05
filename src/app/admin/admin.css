@@ -1004,6 +1004,13 @@
   font-weight: 600;
 }
 
+/* Renglon completo: explica que la foto NO se recorta al guardarse. */
+.image-editor__completa {
+  color: var(--muted);
+  flex-basis: 100%;
+  line-height: 1.45;
+}
+
 /* Vista previa del card real: la tarjeta mide lo mismo que en la
    cuadricula de la tienda para que el encuadre no enganne. */
 .image-editor__tarjeta {
@@ -1123,10 +1130,17 @@
   position: relative;
 }
 
+/* 1.1 = la proporcion REAL de la tarjeta del sitio, para que la miniatura
+   enseñe el mismo encuadre que va a salir en la tienda. */
 .image-upload__preview-card--sm {
   animation: fadeUp 220ms ease both;
-  aspect-ratio: 1;
+  aspect-ratio: 1.1;
   border-radius: 12px;
+}
+
+/* La portada se distingue de un vistazo entre las 8 miniaturas. */
+.image-upload__preview-card.is-portada {
+  box-shadow: 0 0 0 2px var(--red), var(--shadow-sm);
 }
 
 .image-upload__preview {
@@ -1152,6 +1166,9 @@
   opacity: 1;
 }
 
+/* Cuadrados y sin relleno de texto: son tres y la miniatura es angosta.
+   Con el padding de pastilla se salian del recuadro y el clic lo
+   interceptaba la rejilla — el boton de portada no se podia tocar. */
 .image-upload__overlay-btn {
   align-items: center;
   background: #fff;
@@ -1160,11 +1177,12 @@
   color: var(--ink);
   cursor: pointer;
   display: inline-flex;
-  font-size: 12.5px;
-  font-weight: 700;
-  gap: 6px;
-  padding: 8px 14px;
+  flex: none;
+  height: 30px;
+  justify-content: center;
+  padding: 0;
   transition: transform 180ms ease;
+  width: 30px;
 }
 
 .image-upload__overlay-btn:hover {
@@ -1176,11 +1194,28 @@
   color: #fff;
 }
 
+/* 118px: lo minimo para que quepan los tres botones de 30px con su aire.
+   Con 84px no cabian y se salian de la miniatura. */
 .image-upload__thumbs {
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(118px, 1fr));
   margin-bottom: 12px;
+}
+
+.image-upload__overlay {
+  gap: 6px;
+}
+
+/* En tactil no hay hover: si las acciones solo salieran al pasar el mouse,
+   desde el celular no habria forma de cambiar la portada ni de acomodar. */
+@media (hover: none) {
+  .image-upload__overlay {
+    background: linear-gradient(0deg, rgba(9, 12, 16, 0.7), rgba(9, 12, 16, 0));
+    align-items: flex-end;
+    opacity: 1;
+    padding-bottom: 7px;
+  }
 }
 
 .image-upload__loading {

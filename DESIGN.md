@@ -266,10 +266,30 @@ Móvil (iPhone-first):
   muestra dentro de un marco con la proporción REAL del sitio (promos
   1600×720, categorías 1200×720, marcas 600×600, productos 1100×1000 —
   el `aspect-ratio: 1.1` de la tarjeta) y se arrastra para acomodarla.
-  Al confirmar se recorta en canvas con la MISMA matemática que
-  `object-position` y se sube el recorte: el sitio no guarda ninguna
-  posición. Varias fotos se encuadran una por una en cola ("Foto 2 de 5").
+  Al confirmar hay **dos caminos**, y no da igual cuál:
+  - **Fotos de producto** (`ImageListField`, decisión del dueño): la foto
+    se sube **ENTERA, sin recortar**, y el encuadre se guarda aparte en
+    `Product.imageFocus` — un mapa `URL → "50% 30%"` que el sitio aplica
+    con `object-position` (helper `encuadreDe` en `catalog.ts`). Así se
+    puede **reacomodar cuando se quiera** sin volver a subir nada, que era
+    justo lo que no se podía con el recorte. Va con la URL como llave y no
+    por posición, para que reordenar o quitar fotos no descuadre el resto.
+    Si el archivo no cabe en el bucket (8 MB) se reduce de tamaño
+    conservando el cuadro completo — reducir no es recortar.
+  - **Campos de UNA sola imagen** (categorías, promos, marcas, galería):
+    ahí sí se sigue recortando en canvas con la misma matemática que
+    `object-position`, porque el recuadro es fijo y no hace falta poder
+    reacomodarla después.
+
+  Varias fotos se encuadran una por una en cola ("Foto 2 de 5").
   Avisos: "calza exacto" y "más pequeña que lo recomendado".
+  **Miniaturas**: la portada se marca con anillo rojo y su sello, y se
+  cambia con la estrella (antes había que ir moviéndola de puesto con
+  flechas). Cada miniatura lleva tres acciones — portada, acomodar,
+  quitar — en botones cuadrados de 30px dentro de una celda de 118px: con
+  las pastillas de texto anteriores en 84px **no cabían, se salían del
+  recuadro y la rejilla se comía el clic**. En táctil las acciones van
+  siempre visibles, porque sin hover no habría forma de llegar a ellas.
   En productos el marco va **vestido con el card real** (mismas clases de
   `ProductCard`, sin enlaces): categoría, nombre y precio leídos EN VIVO
   del propio formulario, así el dueño acomoda la foto viendo la tarjeta

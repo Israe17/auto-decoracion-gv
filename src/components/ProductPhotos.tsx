@@ -17,13 +17,18 @@ import { ArrowLeft, ChevronLeft, ChevronRight, X } from "lucide-react";
 // desliza con flechas o con la rueda.
 export function ProductPhotos({
   images,
+  focos,
   name,
   discount
 }: {
   images: string[];
+  /** Encuadre guardado por foto (`object-position`). La foto esta entera:
+      esto solo dice que parte se ve dentro del recuadro. */
+  focos?: Record<string, string>;
   name: string;
   discount: number;
 }) {
+  const foco = (image: string) => focos?.[image] || "50% 50%";
   const trackRef = useRef<HTMLDivElement>(null);
   const thumbsRef = useRef<HTMLDivElement>(null);
   const [activa, setActiva] = useState(0);
@@ -217,6 +222,7 @@ export function ProductPhotos({
                 fill
                 sizes="(max-width: 980px) 100vw, 55vw"
                 priority={index === 0}
+                style={{ objectPosition: foco(image) }}
               />
             </button>
           ))}
@@ -260,7 +266,7 @@ export function ProductPhotos({
                 aria-label={`Ver foto ${index + 1}`}
                 aria-current={index === activa}
               >
-                <Image src={image} alt="" fill sizes="110px" />
+                <Image src={image} alt="" fill sizes="110px" style={{ objectPosition: foco(image) }} />
               </button>
             ))}
           </div>
