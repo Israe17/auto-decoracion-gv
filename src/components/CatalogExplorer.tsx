@@ -137,6 +137,13 @@ export function CatalogExplorer({
     });
   }, [products, filters, categories]);
 
+  // Con el filtro puesto en una categoria SIN subcategorias, todas las
+  // tarjetas dicen lo mismo que el filtro y la etiqueta sobra. Si el filtro
+  // es una categoria madre no: ahi los resultados vienen de varias hijas
+  // (categoryScope) y la etiqueta es lo que las distingue.
+  const categoriaEnElFiltro =
+    Boolean(filters.categoria) && childCategories(categories, filters.categoria).length === 0;
+
   const hasVehicleFilter = Boolean(filters.marca || filters.modelo || filters.ano);
   const hasAnyFilter =
     Boolean(filters.q || filters.categoria || filters.lineaPropia) || hasVehicleFilter;
@@ -286,7 +293,11 @@ export function CatalogExplorer({
         {results.length > 0 ? (
           <div className="product-grid product-grid--catalog">
             {results.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                ocultarCategoria={categoriaEnElFiltro}
+              />
             ))}
           </div>
         ) : (
