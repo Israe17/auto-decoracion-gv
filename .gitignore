@@ -8,3 +8,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 tsconfig.tsbuildinfo
+
+# playwright-cli: sesiones, snapshots y perfiles persistentes de navegador
+# (pueden traer cookies o datos de sesion). El config base SI se commitea.
+.playwright-cli/
+.playwright/*
+!.playwright/cli.config.json
